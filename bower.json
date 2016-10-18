@@ -1,6 +1,7 @@
 {
   "name": "etools-searchable-multiselection-menu",
   "description": "Dropdown menu with search and multiple options selection",
+  "license": "https://github.com/unicef-polymer/etools-searchable-multiselection-menu/blob/master/LICENSE.md",
   "main": "etools-searchable-multiselection-menu.html",
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0",

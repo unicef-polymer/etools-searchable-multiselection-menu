@@ -2,37 +2,26 @@
 
 Dropdown menu with search and multiple options selection
 
-## Install the Polymer-CLI
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your application locally.
+## Usage
 
-## Viewing Your Application
+How to use this element ... examples
 
-```
-$ polymer serve
-```
+## Styling
 
-## Building Your Application
+Available css variables and mixins used to style this element
 
-```
-$ polymer build
-```
+## Install
 
-This will create a `build/` folder with `bundled/` and `unbundled/` sub-folders
-containing a bundled (Vulcanized) and unbundled builds, both run through HTML,
-CSS, and JS optimizers.
+It will be available as a bower package when first version is finished.
 
-You can serve the built versions by giving `polymer serve` a folder to serve
-from:
+## Preview element locally
 
-```
-$ polymer serve build/bundled
-```
+Install needed dependencies by running: `$ bower install`.
+Make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `$ polymer serve` to serve your element application locally.
 
 ## Running Tests
 
 ```
 $ polymer test
 ```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
