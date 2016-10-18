@@ -92,7 +92,7 @@ Dropdown menu with search and multiple options selection
     </style>
 
     <div id="main" class="external-wrapper">
-      <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]" value="[[value.label]]"></paper-input>
+      <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]" value="[[value.label]]"> </paper-input>
 
       <div class="multi-container" hidden$="{{!multi}}" >
         <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="chip-value">
@@ -102,7 +102,7 @@ Dropdown menu with search and multiple options selection
       </div>
       <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}">
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
-        <div class="dropdown-content">
+        <div class="dropdown-content ">
           <div class="input-wrapper"  hidden$="{{hideSearch}}">
             <paper-input no-label-float class="search-input" label="Search" type="text" value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
@@ -121,6 +121,7 @@ Dropdown menu with search and multiple options selection
         </div>
       </paper-menu-button>
     </div>
+
   </template>
 
   <script>
@@ -133,7 +134,6 @@ Dropdown menu with search and multiple options selection
         properties: {
           options: {
             type: Array,
-            value: [],
             observer: '_optionsChanged'
           },
           label: {
@@ -165,9 +165,9 @@ Dropdown menu with search and multiple options selection
             notifies: true
           }
         },
-        _optionsChanged: function(newOptions) {
-          if (newOptions && newOptions.length > 0 && !(newOptions[0] instanceof Object)) {
-            var opt = newOptions.map(function(item, index) {
+        _optionsChanged: function() {
+          if (this.options && this.options.length > 0 && !(this.options[0] instanceof Object)) {
+            var opt = this.options.map(function(item, index) {
               return {value: index, label: item};
             });
             this.set('realOptions', opt)
