@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <title>etools-searchable-multiselection-menu demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+
+    <link rel="import" href="../etools-searchable-multiselection-menu.html">
+    <link rel="import" href="demo-helper.html">
+
+    <style is="custom-style" include="demo-pages-shared-styles">
+      .vertical-section-container {
+        max-width: 900px;
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="vertical-section-container centered">
+      <h1>etools-searchable-multiselection-menu demo</h1>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper options="{{options}}" selected-values="{{selectedValues}}"></demo-helper>
+          <etools-searchable-multiselection-menu label="Searchable menu"
+                                                 options="[[options]]"
+                                                 value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+    </div>
+
+  </body>
+</html>
