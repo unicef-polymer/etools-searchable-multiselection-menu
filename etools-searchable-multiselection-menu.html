@@ -7,7 +7,7 @@
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="paper-chip-list.html">
+<link rel="import" href="deletable-option-list.html">
 <!--
 `etools-searchable-multiselection-menu`
 
@@ -22,6 +22,12 @@ Dropdown menu with search and multiple options selection
       :host {
         display: block;
         width: 100%;
+        --paper-menu-button-dropdown: {
+          overflow: hidden;
+        };
+        --paper-menu-button-content: {
+          overflow: hidden;
+        };
       }
       *[hidden] {
         display: none;
@@ -41,6 +47,14 @@ Dropdown menu with search and multiple options selection
       }
       .value-container {
         position: relative;
+      }
+      paper-menu-button {
+        --paper-menu-button-dropdown: {
+          overflow: hidden;
+        };
+        --paper-menu-button-content: {
+          overflow: hidden;
+        };
       }
       #dropdownMenu{
         position:absolute;
@@ -94,13 +108,16 @@ Dropdown menu with search and multiple options selection
     <div id="main" class="external-wrapper">
       <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]" value="[[value.label]]"> </paper-input>
 
-      <div class="multi-container" hidden$="{{!multi}}" >
-        <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="chip-value">
-          <label>[[label]]</label>
-          <paper-chip-list on-chip-delete="_removeItem"  class="paper-input-input" chip-value="{{value}}"></paper-chip-list>
-        </paper-input-container>
-      </div>
-      <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}">
+      <template is="dom-if" if="{{multi}}">
+        <div class="multi-container" >
+          <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="option-value">
+            <label>[[label]]</label>
+            <deletable-option-list on-option-delete="_removeItem"  class="paper-input-input" option-value="{{value}}"></deletable-option-list>
+          </paper-input-container>
+
+        </div>
+      </template>
+      <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}" restore-focus-on-close$="{{falseValue}}">
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
         <div class="dropdown-content ">
           <div class="input-wrapper"  hidden$="{{hideSearch}}">
@@ -110,7 +127,7 @@ Dropdown menu with search and multiple options selection
           </div>
           <div class="list-wrapper">
             <paper-listbox  multi="[[multi]]" attr-for-selected="internal-id" selected="{{selectedValues}}" selected-values="{{selectedValues}}">
-              <template is="dom-repeat" items="[[realOptions]]" filter="{{_filterFunction(search)}}">
+              <template is="dom-repeat" items="[[options]]" filter="{{_filterFunction(search)}}">
                 <paper-item internal-id$="{{item.value}}">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
@@ -133,23 +150,19 @@ Dropdown menu with search and multiple options selection
 
         properties: {
           options: {
-            type: Array,
-            observer: '_optionsChanged'
+            type: Array
           },
           label: {
             type: String
           },
           hideSearch: {
             type: Boolean,
-            value: false,
+            value: false
           },
           value: {
             type: String,
             notify: true,
             observer: '_valueChanged'
-          },
-          realOptions: {
-            type: Array
           },
           multi: {
             type: Boolean,
@@ -163,14 +176,12 @@ Dropdown menu with search and multiple options selection
             type: Boolean,
             value: false,
             notifies: true
-          }
-        },
-        _optionsChanged: function() {
-          if (this.options && this.options.length > 0 && !(this.options[0] instanceof Object)) {
-            var opt = this.options.map(function(item, index) {
-              return {value: index, label: item};
-            });
-            this.set('realOptions', opt)
+          },
+          falseValue: {
+            type: Boolean,
+            value: function() {
+              return false;
+            }
           }
         },
         _filterFunction: function(searchKey) {
@@ -193,7 +204,7 @@ Dropdown menu with search and multiple options selection
           if(this.selectedValues instanceof Array) {
             var newValue = [];
             this.selectedValues.forEach(function(selected) {
-              self.realOptions.forEach(function(option){
+              self.options.forEach(function(option){
                 if(parseInt(option.value, 10) === parseInt(selected, 10)) {
                   newValue.push(option);
                 }
@@ -201,7 +212,7 @@ Dropdown menu with search and multiple options selection
             });
             self.set('value', newValue);
           } else {
-            this.realOptions.forEach(function(item) {
+            this.options.forEach(function(item) {
               if(item.value === parseInt(self.selectedValues, 10)) {
                 self.set('value', item);
               }
@@ -225,6 +236,7 @@ Dropdown menu with search and multiple options selection
           var dropDown =  this.$.dropdownMenu;
           dropDown.addEventListener('paper-dropdown-open', function() {
             dropDown.$.dropdown.style.width = self.$.main.offsetWidth + 'px';
+            dropDown.$.dropdown.$.contentWrapper.querySelector('.dropdown-content').style.overflow = 'hidden';
           });
           dropDown.addEventListener('paper-dropdown-close', function() {
             self._valueSelected();
