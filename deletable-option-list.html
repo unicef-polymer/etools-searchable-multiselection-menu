@@ -2,59 +2,62 @@
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <dom-module id="deletable-option-list">
-  <template>
-    <style >
-      :host{
-      }
-      span {
-        display: inline-block;
-        width: auto;
-        height:auto;
-        margin-right:8px;
-        color: #212121;
-      }
-      paper-icon-button{
-        color: red;
-        padding:0;
-        height:24px;
-        width:24px;
-      }
-      .custom-input {
-        height: 24px;
-      }
-    </style>
+    <template>
+        <style >
+            :host{
+            }
+            span {
+                display: inline-block;
+                width: auto;
+                height:auto;
+                margin-right:8px;
+                font-size:16px;
+                line-height: 24px;
+                color: #212121;
+            }
+            paper-icon-button{
+                color: red;
+                opacity:0.54;
+                padding:0;
+                height:18px;
+                width:18px;
+            }
+            .custom-input {
+                height: 24px;
+            }
+        </style>
 
-    <div class="paper-input-input custom-input" >
-      <template is="dom-repeat" items="[[optionValue]]">
+        <div class="paper-input-input custom-input" >
+            <template is="dom-repeat" items="[[optionValue]]">
                 <span>
                     {{item.label}}
                     <paper-icon-button icon="close" on-click="_fireClose"></paper-icon-button>
                 </span>
-      </template>
-    </div>
+            </template>
+        </div>
 
 
 
-  </template>
+    </template>
 
-  <script>
-    Polymer({
-      is: 'deletable-option-list',
-      properties: {
-        optionValue: {
-          type: Array,
-          notify: true
-        }
-      },
-      _fireClose: function (e) {
-        var details = e.model.item;
-        var newValue = this.optionValue.filter(function(item) {
-          return parseInt(item.value, 10) !== parseInt(details.value,10)
+    <script>
+        Polymer({
+            is: 'deletable-option-list',
+            properties: {
+                optionValue: {
+                    type: Array,
+                    notify: true
+                }
+            },
+            _fireClose: function (e) {
+                var details = e.model.item;
+                var newValue = this.optionValue.filter(function(item) {
+                    return parseInt(item.value, 10) !== parseInt(details.value,10)
+                });
+                newValue = newValue.length > 0 ? newValue : null;
+                this.set('optionValue', newValue);
+                this.fire('option-delete', details)
+            },
         });
-        newValue = newValue.length > 0 ? newValue : null;
-        this.set('optionValue', newValue);
-        this.fire('option-delete', details)
-      },
-    });
-  </script>
+    </script>
 </dom-module>

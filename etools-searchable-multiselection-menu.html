@@ -22,12 +22,6 @@ Dropdown menu with search and multiple options selection
       :host {
         display: block;
         width: 100%;
-        --paper-menu-button-dropdown: {
-          overflow: hidden;
-        };
-        --paper-menu-button-content: {
-          overflow: hidden;
-        };
       }
       *[hidden] {
         display: none;
@@ -41,20 +35,18 @@ Dropdown menu with search and multiple options selection
       .search-input {
         position: absolute;
         top:0;
-        left:0;
-        width:90%;
-        margin: 8px;
+        left:0px;
+        width: calc(100% - 32px );
+        margin: 16px;
+      }
+
+      .search-input iron-icon {
+        width:24px;
+        height:24px;
+        font-size: 24px;
       }
       .value-container {
         position: relative;
-      }
-      paper-menu-button {
-        --paper-menu-button-dropdown: {
-          overflow: hidden;
-        };
-        --paper-menu-button-content: {
-          overflow: hidden;
-        };
       }
       #dropdownMenu{
         position:absolute;
@@ -63,7 +55,8 @@ Dropdown menu with search and multiple options selection
         padding:0;
       }
       .dropdown-trigger {
-        padding: 8px 0 8px 16px;
+        margin-right: -8px;
+        opacity: 0.54;
       }
       .input-wrapper {
         position: relative;
@@ -71,6 +64,7 @@ Dropdown menu with search and multiple options selection
         background: #fff;
         width:100%;
         height: 45px;
+        margin-right:16px;
       }
       .multi-container {
         position: relative;
@@ -88,12 +82,17 @@ Dropdown menu with search and multiple options selection
         min-width:150px;
         width:100%;
         overflow-y: auto;
+      }
+
+      .list-wrapper paper-listbox {
         --paper-listbox: {
-          margin-left: 8px;
-          margin-right: 8px;
+          margin: 0;
         };
+      }
+
+      .list-wrapper paper-item {
         --paper-item: {
-          padding: 0;
+          padding: 0 24px 0 24px;
         }
       }
       .tick-icon {
@@ -102,6 +101,9 @@ Dropdown menu with search and multiple options selection
       }
       .iron-selected .tick-icon {
         display: block
+      }
+      .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
     </style>
 
