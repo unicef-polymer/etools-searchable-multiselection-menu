@@ -35,7 +35,7 @@ Dropdown menu with search and multiple options selection
       .search-input {
         position: absolute;
         top:0;
-        left:0px;
+        left:0;
         width: calc(100% - 32px );
         margin: 16px;
       }
@@ -119,7 +119,9 @@ Dropdown menu with search and multiple options selection
 
         </div>
       </template>
-      <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}" restore-focus-on-close$="{{falseValue}}">
+      <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}"
+                          restore-focus-on-close$="{{falseValue}}" on-paper-dropdown-close="_valueSelected"
+                          on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll>
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
         <div class="dropdown-content ">
           <div class="input-wrapper"  hidden$="{{hideSearch}}">
@@ -233,16 +235,12 @@ Dropdown menu with search and multiple options selection
           }
           this.set('menuOpened', true);
         },
-        attached: function() {
-          var self = this;
+        _onDropdownOpen: function() {
           var dropDown =  this.$.dropdownMenu;
-          dropDown.addEventListener('paper-dropdown-open', function() {
-            dropDown.$.dropdown.style.width = self.$.main.offsetWidth + 'px';
-            dropDown.$.dropdown.$.contentWrapper.querySelector('.dropdown-content').style.overflow = 'hidden';
-          });
-          dropDown.addEventListener('paper-dropdown-close', function() {
-            self._valueSelected();
-          });
+          dropDown.$.dropdown.style.width = this.$.main.offsetWidth + 'px';
+          var style = dropDown.$.dropdown.$.contentWrapper.querySelector('.dropdown-content').style;
+          style.overflow = 'hidden';
+          style.marginTop = '-20px';
         }
 
       });
