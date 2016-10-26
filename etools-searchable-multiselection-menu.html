@@ -7,11 +7,23 @@
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 
-<link rel="import" href="paper-chip-list.html">
+<link rel="import" href="deletable-option-list.html">
 <!--
 `etools-searchable-multiselection-menu`
 
 Dropdown menu with search and multiple options selection
+
+### Usage
+Check demo page or readme file.
+
+### Style
+
+Use this css variables and mixins to style this element.
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--esmm-option-list-color` | Multiple selected options color | `#212121`
+`--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
 
 @demo demo/index.html 
 -->
@@ -23,94 +35,139 @@ Dropdown menu with search and multiple options selection
         display: block;
         width: 100%;
       }
+
       *[hidden] {
         display: none;
       }
+
       .external-wrapper {
-        width: calc( 100% - 24px );
-        margin-right:12px;
+        width: calc(100% - 24px);
+        margin-right: 12px;
         margin-left: 12px;
         position: relative;
       }
+
       .search-input {
+        background-color: #fff;
         position: absolute;
-        top:0;
-        left:0;
-        width:90%;
-        margin: 8px;
+        top: 0;
+        left: 0;
+        width: calc(100% - 32px);
+        margin: 16px;
       }
+
+      .search-input iron-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+      }
+
       .value-container {
         position: relative;
       }
-      #dropdownMenu{
-        position:absolute;
-        right:0;
-        bottom:0;
-        padding:0;
+
+      .dropdown-opened .value-container,
+      .dropdown-opened .multi-container {
+        visibility: hidden;
       }
+
+
+      #dropdownMenu {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 0;
+      }
+
       .dropdown-trigger {
-        padding: 8px 0 8px 16px;
+        margin-right: -8px;
+        opacity: 0.54;
       }
+
       .input-wrapper {
         position: relative;
-        z-index:10;
+        z-index: 10;
         background: #fff;
-        width:100%;
+        width: 100%;
         height: 45px;
+        margin-right: 16px;
       }
+
       .multi-container {
         position: relative;
         height: 61px;
         --paper-input-container: {
           height: 45px;
           position: relative;
-          width:100%;
+          width: 100%;
         }
       }
+
       .list-wrapper {
         position: relative;
-        z-index:5;
-        max-height:50vh;
-        min-width:150px;
-        width:100%;
+        z-index: 5;
+        max-height: 50vh;
+        min-width: 150px;
+        width: 100%;
         overflow-y: auto;
+      }
+
+      .list-wrapper paper-listbox {
         --paper-listbox: {
-          margin-left: 8px;
-          margin-right: 8px;
+          margin: 0;
         };
+      }
+
+      .list-wrapper paper-item {
         --paper-item: {
-          padding: 0;
+          padding: 0 24px 0 24px;
+          cursor: pointer;
         }
       }
+
       .tick-icon {
-        display:none;
-        padding-right:8px;
+        display: none;
+        padding-right: 8px;
       }
+
       .iron-selected .tick-icon {
-        display: block
+        display: block;
       }
+
+      .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+
     </style>
 
-    <div id="main" class="external-wrapper">
-      <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]" value="[[value.label]]"> </paper-input>
+    <div id="main" class$="external-wrapper [[openedClass]]">
+      <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]"
+                   value="[[value.label]]"></paper-input>
 
-      <div class="multi-container" hidden$="{{!multi}}" >
-        <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="chip-value">
-          <label>[[label]]</label>
-          <paper-chip-list on-chip-delete="_removeItem"  class="paper-input-input" chip-value="{{value}}"></paper-chip-list>
-        </paper-input-container>
-      </div>
-      <paper-menu-button  horizontal-align="right" id="dropdownMenu"  ignore-select$="[[multi]]" opened="{{menuOpened}}">
+      <template is="dom-if" if="{{multi}}">
+        <div class="multi-container">
+          <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="option-value">
+            <label>[[label]]</label>
+            <deletable-option-list on-option-delete="_removeItem" class="paper-input-input"
+                                   option-value="{{value}}"></deletable-option-list>
+          </paper-input-container>
+
+        </div>
+      </template>
+      <paper-menu-button horizontal-align="right" id="dropdownMenu" ignore-select$="[[multi]]" opened="{{menuOpened}}"
+                         restore-focus-on-close$="{{falseValue}}" on-paper-dropdown-close="_valueSelected"
+                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align>
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
         <div class="dropdown-content ">
-          <div class="input-wrapper"  hidden$="{{hideSearch}}">
+          <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input no-label-float class="search-input" label="Search" type="text" value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
           <div class="list-wrapper">
-            <paper-listbox  multi="[[multi]]" attr-for-selected="internal-id" selected="{{selectedValues}}" selected-values="{{selectedValues}}">
-              <template is="dom-repeat" items="[[realOptions]]" filter="{{_filterFunction(search)}}">
+            <paper-listbox multi="[[multi]]" attr-for-selected="internal-id" selected="{{selectedValues}}"
+                           selected-values="{{selectedValues}}">
+              <template is="dom-repeat" items="[[options]]" filter="{{_filterFunction(search)}}">
                 <paper-item internal-id$="{{item.value}}">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
@@ -133,23 +190,19 @@ Dropdown menu with search and multiple options selection
 
         properties: {
           options: {
-            type: Array,
-            observer: '_optionsChanged'
+            type: Array
           },
           label: {
             type: String
           },
           hideSearch: {
             type: Boolean,
-            value: false,
+            value: false
           },
           value: {
             type: String,
             notify: true,
             observer: '_valueChanged'
-          },
-          realOptions: {
-            type: Array
           },
           multi: {
             type: Boolean,
@@ -163,72 +216,69 @@ Dropdown menu with search and multiple options selection
             type: Boolean,
             value: false,
             notifies: true
-          }
-        },
-        _optionsChanged: function() {
-          if (this.options && this.options.length > 0 && !(this.options[0] instanceof Object)) {
-            var opt = this.options.map(function(item, index) {
-              return {value: index, label: item};
-            });
-            this.set('realOptions', opt)
+          },
+          falseValue: {
+            type: Boolean,
+            value: function() {
+              return false;
+            }
           }
         },
         _filterFunction: function(searchKey) {
-          return function (item){
-            if(searchKey && searchKey.length > 0) {
+          return function(item) {
+            if (searchKey && searchKey.length > 0) {
               return item.label && item.label.indexOf(searchKey) > -1;
             }
             return true
           };
         },
         _valueChanged: function(value) {
-          if(this.multi && value && value.length > 0 && !this.selectedValues) {
+          if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
-              return ""+item.value;
+              return "" + item.value;
             }))
           }
         },
         _valueSelected: function() {
           var self = this;
-          if(this.selectedValues instanceof Array) {
+          if (this.selectedValues instanceof Array) {
             var newValue = [];
             this.selectedValues.forEach(function(selected) {
-              self.realOptions.forEach(function(option){
-                if(parseInt(option.value, 10) === parseInt(selected, 10)) {
+              self.options.forEach(function(option) {
+                if (parseInt(option.value, 10) === parseInt(selected, 10)) {
                   newValue.push(option);
                 }
               })
             });
             self.set('value', newValue);
           } else {
-            this.realOptions.forEach(function(item) {
-              if(item.value === parseInt(self.selectedValues, 10)) {
+            this.options.forEach(function(item) {
+              if (item.value === parseInt(self.selectedValues, 10)) {
                 self.set('value', item);
               }
             })
           }
+          this.openedClass = '';
         },
         _removeItem: function(event, details) {
           var newSelected = this.selectedValues.filter(function(item) {
-            return parseInt(item, 10) !== parseInt(details.value,10)
+            return parseInt(item, 10) !== parseInt(details.value, 10)
           });
           this.set('selectedValues', newSelected);
         },
-        _openMenu: function () {
-          if (this.value && this.value instanceof Array && this.value.length > 0){
+        _openMenu: function() {
+          if (this.value && this.value instanceof Array && this.value.length > 0) {
             return;
           }
           this.set('menuOpened', true);
         },
-        attached: function() {
-          var self = this;
-          var dropDown =  this.$.dropdownMenu;
-          dropDown.addEventListener('paper-dropdown-open', function() {
-            dropDown.$.dropdown.style.width = self.$.main.offsetWidth + 'px';
-          });
-          dropDown.addEventListener('paper-dropdown-close', function() {
-            self._valueSelected();
-          });
+        _onDropdownOpen: function() {
+          this.openedClass = 'dropdown-opened';
+          var dropDown = this.$.dropdownMenu;
+          dropDown.$.dropdown.style.width = this.$.main.offsetWidth + 'px';
+          var style = dropDown.$.dropdown.$.contentWrapper.querySelector('.dropdown-content').style;
+          style.overflow = 'hidden';
+          style.marginTop = '-20px';
         }
 
       });

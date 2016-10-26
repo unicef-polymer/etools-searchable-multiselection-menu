@@ -22,12 +22,40 @@
 
     <div class="vertical-section-container centered">
       <h1>etools-searchable-multiselection-menu demo</h1>
+
+      <h2>Single selection, with search</h2>
       <demo-snippet>
         <template is="dom-bind">
-          <demo-helper options="{{options}}" selected-values="{{selectedValues}}"></demo-helper>
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+                  label="Searchable menu"
+                  options="[[realOptions]]"
+                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
+      <h2>Single selection, without search</h2>
+
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu label="Searchable menu"
-                                                 options="[[options]]"
-                                                 value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+                                                 options="[[realOptions]]"
+                                                 value="{{selectedValues}}"
+                                                 hide-search></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
+
+      <h2>Multi selection, with search</h2>
+
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
+                                                 options="[[realOptions]]"
+                                                 value="{{selectedValues}}"
+                                                 multi></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
     </div>

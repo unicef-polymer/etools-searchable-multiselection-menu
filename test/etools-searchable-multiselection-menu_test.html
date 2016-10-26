@@ -1,32 +1,117 @@
 <!doctype html>
 
 <html>
-  <head>
-    <title>etools-searchable-multiselection-menu test</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+<head>
+  <title>etools-searchable-multiselection-menu test</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
 
-    <link rel="import" href="../etools-searchable-multiselection-menu.html">
-  </head>
-  <body>
+  <link rel="import" href="../etools-searchable-multiselection-menu.html">
+</head>
+<body>
 
-    <test-fixture id="basic">
-      <template>
-        <etools-searchable-multiselection-menu></etools-searchable-multiselection-menu>
-      </template>
-    </test-fixture>
+<test-fixture id="basic">
+  <template>
+    <etools-searchable-multiselection-menu></etools-searchable-multiselection-menu>
+  </template>
+</test-fixture>
 
-    <script>
-      suite('etools-searchable-multiselection-menu', function() {
+<script>
 
-        test('instantiating the element works', function() {
-          var element = fixture('basic');
-          assert.equal(element.is, 'etools-searchable-multiselection-menu');
-        });
+  suite('etools-searchable-multiselection-menu', function() {
+    var options, element, values;
+    setup(function() {
+      options = [
+        {value: 1, label: 'a'},
+        {value: 2, label: 'b'}
+      ];
+      values = [
+        {value: 2, label: 'b'}
+      ];
+      element = fixture('basic');
+    });
 
+    test('instantiating the element works', function() {
+      assert.equal(element.is, 'etools-searchable-multiselection-menu');
+    });
+
+    test('if the multi flag is not true the element show a paper-input', function(done) {
+      element.multi = false;
+      var paperInput = Polymer.dom(element.root).querySelectorAll('.value-container')[0];
+      assert.isNotOk(paperInput.hidden);
+      done();
+    });
+
+    test('if the multi flag is true the element not show a paper-input', function(done) {
+      element.multi = true;
+      var paperInput = Polymer.dom(element.root).querySelectorAll('.value-container')[0];
+      assert.isOk(paperInput.hidden);
+      done();
+    });
+
+    test('if the multi flag is true the element show the custom paper-input-container', function(done) {
+      element.multi = true;
+      flush(function() {
+        var paperInputContainer = element.$$('#customPaperInput');
+        assert.isOk(paperInputContainer);
+        done();
+      })
+    });
+
+    test('if the multi flag is not true the element not show the custom paper-input-container', function(done) {
+      element.multi = false;
+      flush(function() {
+        var paperInputContainer = element.$$('#customPaperInput');
+        assert.isNotOk(paperInputContainer);
+        done();
+      })
+    });
+
+
+    test('the element show the proper amount of list element', function(done) {
+      element.options = options;
+      flush(function() {
+        var listItems = Polymer.dom(element.root).querySelectorAll('paper-item');
+        assert.equal(listItems.length, options.length);
+        done();
       });
-    </script>
-  </body>
+    });
+
+    test('if the element has a value selected its shown', function(done) {
+      element.options = options;
+      element.value = values[0];
+      flush(function() {
+        var paperInput = Polymer.dom(element.root).querySelectorAll('.value-container')[0];
+        assert.equal(paperInput.value, values[0].label);
+        done();
+      });
+    });
+
+    test('if the element has a value selected its shown (multi)', function(done) {
+      element.options = options;
+      element.value = values;
+      element.multi = true;
+      flush(function() {
+        var optionList = element.$$('deletable-option-list');
+        assert.equal(optionList.optionValue.length, values.length);
+        done();
+      });
+    });
+
+    test('if hideSearch is true the search box is hidden', function(done) {
+      element.options = options;
+      element.hideSearch = true;
+      flush(function() {
+        var searchBox = Polymer.dom(element.root).querySelectorAll('.input-wrapper')[0];
+        assert.isOk(searchBox.hidden);
+        done();
+      });
+    });
+
+
+  });
+</script>
+</body>
 </html>
