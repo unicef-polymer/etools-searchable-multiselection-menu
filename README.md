@@ -58,7 +58,9 @@ Custom property | Description | Default
 
 ## Install
 
-It will be available as a bower package when first version is finished.
+```bash
+$ bower install --save etools-searchable-multiselection-menu
+```
 
 ## Preview element locally
 
