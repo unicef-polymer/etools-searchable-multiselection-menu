@@ -276,7 +276,7 @@ Custom property | Description | Default
           this.openedClass = 'dropdown-opened';
           var dropDown = this.$.dropdownMenu;
           dropDown.$.dropdown.style.width = this.$.main.offsetWidth + 'px';
-          var style = dropDown.$.dropdown.$.contentWrapper.querySelector('.dropdown-content').style;
+          var style = dropDown.$.dropdown.querySelector('.dropdown-content').style;
           style.overflow = 'hidden';
           style.marginTop = '-20px';
         }
