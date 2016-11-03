@@ -16,6 +16,7 @@
       .vertical-section-container {
         max-width: 900px;
       }
+
     </style>
   </head>
   <body>
@@ -46,6 +47,18 @@
         </template>
       </demo-snippet>
 
+      <h2>Single selection, disabled</h2>
+
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu label="Searchable menu"
+            options="[[realOptions]]"
+            value="{{selectedValues}}"
+            disabled></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
 
       <h2>Multi selection, with search</h2>
 
@@ -56,6 +69,20 @@
                                                  options="[[realOptions]]"
                                                  value="{{selectedValues}}"
                                                  multi></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
+
+      <h2>Multi selection, disabled</h2>
+
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
+            options="[[realOptions]]"
+            value="{{selectedValues}}"
+            multi
+          disabled></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
     </div>
