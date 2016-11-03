@@ -145,21 +145,21 @@ Custom property | Description | Default
 
     <div id="main" class$="external-wrapper [[openedClass]]">
       <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]"
-                   value="[[value.label]]"></paper-input>
+                   value="[[value.label]]" disabled="[[disabled]]"></paper-input>
 
       <template is="dom-if" if="{{multi}}">
         <div class="multi-container">
-          <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="option-value">
+          <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="option-value" disabled$="[[disabled]]">
             <label>[[label]]</label>
             <deletable-option-list on-option-delete="_removeItem" class="paper-input-input"
-                                   option-value="{{value}}"></deletable-option-list>
+                                   option-value="{{value}}" disabled="[[disabled]]"></deletable-option-list>
           </paper-input-container>
 
         </div>
       </template>
       <paper-menu-button horizontal-align="right" id="dropdownMenu" ignore-select$="[[multi]]" opened="{{menuOpened}}"
                          restore-focus-on-close$="{{falseValue}}" on-paper-dropdown-close="_valueSelected"
-                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align>
+                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align disabled="[[disabled]]">
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
         <div class="dropdown-content ">
           <div class="input-wrapper" hidden$="{{hideSearch}}">
@@ -225,6 +225,10 @@ Custom property | Description | Default
             value: function() {
               return false;
             }
+          },
+          disabled: {
+            type: Boolean,
+            value: false
           }
         },
         _filterFunction: function(searchKey) {
