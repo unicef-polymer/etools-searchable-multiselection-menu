@@ -24,6 +24,7 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
+`--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
 
 @demo demo/index.html 
 -->
@@ -45,6 +46,7 @@ Custom property | Description | Default
         margin-right: 12px;
         margin-left: 12px;
         position: relative;
+        @apply(--esmm-external-wrapper);
       }
 
       .search-input {
