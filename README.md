@@ -54,6 +54,7 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
+`--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
 
 
 ## Install
