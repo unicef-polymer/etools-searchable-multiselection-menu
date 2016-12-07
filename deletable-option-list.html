@@ -17,6 +17,10 @@
                 color: var(--esmm-option-list-color, #212121);
             }
 
+            span.placeholder {
+                color: rgba(0,0,0,.54);
+            }
+
             paper-icon-button {
                 color: red;
                 opacity: 0.54;
@@ -28,17 +32,23 @@
             .custom-input {
                 height: 24px;
             }
+
             *[hidden] {
                 display: none;
             }
         </style>
 
         <div class="paper-input-input custom-input">
+
+            <template is="dom-if" if="[[_showPlaceHolder(optionValue)]]">
+                <span class="placeholder">[[placeholder]]</span>
+            </template>
+
             <template is="dom-repeat" items="[[optionValue]]">
-        <span>
-            {{item.label}}
-            <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_fireClose"></paper-icon-button>
-        </span>
+                <span>
+                    {{item.label}}
+                    <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_fireClose"></paper-icon-button>
+                </span>
             </template>
         </div>
 
@@ -48,9 +58,12 @@
     <script>
         Polymer({
             is: 'deletable-option-list',
+
             properties: {
+                placeholder: String,
                 optionValue: {
                     type: Array,
+                    value: [],
                     notify: true
                 },
                 disabled: {
@@ -58,6 +71,11 @@
                     value: false
                 }
             },
+
+            _showPlaceHolder: function(optionValue) {
+                return !optionValue || !optionValue.length;
+            },
+
             _fireClose: function(e) {
                 if(this.disabled) {
                     return;

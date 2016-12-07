@@ -146,44 +146,90 @@ Custom property | Description | Default
     </style>
 
     <div id="main" class$="external-wrapper [[openedClass]]">
-      <paper-input hidden$="{{multi}}" class="value-container" on-tap="_openMenu" label="[[label]]"
-                   value="[[value.label]]" disabled="[[disabled]]"></paper-input>
+
+      <paper-input hidden$="{{multi}}"
+        class="value-container"
+        on-tap="_openMenu"
+        label="[[label]]"
+        value="[[value.label]]"
+        disabled="[[disabled]]"
+        error-message="[[errorMessage]]"
+        required$="[[_simpleRequired(required)]]"
+        placeholder="[[placeholder]]"
+        auto-validate$="[[autoValidate]]"
+        invalid$="[[invalid]]">
+      </paper-input>
 
       <template is="dom-if" if="{{multi}}">
-        <div class="multi-container">
-          <paper-input-container id="customPaperInput" on-tap="_openMenu" attr-for-value="option-value" disabled$="[[disabled]]">
-            <label>[[label]]</label>
-            <deletable-option-list on-option-delete="_removeItem" class="paper-input-input"
-                                   option-value="{{value}}" disabled="[[disabled]]"></deletable-option-list>
-          </paper-input-container>
 
+        <div class="multi-container">
+
+          <paper-input-container
+            id="customPaperInput"
+            on-tap="_openMenu"
+            attr-for-value="option-value"
+            disabled$="[[disabled]]"
+            error-message="[[errorMessage]]"
+            required$="[[_multiRequired(required)]]"
+            invalid$="[[invalid]]"
+            always-float-label>
+
+            <label>[[label]]</label>
+
+            <deletable-option-list on-option-delete="_removeItem"
+              class="paper-input-input"
+              option-value="{{value}}"
+              disabled="[[disabled]]"
+              placeholder=[[placeholder]]>
+            </deletable-option-list>
+          </paper-input-container>
         </div>
       </template>
-      <paper-menu-button horizontal-align="right" id="dropdownMenu" ignore-select$="[[multi]]" opened="{{menuOpened}}"
-                         restore-focus-on-close$="{{falseValue}}" on-paper-dropdown-close="_valueSelected"
-                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align disabled="[[disabled]]">
+
+      <paper-menu-button
+        horizontal-align="right"
+        id="dropdownMenu"
+        ignore-select$="[[multi]]"
+        opened="{{menuOpened}}"
+        restore-focus-on-close$="{{falseValue}}"
+        on-paper-dropdown-close="_valueSelected"
+        on-paper-dropdown-open="_onDropdownOpen"
+        allow-outside-scroll
+        dynamic-align
+        disabled="[[disabled]]">
+
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
-        <div class="dropdown-content ">
+
+        <div class="dropdown-content">
+
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input no-label-float class="search-input" label="Search" type="text" value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
+
           <div class="list-wrapper">
-            <paper-listbox multi="[[multi]]" attr-for-selected="internal-id" selected="{{selectedValues}}"
-                           selected-values="{{selectedValues}}">
+            <paper-listbox
+              multi="[[multi]]"
+              attr-for-selected="internal-id"
+              selected="{{selectedValues}}"
+              selected-values="{{selectedValues}}">
+
               <template is="dom-repeat" items="[[options]]" filter="{{_filterFunction(search)}}">
+
                 <paper-item internal-id$="{{item.value}}">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
                 </paper-item>
+
               </template>
+
             </paper-listbox>
           </div>
+
         </div>
       </paper-menu-button>
     </div>
-
   </template>
 
   <script>
@@ -194,6 +240,12 @@ Custom property | Description | Default
         is: 'etools-searchable-multiselection-menu',
 
         properties: {
+
+          errorMessage: String,
+          required: Boolean,
+          placeholder: String,
+          autoValidate: Boolean,
+          invalid: Boolean,
           options: {
             type: Array
           },
@@ -233,6 +285,7 @@ Custom property | Description | Default
             value: false
           }
         },
+
         _filterFunction: function(searchKey) {
           return function(item) {
             if (searchKey && searchKey.length > 0) {
@@ -241,6 +294,15 @@ Custom property | Description | Default
             return true
           };
         },
+
+        _simpleRequired: function(required) {
+          return !this.multi && required;
+        },
+
+        _multiRequired: function(required) {
+          return this.multi && required;
+        },
+
         _valueChanged: function(value) {
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
@@ -248,6 +310,7 @@ Custom property | Description | Default
             }))
           }
         },
+
         _valueSelected: function() {
           var self = this;
           if (this.selectedValues instanceof Array) {
@@ -269,18 +332,21 @@ Custom property | Description | Default
           }
           this.openedClass = '';
         },
+
         _removeItem: function(event, details) {
           var newSelected = this.selectedValues.filter(function(item) {
             return parseInt(item, 10) !== parseInt(details.value, 10)
           });
           this.set('selectedValues', newSelected);
         },
+
         _openMenu: function() {
           if (this.value && this.value instanceof Array && this.value.length > 0) {
             return;
           }
           this.set('menuOpened', true);
         },
+
         _onDropdownOpen: function() {
           this.openedClass = 'dropdown-opened';
           var dropDown = this.$.dropdownMenu;
@@ -289,7 +355,6 @@ Custom property | Description | Default
           style.overflow = 'hidden';
           style.marginTop = '-20px';
         }
-
       });
     })();
   </script>
