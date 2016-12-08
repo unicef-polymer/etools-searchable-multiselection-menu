@@ -54,11 +54,14 @@ Custom property | Description | Default
 ----------------|-------------|----------
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
+`--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
 
 
 ## Install
 
-It will be available as a bower package when first version is finished.
+```bash
+$ bower install --save etools-searchable-multiselection-menu
+```
 
 ## Preview element locally
 
