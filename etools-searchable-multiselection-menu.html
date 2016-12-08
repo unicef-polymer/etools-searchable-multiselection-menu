@@ -141,6 +141,10 @@ Custom property | Description | Default
       .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
+      .warning {
+        font-size: 10px;
+        font-style: italic;
+      }
 
     </style>
 
@@ -214,7 +218,7 @@ Custom property | Description | Default
               selected="{{selectedValues}}"
               selected-values="{{selectedValues}}">
 
-              <template is="dom-repeat" items="[[shownItems]]>
+              <template is="dom-repeat" items="[[shownItems]]">
 
                 <paper-item internal-id$="{{item.value}}">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -222,6 +226,10 @@ Custom property | Description | Default
                 </paper-item>
 
               </template>
+
+               <paper-item hidden$="[[!showLimitWarning]]" class="warning">
+                  More than [[shownItemsLimit]] items, use the search function to reveal more
+                </paper-item>
 
             </paper-listbox>
           </div>
@@ -250,11 +258,18 @@ Custom property | Description | Default
           },
           shownItems: {
             type: Array,
-            computed: '_computeShowItems(options, search)'
+            computed: '_computeShowItems(options, search)',
+          },
+          shownItemsLimit: {
+            type: Number,
+            value: 50
+          },
+          showLimitWarning: {
+            type: Boolean,
+            computed: '_computeShowLimitWarning(shownItemsLimit, shownItems)'
           },
           search: {
-            type: String,
-            value: false
+            type: String
           },
           label: {
             type: String
@@ -303,13 +318,15 @@ Custom property | Description | Default
               var filtered = options.filter(function(item) {
                 return item.label && item.label.indexOf(searchKey) > -1;
               });
-              return filtered.slice(0, max(50, filtered.length));
+              return filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
             }
-            else {
-              if(options.length < 51) {
-                return options
+            else if(options.length > this.shownItemsLimit) {
+                return options.slice(0, Math.min(this.shownItemsLimit, options.length));
               }
-            }
+            return options;
+        },
+        _computeShowLimitWarning: function(limit, shownItems) {
+          return shownItems.length >= limit;
         },
 
         _simpleRequired: function(required) {
@@ -324,7 +341,7 @@ Custom property | Description | Default
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
               return "" + item.value;
-            }))
+            }));
           }
         },
 
@@ -337,7 +354,7 @@ Custom property | Description | Default
                 if (parseInt(option.value, 10) === parseInt(selected, 10)) {
                   newValue.push(option);
                 }
-              })
+              });
             });
             self.set('value', newValue);
           } else {
