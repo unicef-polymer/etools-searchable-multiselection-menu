@@ -7,6 +7,7 @@
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 
+
 <link rel="import" href="deletable-option-list.html">
 <!--
 `etools-searchable-multiselection-menu`
@@ -25,7 +26,7 @@ Custom property | Description | Default
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="etools-searchable-multiselection-menu">
@@ -127,7 +128,6 @@ Custom property | Description | Default
           cursor: pointer;
         }
       }
-
       .tick-icon {
         display: none;
         padding-right: 8px;
@@ -159,7 +159,7 @@ Custom property | Description | Default
       </template>
       <paper-menu-button horizontal-align="right" id="dropdownMenu" ignore-select$="[[multi]]" opened="{{menuOpened}}"
                          restore-focus-on-close$="{{falseValue}}" on-paper-dropdown-close="_valueSelected"
-                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align disabled="[[disabled]]">
+                         on-paper-dropdown-open="_onDropdownOpen" allow-outside-scroll dynamic-align="[[dynamicAlign]]" disabled="[[disabled]]">
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
         <div class="dropdown-content ">
           <div class="input-wrapper" hidden$="{{hideSearch}}">
@@ -171,10 +171,12 @@ Custom property | Description | Default
             <paper-listbox multi="[[multi]]" attr-for-selected="internal-id" selected="{{selectedValues}}"
                            selected-values="{{selectedValues}}">
               <template is="dom-repeat" items="[[options]]" filter="{{_filterFunction(search)}}">
-                <paper-item internal-id$="{{item.value}}">
-                  <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  {{item.label}}
-                </paper-item>
+                <div>
+                  <paper-item internal-id$="{{item.value}}">
+                    <iron-icon class="tick-icon" icon="check"></iron-icon>
+                    {{item.label}}
+                  </paper-item>
+                </div>
               </template>
             </paper-listbox>
           </div>
@@ -194,6 +196,14 @@ Custom property | Description | Default
         properties: {
           options: {
             type: Array
+          },
+          shownItems: {
+            type: Array,
+            computed: '_computeShowItems(options, search)'
+          },
+          search: {
+            type: String,
+            value: false
           },
           label: {
             type: String
@@ -229,15 +239,23 @@ Custom property | Description | Default
           disabled: {
             type: Boolean,
             value: false
+          },
+          dynamicAlign: {
+            type: Boolean,
+            value: false
           }
         },
-        _filterFunction: function(searchKey) {
-          return function(item) {
+        _computeShowItems: function(options, searchKey) {
             if (searchKey && searchKey.length > 0) {
-              return item.label && item.label.indexOf(searchKey) > -1;
+              var filtered = options.filter(function(item) {
+                return item.label && item.label.indexOf(searchKey) > -1;
+              });
+              return filtered.slice(0, max(50, filtered.length));
+            } else {
+              if(options.length < 51) {
+                return options
+              }
             }
-            return true
-          };
         },
         _valueChanged: function(value) {
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
