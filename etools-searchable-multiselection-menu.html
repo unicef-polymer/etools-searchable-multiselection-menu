@@ -26,7 +26,7 @@ Custom property | Description | Default
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
 `--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
 
-@demo demo/index.html 
+@demo demo/index.html
 -->
 
 <dom-module id="etools-searchable-multiselection-menu">
@@ -120,6 +120,7 @@ Custom property | Description | Default
         --paper-listbox-background-color: #fff;
         --paper-listbox: {
           margin: 0;
+          padding: 8px 0 0 0;
         };
       }
 
@@ -129,7 +130,6 @@ Custom property | Description | Default
           cursor: pointer;
         }
       }
-
       .tick-icon {
         display: none;
         padding-right: 8px;
@@ -141,6 +141,13 @@ Custom property | Description | Default
 
       .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+      .warning {
+        font-family: Roboto;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0,0,0,0.54);
+        background-color: #EEEEEE;
       }
 
     </style>
@@ -195,7 +202,7 @@ Custom property | Description | Default
         on-paper-dropdown-close="_valueSelected"
         on-paper-dropdown-open="_onDropdownOpen"
         allow-outside-scroll
-        dynamic-align
+        dynamic-align="[[dynamicAlign]]"
         disabled="[[disabled]]">
 
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
@@ -215,7 +222,7 @@ Custom property | Description | Default
               selected="{{selectedValues}}"
               selected-values="{{selectedValues}}">
 
-              <template is="dom-repeat" items="[[options]]" filter="{{_filterFunction(search)}}">
+              <template is="dom-repeat" items="[[shownItems]]">
 
                 <paper-item internal-id$="{{item.value}}">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -223,6 +230,10 @@ Custom property | Description | Default
                 </paper-item>
 
               </template>
+
+               <paper-item hidden$="[[!showLimitWarning]]" class="warning">
+                  More than [[shownItemsLimit]] items, use the search function to reveal more
+                </paper-item>
 
             </paper-listbox>
           </div>
@@ -248,6 +259,21 @@ Custom property | Description | Default
           invalid: Boolean,
           options: {
             type: Array
+          },
+          shownItems: {
+            type: Array,
+            computed: '_computeShowItems(options, search)',
+          },
+          shownItemsLimit: {
+            type: Number,
+            value: 50
+          },
+          showLimitWarning: {
+            type: Boolean,
+            computed: '_computeShowLimitWarning(shownItemsLimit, shownItems)'
+          },
+          search: {
+            type: String
           },
           label: {
             type: String
@@ -283,16 +309,27 @@ Custom property | Description | Default
           disabled: {
             type: Boolean,
             value: false
+          },
+          dynamicAlign: {
+            type: Boolean,
+            value: false
           }
         },
 
-        _filterFunction: function(searchKey) {
-          return function(item) {
+        _computeShowItems: function(options, searchKey) {
             if (searchKey && searchKey.length > 0) {
-              return item.label && item.label.indexOf(searchKey) > -1;
+              var filtered = options.filter(function(item) {
+                return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
+              });
+              return filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
             }
-            return true
-          };
+            else if(options.length > this.shownItemsLimit) {
+                return options.slice(0, Math.min(this.shownItemsLimit, options.length));
+              }
+            return options;
+        },
+        _computeShowLimitWarning: function(limit, shownItems) {
+          return shownItems.length >= limit;
         },
 
         _simpleRequired: function(required) {
@@ -307,7 +344,7 @@ Custom property | Description | Default
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
               return "" + item.value;
-            }))
+            }));
           }
         },
 
@@ -320,7 +357,7 @@ Custom property | Description | Default
                 if (parseInt(option.value, 10) === parseInt(selected, 10)) {
                   newValue.push(option);
                 }
-              })
+              });
             });
             self.set('value', newValue);
           } else {
