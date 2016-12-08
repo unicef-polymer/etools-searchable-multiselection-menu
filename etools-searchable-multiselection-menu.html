@@ -120,6 +120,7 @@ Custom property | Description | Default
         --paper-listbox-background-color: #fff;
         --paper-listbox: {
           margin: 0;
+          padding: 8px 0 0 0;
         };
       }
 
@@ -142,8 +143,11 @@ Custom property | Description | Default
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
       .warning {
-        font-size: 10px;
-        font-style: italic;
+        font-family: Roboto;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0,0,0,0.54);
+        background-color: #EEEEEE;
       }
 
     </style>
@@ -312,11 +316,10 @@ Custom property | Description | Default
           }
         },
 
-
         _computeShowItems: function(options, searchKey) {
             if (searchKey && searchKey.length > 0) {
               var filtered = options.filter(function(item) {
-                return item.label && item.label.indexOf(searchKey) > -1;
+                return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
               });
               return filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
             }
