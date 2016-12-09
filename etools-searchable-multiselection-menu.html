@@ -196,13 +196,13 @@ Custom property | Description | Default
       <paper-menu-button
         horizontal-align="right"
         id="dropdownMenu"
-        ignore-select$="[[multi]]"
+        ignore-select
         opened="{{menuOpened}}"
         restore-focus-on-close$="{{falseValue}}"
         on-paper-dropdown-close="_valueSelected"
         on-paper-dropdown-open="_onDropdownOpen"
         allow-outside-scroll
-        dynamic-align="[[dynamicAlign]]"
+        dynamic-align$="[[dynamicAlign]]"
         disabled="[[disabled]]">
 
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger "></paper-icon-button>
@@ -210,7 +210,12 @@ Custom property | Description | Default
         <div class="dropdown-content">
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
-            <paper-input no-label-float class="search-input" label="Search" type="text" value="{{search}}">
+            <paper-input
+            no-label-float
+            class="search-input"
+            label="Search"
+            type="text"
+            value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
@@ -224,7 +229,7 @@ Custom property | Description | Default
 
               <template is="dom-repeat" items="[[shownItems]]">
 
-                <paper-item internal-id$="{{item.value}}">
+                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
                 </paper-item>
@@ -262,7 +267,7 @@ Custom property | Description | Default
           },
           shownItems: {
             type: Array,
-            computed: '_computeShowItems(options, search)',
+            computed: '_computeShowItems(options, search)'
           },
           shownItemsLimit: {
             type: Number,
@@ -315,7 +320,6 @@ Custom property | Description | Default
             value: false
           }
         },
-
         _computeShowItems: function(options, searchKey) {
             if (searchKey && searchKey.length > 0) {
               var filtered = options.filter(function(item) {
@@ -340,6 +344,13 @@ Custom property | Description | Default
           return this.multi && required;
         },
 
+        _elementSelected: function(e, detail) {
+          if(!this.multi) {
+            this.selectedValues = e.model.item.value;
+            this._valueSelected();
+            this.$.dropdownMenu.close();
+          }
+        },
         _valueChanged: function(value) {
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
@@ -365,7 +376,7 @@ Custom property | Description | Default
               if (item.value === parseInt(self.selectedValues, 10)) {
                 self.set('value', item);
               }
-            })
+            });
           }
           this.openedClass = '';
         },
