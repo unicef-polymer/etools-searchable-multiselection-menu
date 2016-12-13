@@ -356,8 +356,8 @@ Custom property | Description | Default
             this.set('selectedValues', value.map(function(item) {
               return '' + item.value;
             }));
-          } else {
-            this.set('selectedValues', value);
+          } else if (!value) {
+            this.set('selectedValues', undefined);
           }
         },
         _valueSelected: function() {
