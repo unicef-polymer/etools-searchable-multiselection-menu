@@ -45,6 +45,21 @@ Multi selection, with search
      multi></etools-searchable-multiselection-menu>
 ```
 
+Change event('value-change') examples
+
+```html
+<etools-searchable-multiselection-menu
+    label="Searchable menu"
+    options="[[realOptions]]"
+    on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
+
+<etools-searchable-multiselection-menu
+    label="Multi searchable menu"
+    options="[[realOptions]]"
+    on-value-change="_multiSelectionChanged"
+    multi></etools-searchable-multiselection-menu>
+
+```
 
 ## Styling
 
