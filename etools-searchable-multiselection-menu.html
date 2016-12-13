@@ -298,12 +298,12 @@ Custom property | Description | Default
             reflectToAttribute: true
           },
           selectedValues: {
-            notifies: true
+            notify: true
           },
           menuOpened: {
             type: Boolean,
             value: false,
-            notifies: true
+            notify: true
           },
           falseValue: {
             type: Boolean,
@@ -371,10 +371,12 @@ Custom property | Description | Default
               });
             });
             self.set('value', newValue);
+            self._fireValueChangeEvent();
           } else {
             this.options.forEach(function(item) {
               if (item.value === parseInt(self.selectedValues, 10)) {
                 self.set('value', item);
+                self._fireValueChangeEvent();
               }
             });
           }
@@ -386,6 +388,7 @@ Custom property | Description | Default
             return parseInt(item, 10) !== parseInt(details.value, 10)
           });
           this.set('selectedValues', newSelected);
+          this._fireValueChangeEvent();
         },
 
         _openMenu: function() {
@@ -402,6 +405,17 @@ Custom property | Description | Default
           var style = dropDown.$.dropdown.querySelector('.dropdown-content').style;
           style.overflow = 'hidden';
           style.marginTop = '-20px';
+        },
+
+        _fireValueChangeEvent: function() {
+          this.debounce('fireValueChanged', function () {
+            var selectedValues = null;
+            if ((typeof this.value === 'object' && this.value !== null)
+                || (this.value instanceof Array && this.value.length > 0)) {
+              selectedValues = this.value;
+            }
+            this.fire('value-change', {selectedValues: selectedValues});
+          }.bind(this), 100);
         }
       });
     })();
