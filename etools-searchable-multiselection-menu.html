@@ -354,11 +354,12 @@ Custom property | Description | Default
         _valueChanged: function(value) {
           if (this.multi && value && value.length > 0 && !this.selectedValues) {
             this.set('selectedValues', value.map(function(item) {
-              return "" + item.value;
+              return '' + item.value;
             }));
+          } else if (!value) {
+            this.set('selectedValues', undefined);
           }
         },
-
         _valueSelected: function() {
           var self = this;
           if (this.selectedValues instanceof Array) {
