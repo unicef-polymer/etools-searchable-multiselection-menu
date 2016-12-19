@@ -149,6 +149,11 @@ Custom property | Description | Default
         color: rgba(0,0,0,0.54);
         background-color: #EEEEEE;
       }
+      .emptyValue {
+        --paper-item: {
+          color: rgba(0,0,0,0.38);
+        };
+      }
 
     </style>
 
@@ -229,7 +234,7 @@ Custom property | Description | Default
 
               <template is="dom-repeat" items="[[shownItems]]">
 
-                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected">
+                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected" class$="[[item.style]]">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
                 </paper-item>
@@ -337,7 +342,7 @@ Custom property | Description | Default
               }
 
             if (emptyValue) {
-              filtered.unshift({value: null, label: ' '});
+              filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
             }
             return filtered;
         },
