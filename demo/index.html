@@ -78,10 +78,10 @@
 
       <demo-snippet>
         <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}" massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
           <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
                                                  options="[[realOptions]]"
-                                                 value="{{selectedValues}}"
+                                                 value="{{massiveSelectedValues}}"
                                                  multi></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
