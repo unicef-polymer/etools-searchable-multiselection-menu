@@ -149,6 +149,13 @@ Custom property | Description | Default
         color: rgba(0,0,0,0.54);
         background-color: #EEEEEE;
       }
+      .emptyValue {
+        --paper-item: {
+          color: rgba(0,0,0,0.38);
+          padding: 0 24px 0 24px;
+          cursor: pointer;
+        };
+      }
 
     </style>
 
@@ -229,7 +236,7 @@ Custom property | Description | Default
 
               <template is="dom-repeat" items="[[shownItems]]">
 
-                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected">
+                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected" class$="[[item.style]]">
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
                 </paper-item>
@@ -267,7 +274,7 @@ Custom property | Description | Default
           },
           shownItems: {
             type: Array,
-            computed: '_computeShowItems(options, search)'
+            computed: '_computeShowItems(options, search, emptyValue)'
           },
           shownItemsLimit: {
             type: Number,
@@ -276,6 +283,10 @@ Custom property | Description | Default
           showLimitWarning: {
             type: Boolean,
             computed: '_computeShowLimitWarning(shownItemsLimit, shownItems)'
+          },
+          emptyValue: {
+            type: Boolean,
+            value: false
           },
           search: {
             type: String
@@ -320,17 +331,22 @@ Custom property | Description | Default
             value: false
           }
         },
-        _computeShowItems: function(options, searchKey) {
+        _computeShowItems: function(options, searchKey, emptyValue) {
+          var filtered = options;
             if (searchKey && searchKey.length > 0) {
-              var filtered = options.filter(function(item) {
+              filtered = options.filter(function(item) {
                 return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
               });
-              return filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
+              filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
             }
-            else if(options.length > this.shownItemsLimit) {
-                return options.slice(0, Math.min(this.shownItemsLimit, options.length));
+            else if (options.length > this.shownItemsLimit) {
+                filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
               }
-            return options;
+
+            if (emptyValue) {
+              filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+            }
+            return filtered;
         },
         _computeShowLimitWarning: function(limit, shownItems) {
           return shownItems.length >= limit;
@@ -357,11 +373,15 @@ Custom property | Description | Default
               return '' + item.value;
             }));
           } else if (!value) {
-            this.set('selectedValues', undefined);
+            this.set('selectedValues', null);
           }
         },
         _valueSelected: function() {
           var self = this;
+          if(this.selectedValues === null) {
+            this.set('value', null);
+            this._fireValueChangeEvent();
+          }
           if (this.selectedValues instanceof Array) {
             var newValue = [];
             this.selectedValues.forEach(function(selected) {
