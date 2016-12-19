@@ -97,7 +97,7 @@ Custom property | Description | Default
 
       .multi-container {
         position: relative;
-        height: 61px;
+        height: 100%;
         --paper-input-container: {
           height: 45px;
           position: relative;
@@ -352,7 +352,7 @@ Custom property | Description | Default
           }
         },
         _valueChanged: function(value) {
-          if (this.multi && value && value.length > 0 && !this.selectedValues) {
+          if (this.multi && value && value.length > 0 ) {
             this.set('selectedValues', value.map(function(item) {
               return '' + item.value;
             }));
@@ -385,9 +385,12 @@ Custom property | Description | Default
         },
 
         _removeItem: function(event, details) {
-          var newSelected = this.selectedValues.filter(function(item) {
-            return parseInt(item, 10) !== parseInt(details.value, 10)
-          });
+          var newSelected = [];
+          if (this.selectedValues) {
+            newSelected = this.selectedValues.filter(function(item) {
+              return parseInt(item, 10) !== parseInt(details.value, 10);
+            });
+          }
           this.set('selectedValues', newSelected);
           this._fireValueChangeEvent();
         },
@@ -411,8 +414,8 @@ Custom property | Description | Default
         _fireValueChangeEvent: function() {
           this.debounce('fireValueChanged', function () {
             var selectedValues = null;
-            if ((typeof this.value === 'object' && this.value !== null)
-                || (this.value instanceof Array && this.value.length > 0)) {
+            if ((typeof this.value === 'object' && this.value !== null) ||
+              (this.value instanceof Array && this.value.length > 0)) {
               selectedValues = this.value;
             }
             this.fire('value-change', {selectedValues: selectedValues});

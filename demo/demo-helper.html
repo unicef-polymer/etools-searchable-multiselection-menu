@@ -25,17 +25,23 @@
             type: Array,
             value: function() {
               var opt = [];
-              for(var i = 1; i <= 10; i++) {
-                opt.push({value: i, label: 'Option ' + i})
+              for(var i = 1; i <= 25; i++) {
+                opt.push({value: i, label: 'Option ' + i});
               }
               return opt;
             },
             notify: true
-          }
+          },
+          massiveSelectedValues: {
+            type:  Array,
+            value: [],
+            notify: true
+          },
         },
 
         ready: function() {
           this.set('options', ['Option 1', 'Option 2', 'Option 3', 'Option 4', 'Option 5', 'Option 6', 'Option 7', 'Option 8']);
+          this.set('massiveSelectedValues', this.realOptions);
           this.set('selectedValues',  [{value: 2, label: 'Option 2'}]);
         }
       });
