@@ -36,6 +36,18 @@
         </template>
       </demo-snippet>
 
+       <h2>Single selection, with search, always display an empty value</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+                  label="Searchable menu"
+                  options="[[realOptions]]"
+                  empty-value
+                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
 
        <h2>Single selection, with search, limit of 3 elements</h2>
       <demo-snippet>
