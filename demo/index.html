@@ -12,6 +12,7 @@
     <link rel="import" href="../etools-searchable-multiselection-menu.html">
     <link rel="import" href="demo-helper.html">
     <link rel="import" href="demo-with-change-event.html">
+    <link rel="import" href="demo-error-messages-and-validations.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
       .vertical-section-container {
@@ -36,28 +37,28 @@
         </template>
       </demo-snippet>
 
-       <h2>Single selection, with search, always display an empty value</h2>
+      <h2>Single selection, with search, always display an empty value</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  options="[[realOptions]]"
-                  empty-value
-                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+              label="Searchable menu"
+              options="[[realOptions]]"
+              empty-value
+              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
 
-       <h2>Single selection, with search, limit of 3 elements</h2>
+      <h2>Single selection, with search, limit of 3 elements</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  options="[[realOptions]]"
-                  shown-items-limit="3"
-                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+              label="Searchable menu"
+              options="[[realOptions]]"
+              shown-items-limit="3"
+              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
@@ -79,9 +80,9 @@
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu label="Searchable menu"
-            options="[[realOptions]]"
-            value="{{selectedValues}}"
-            disabled></etools-searchable-multiselection-menu>
+                                                 options="[[realOptions]]"
+                                                 value="{{selectedValues}}"
+                                                 disabled></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
@@ -90,7 +91,8 @@
 
       <demo-snippet>
         <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}" massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"
+                       massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
           <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
                                                  options="[[realOptions]]"
                                                  value="{{massiveSelectedValues}}"
@@ -105,10 +107,10 @@
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
-            options="[[realOptions]]"
-            value="{{selectedValues}}"
-            multi
-          disabled></etools-searchable-multiselection-menu>
+                                                 options="[[realOptions]]"
+                                                 value="{{selectedValues}}"
+                                                 multi
+                                                 disabled></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
@@ -117,6 +119,14 @@
       <demo-snippet>
         <template is="dom-bind">
           <demo-with-change-event></demo-with-change-event>
+        </template>
+      </demo-snippet>
+
+      <h2>Error messages and validations</h2>
+
+      <demo-snippet>
+        <template>
+          <demo-error-messages-and-validations></demo-error-messages-and-validations>
         </template>
       </demo-snippet>
 
