@@ -5,6 +5,7 @@
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
 
 <link rel="import" href="deletable-option-list.html">
@@ -161,18 +162,21 @@ Custom property | Description | Default
 
     <div id="main" class$="external-wrapper [[openedClass]]">
 
-      <paper-input hidden$="{{multi}}"
-        class="value-container"
-        on-tap="_openMenu"
-        label="[[label]]"
-        value="[[value.label]]"
-        disabled="[[disabled]]"
-        error-message="[[errorMessage]]"
-        required$="[[_simpleRequired(required)]]"
-        placeholder="[[placeholder]]"
-        auto-validate$="[[autoValidate]]"
-        invalid$="[[invalid]]">
-      </paper-input>
+      <template is="dom-if" if="{{!multi}}">
+        <paper-input
+          id="singleSelectionDropdown"
+          class="value-container"
+          on-tap="_openMenu"
+          label="[[label]]"
+          value="[[value.label]]"
+          disabled="[[disabled]]"
+          error-message="[[errorMessage]]"
+          required$="[[_simpleRequired(required)]]"
+          placeholder="[[placeholder]]"
+          auto-validate$="[[autoValidate]]"
+          invalid$="[[invalid]]">
+        </paper-input>
+      </template>
 
       <template is="dom-if" if="{{multi}}">
 
@@ -196,6 +200,10 @@ Custom property | Description | Default
               disabled="[[disabled]]"
               placeholder=[[placeholder]]>
             </deletable-option-list>
+
+            <template is="dom-if" if="[[errorMessage]]">
+              <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
+            </template>
           </paper-input-container>
         </div>
       </template>
@@ -331,6 +339,13 @@ Custom property | Description | Default
             value: false
           }
         },
+        ready: function() {
+          if (this.autoValidate === true && this.multi === true) {
+            // autoValidate for multi selection will not work, we will use a new flag in this case
+            this.set('autoValidate', false);
+            this.set('_autoValidateMultiSelection', true);
+          }
+        },
         _computeShowItems: function(options, searchKey, emptyValue) {
           var filtered = options;
             if (searchKey && searchKey.length > 0) {
@@ -372,6 +387,13 @@ Custom property | Description | Default
             this.set('selectedValues', value.map(function(item) {
               return '' + item.value;
             }));
+          } else if (!this.multi && Array.isArray(value) && value.length > 0) {
+            /**
+             * In case the single selection dropdown is initialized with an array of one object
+             * value and selectedValues must be updated with that object data
+             */
+            this.set('value', value[0]);
+            this.set('selectedValues', [value[0].value]);
           } else if (!value) {
             this.set('selectedValues', null);
           }
@@ -391,6 +413,7 @@ Custom property | Description | Default
                 }
               });
             });
+            this._autoValidateMulti();
             self.set('value', newValue);
             self._fireValueChangeEvent();
           } else {
@@ -411,6 +434,7 @@ Custom property | Description | Default
               return parseInt(item, 10) !== parseInt(details.value, 10);
             });
           }
+          this._autoValidateMulti();
           this.set('selectedValues', newSelected);
           this._fireValueChangeEvent();
         },
@@ -440,6 +464,32 @@ Custom property | Description | Default
             }
             this.fire('value-change', {selectedValues: selectedValues});
           }.bind(this), 100);
+        },
+
+        _autoValidateMulti: function() {
+          if (this._autoValidateMultiSelection) {
+            this.validate();
+          }
+        },
+
+        validate: function() {
+          if (!this.multi) {
+            // single selection validation
+            return this.$$('#singleSelectionDropdown').validate();
+          } else {
+            // multiple selection validation
+            var valid = false;
+            if (this._multiRequired(this.required)) {
+              if (Array.isArray(this.selectedValues) && this.selectedValues.length > 0) {
+                valid = true;
+              }
+            } else {
+              valid = true; // is not required
+            }
+
+            this.set('invalid', !valid);
+            return valid;
+          }
         }
       });
     })();

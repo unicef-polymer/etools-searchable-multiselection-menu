@@ -1,0 +1,76 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../etools-searchable-multiselection-menu.html">
+
+<dom-module id="demo-error-messages-and-validations">
+  <template>
+
+    <etools-searchable-multiselection-menu
+        label="Searchable menu with errors shown by default, auto validation active"
+        error-message="You must select an option"
+        invalid auto-validate required
+        options="[[realOptions]]" dynamic-align></etools-searchable-multiselection-menu>
+
+    <etools-searchable-multiselection-menu
+        id="select_1"
+        label="Searchable menu with validation manually triggered (in 5s)"
+        error-message="You must select an option"
+        auto-validate required
+        options="[[realOptions]]" dynamic-align></etools-searchable-multiselection-menu>
+
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu already validated"
+        options="[[realOptions]]"
+        placeholder="Select your options"
+        error-message="You must select at least an option"
+        invalid auto-validate required
+        multi></etools-searchable-multiselection-menu>
+
+    <etools-searchable-multiselection-menu
+        id="select_2"
+        label="Multi searchable menu with validation manually triggered (in 3s)"
+        options="[[realOptions]]"
+        placeholder="Select your options"
+        error-message="You must select at least an option"
+        auto-validate required
+        multi></etools-searchable-multiselection-menu>
+
+  </template>
+  <script>
+    (function() {
+      // jscs:disable
+      'use strict';
+
+      Polymer({
+        is: 'demo-error-messages-and-validations',
+
+        properties: {
+
+          realOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 1; i <= 10; i++) {
+                opt.push({value: i, label: 'Option ' + i});
+              }
+              return opt;
+            },
+            notify: true
+          }
+        },
+
+        ready: function() {
+          setTimeout(function() {
+            this.$.select_1.validate();
+          }.bind(this), 5000);
+
+          setTimeout(function() {
+            this.$.select_2.validate();
+          }.bind(this), 3000);
+        },
+
+
+      });
+
+    })();
+  </script>
+</dom-module>
