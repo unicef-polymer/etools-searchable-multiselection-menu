@@ -347,21 +347,20 @@ Custom property | Description | Default
           }
         },
         _computeShowItems: function(options, searchKey, emptyValue) {
-          var filtered = options;
-            if (searchKey && searchKey.length > 0) {
-              filtered = options.filter(function(item) {
-                return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
-              });
-              filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
-            }
-            else if (options.length > this.shownItemsLimit) {
-                filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
-              }
+          var filtered = JSON.parse(JSON.stringify(options));
+          if (searchKey && searchKey.length > 0) {
+            filtered = options.filter(function(item) {
+              return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
+            });
+            filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
+          } else if (options.length > this.shownItemsLimit) {
+            filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
+          }
 
-            if (emptyValue) {
-              filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
-            }
-            return filtered;
+          if (emptyValue) {
+            filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+          }
+          return filtered;
         },
         _computeShowLimitWarning: function(limit, shownItems) {
           return shownItems.length >= limit;
