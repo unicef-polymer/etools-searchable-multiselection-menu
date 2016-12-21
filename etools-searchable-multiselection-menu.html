@@ -347,7 +347,7 @@ Custom property | Description | Default
           }
         },
         _computeShowItems: function(options, searchKey, emptyValue) {
-          var filtered = JSON.parse(JSON.stingify(options));
+          var filtered = JSON.parse(JSON.stringify(options));
           if (searchKey && searchKey.length > 0) {
             filtered = options.filter(function(item) {
               return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
