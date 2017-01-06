@@ -157,6 +157,9 @@ Custom property | Description | Default
           cursor: pointer;
         };
       }
+      .multiInputContainer {
+        outline: none;
+      }
 
     </style>
 
@@ -167,6 +170,7 @@ Custom property | Description | Default
           id="singleSelectionDropdown"
           class="value-container"
           on-tap="_openMenu"
+          on-focus="_openMenu"
           label="[[label]]"
           value="[[value.label]]"
           disabled="[[disabled]]"
@@ -183,8 +187,11 @@ Custom property | Description | Default
         <div class="multi-container">
 
           <paper-input-container
+            class="multiInputContainer"
             id="customPaperInput"
+            tabindex="0"
             on-tap="_openMenu"
+            on-focus="_openMenu"
             attr-for-value="option-value"
             disabled$="[[disabled]]"
             error-message="[[errorMessage]]"
