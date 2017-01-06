@@ -147,9 +147,9 @@ Make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) 
 
 You need to have `web-component-tester` installed (if not run `npm install -g web-component-tester`)
 ```bash
-$ wtc
+$ wct
 ```
 or 
 ```bash
-$ wtc -p
+$ wct -p
 ```

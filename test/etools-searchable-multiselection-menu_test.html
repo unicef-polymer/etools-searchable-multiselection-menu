@@ -39,16 +39,21 @@
 
     test('if the multi flag is not true the element show a paper-input', function(done) {
       element.multi = false;
-      var paperInput = Polymer.dom(element.root).querySelectorAll('.value-container')[0];
-      assert.isNotOk(paperInput.hidden);
-      done();
+      flush(function(){
+        var paperInput = Polymer.dom(element.root).querySelector('.value-container');
+        assert.equal(typeof paperInput, 'object');
+        assert.equal(paperInput.id, 'singleSelectionDropdown')
+        done();
+      });
     });
 
     test('if the multi flag is true the element not show a paper-input', function(done) {
       element.multi = true;
-      var paperInput = Polymer.dom(element.root).querySelectorAll('.value-container')[0];
-      assert.isOk(paperInput.hidden);
-      done();
+      flush(function(){
+        var paperInput = Polymer.dom(element.root).querySelector('.value-container');
+        assert.equal(paperInput, null);
+        done();
+      })
     });
 
     test('if the multi flag is true the element show the custom paper-input-container', function(done) {
@@ -74,7 +79,7 @@
       element.options = options;
       flush(function() {
         var listItems = Polymer.dom(element.root).querySelectorAll('paper-item');
-        assert.equal(listItems.length, options.length);
+        assert.isAtMost(listItems.length, element.shownItemsLimit);
         done();
       });
     });
@@ -91,11 +96,10 @@
 
     test('if the element has a value selected its shown (multi)', function(done) {
       element.options = options;
-      element.value = values;
       element.multi = true;
+      element.value = values;
       flush(function() {
-        var optionList = element.$$('deletable-option-list');
-        assert.equal(optionList.optionValue.length, values.length);
+        assert.equal(element.selectedValues.length, values.length);
         done();
       });
     });
