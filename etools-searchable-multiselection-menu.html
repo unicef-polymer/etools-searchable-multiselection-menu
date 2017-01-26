@@ -119,10 +119,13 @@ Custom property | Description | Default
         };
       }
 
-      .list-wrapper paper-item {
+      .list-wrapper paper-item:not(.warning) {
         --paper-item: {
           padding: 0 24px 0 24px;
           cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
       .tick-icon {
@@ -227,16 +230,17 @@ Custom property | Description | Default
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
-            no-label-float
-            class="search-input"
-            label="Search"
-            type="text"
-            value="{{search}}">
+              no-label-float
+              class="search-input"
+              label="Search"
+              type="text"
+              value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
 
           <div class="list-wrapper">
+
             <paper-listbox
               multi="[[multi]]"
               attr-for-selected="internal-id"
@@ -245,20 +249,24 @@ Custom property | Description | Default
 
               <template is="dom-repeat" items="[[shownItems]]">
 
-                <paper-item internal-id$="{{item.value}}" on-tap="_elementSelected" class$="[[item.style]]">
+                <paper-item
+                  internal-id$="{{item.value}}"
+                  on-tap="_elementSelected"
+                  class$="[[item.style]]"
+                  title$="[[item.label]]">
+
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   {{item.label}}
-                </paper-item>
 
+                </paper-item>
               </template>
 
-               <paper-item hidden$="[[!showLimitWarning]]" class="warning">
-                  More than [[shownItemsLimit]] items, use the search function to reveal more
-                </paper-item>
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning">
+                More than [[shownItemsLimit]] items, use the search function to reveal more
+              </paper-item>
 
             </paper-listbox>
           </div>
-
         </div>
       </paper-menu-button>
     </div>
