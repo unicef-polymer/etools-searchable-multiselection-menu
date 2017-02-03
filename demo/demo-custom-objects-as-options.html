@@ -1,0 +1,170 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../etools-searchable-multiselection-menu.html">
+
+<dom-module id="demo-custom-objects-as-options">
+  <template>
+    <h3>Old way type of objects with integer value and label string (still working)</h3>
+    <etools-searchable-multiselection-menu
+        label="Searchable menu"
+        options="[[realOptions]]"
+        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
+
+    <h3>Single selection, custom objects as options</h3>
+    <etools-searchable-multiselection-menu
+        label="Searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="option_key"
+        option-label="option_label"
+        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
+
+    <h3>Multiple selection. Old way type of objects with integer value and label string (still working)</h3>
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu"
+        options="[[realOptions]]"
+        placeholder="Please select the options"
+        on-value-change="_multiSelectionChanged"
+        multi></etools-searchable-multiselection-menu>
+
+    <h3>Multiple selection, custom objects as options</h3>
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="option_key"
+        option-label="option_label"
+        placeholder="Please select the options"
+        on-value-change="_multiSelectionChanged"
+        multi></etools-searchable-multiselection-menu>
+
+    <h3>Custom objects as options and selected property with no change events</h3>
+
+    <p><span>SelectedID:</span> [[selectedId]]</p>
+    <etools-searchable-multiselection-menu
+        label="Searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="id"
+        option-label="option_label"
+        selected="{{selectedId}}"
+        update-selected no-change-event></etools-searchable-multiselection-menu>
+
+    <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="id"
+        option-label="option_label"
+        selected="{{selectedIds}}"
+        update-selected no-change-event
+        placeholder="Please select the options"
+        multi></etools-searchable-multiselection-menu>
+
+    <h3>A few options selected by default example</h3>
+    <etools-searchable-multiselection-menu
+        label="Searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        value="[[selectedObjOptions]]"
+        custom-object-options
+        option-value="option_key"
+        option-label="option_label"
+        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
+
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        value="[[selectedObjOptions]]"
+        custom-object-options
+        option-value="id"
+        option-label="option_label"
+        selected="{{selectedIds}}"
+        update-selected no-change-event
+        placeholder="Please select the options"
+        multi></etools-searchable-multiselection-menu>
+
+
+  </template>
+  <script>
+    (function() {
+      // jscs:disable
+      'use strict';
+
+      Polymer({
+        is: 'demo-custom-objects-as-options',
+
+        properties: {
+
+          realOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 1; i <= 10; i++) {
+                opt.push({value: i, label: 'Option ' + i});
+              }
+              return opt;
+            }
+          },
+
+          customObjOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 1; i <= 100; i++) {
+                opt.push({
+                  id: i,
+                  option_key: 'opt' + i,
+                  option_label: 'Option ' + i,
+                  some_other_propery: 'dummy propery for objIdx' + (i -1)
+                });
+              }
+              return opt;
+            }
+          },
+
+          selectedObjOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 3; i <= 5; i++) {
+                opt.push({
+                  id: i,
+                  option_key: 'opt' + i,
+                  option_label: 'Option ' + i,
+                  some_other_propery: 'dummy propery for objIdx' + (i -1)
+                });
+              }
+              return opt;
+            }
+          },
+
+          selectedId: {
+            type: Number,
+            value: null
+          },
+          selectedIds: {
+            type: Array,
+            value: []
+          }
+        },
+
+        ready: function() {
+//          this.set('selectedValues',  [{value: 2, label: 'Option 2'}]);
+        },
+
+        _returnIdsString: function(vals) {
+          return vals.join(', ');
+        },
+
+        _singleSelectionChanged: function(event) {
+          console.log('_singleSelectionChanged', event.detail);
+        },
+
+        _multiSelectionChanged: function(event) {
+          console.log('_multiSelectionChanged', event.detail);
+        }
+      });
+
+    })();
+  </script>
+</dom-module>
