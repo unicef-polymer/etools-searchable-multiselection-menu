@@ -29,6 +29,7 @@ Dropdown menu with search and multiple options selection
 * showLimitWarning - Boolean
 * shownItems - Array
 * shownItemsLimit - Number Default: 50
+* updateSelected - Boolean, Default: false
 * value - String
 
 ## Usage
