@@ -478,44 +478,52 @@ Custom property | Description | Default
             }
             if (this.selectedValues instanceof Array) {
               // multiple selection
-              var newValue = [];
-              this.selectedValues.forEach(function(selected) {
-                self.options.forEach(function(option) {
-                  if (self.customObjectOptions) {
-                    var optionValue = self._prepareCustomOptionObjValue(option, self.optionValue);
-                    if (optionValue === selected) {
-                      newValue.push(option);
-                    }
-                  } else {
-                    if (parseInt(option.value, 10) === parseInt(selected, 10)) {
-                      newValue.push(option);
-                    }
-                  }
-                });
-              });
-              this._autoValidateMulti();
-              self.set('value', newValue);
-              self._fireValueChangeEvent();
+              this._multipleValuesSelected();
             } else {
               // single selection
-              this.options.forEach(function(item) {
-                if (self.customObjectOptions) {
-                  var itemValue = self._prepareCustomOptionObjValue(item, self.optionValue);
-                  if (itemValue === self.selectedValues) {
-                    self.set('value', item);
-                    self._fireValueChangeEvent();
-                  }
-                } else {
-                  // option values as integer value (old way)
-                  if (item[self.optionValue] === parseInt(self.selectedValues, 10)) {
-                    self.set('value', item);
-                    self._fireValueChangeEvent();
-                  }
-                }
-              });
+              this._singleValueSelected();
             }
             this.openedClass = '';
           }.bind(this), 50);
+        },
+
+        _singleValueSelected: function() {
+          this.options.forEach(function(item) {
+            if (this.customObjectOptions) {
+              var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
+              if (itemValue === this.selectedValues) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
+              }
+            } else {
+              // option values as integer value (old way)
+              if (item[this.optionValue] === parseInt(this.selectedValues, 10)) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
+              }
+            }
+          }.bind(this));
+        },
+
+        _multipleValuesSelected: function() {
+          var newValue = [];
+          this.selectedValues.forEach(function(selected) {
+            this.options.forEach(function(option) {
+              if (this.customObjectOptions) {
+                var optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
+                if (optionValue === selected) {
+                  newValue.push(option);
+                }
+              } else {
+                if (parseInt(option[this.optionValue], 10) === parseInt(selected, 10)) {
+                  newValue.push(option);
+                }
+              }
+            }.bind(this));
+          }.bind(this));
+          this._autoValidateMulti();
+          this.set('value', newValue);
+          this._fireValueChangeEvent();
         },
 
         _prepareCustomOptionObjValue: function(item, optionValue) {
