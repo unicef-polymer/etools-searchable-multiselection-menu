@@ -6,6 +6,7 @@ Dropdown menu with search and multiple options selection
 
 
 * autoValidate - boolean
+* customObjectOptions - Boolean, Default: false
 * disabled - Boolean Default: false
 * dynamicAlign - Boolean Default: false
 * emptyValue - Boolean Default: false
@@ -16,14 +17,19 @@ Dropdown menu with search and multiple options selection
 * label - String
 * menuOpened - Boolean Default: false – notifies
 * multi - Boolean Default: false
+* noChangeEvent - Boolean, Default: false
+* optionLabel - String, Default: label
 * options - Array
+* optionValue - String, Default: 'value'
 * placeholder - string
 * required - boolean
 * search - String
+* selected - Number/Array - notifies
 * selectedValues - Object notifies
 * showLimitWarning - Boolean
 * shownItems - Array
 * shownItemsLimit - Number Default: 50
+* updateSelected - Boolean, Default: false
 * value - String
 
 ## Usage
@@ -119,6 +125,54 @@ Validation triggered from javascript:
 this.$.dropdownElement.validate();
 // or
 this.$.dropdownElementMulti.validate();
+```
+
+If the options array where objects of this model: `{value: someIntegerValue, label: someLabel}` 
+is not what you need you can use any type of objects. You have to set some properties on the element to tell 
+that you have custom options and which properties to be used as values and labels.
+```javascript
+// options example(used in the demo), in properties object
+customObjOptions: {
+    type: Array,
+    value: function() {
+      var opt = [];
+      for(var i = 1; i <= 100; i++) {
+        opt.push({
+          id: i,
+          option_key: 'opt' + i,
+          option_label: 'Option ' + i,
+          some_other_propery: 'dummy propery for objIdx' + (i -1)
+        });
+      }
+      return opt;
+    }
+}
+```
+```html
+<etools-searchable-multiselection-menu
+        label="Searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="option_key"
+        option-label="option_label"
+        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
+```
+
+If you need only select an option and get option ID (most use cases) or an array of IDs(for multiselection) 
+you can use `selected` property of the element. It only works for integer values, for other types use `selectedValues` property.
+Additionally you can chose to block the change event. Example:
+
+```html
+<p>SelectedID: [[selectedId]]</p>
+<etools-searchable-multiselection-menu
+    label="Searchable menu, custom objects"
+    options="[[customObjOptions]]"
+    custom-object-options
+    option-value="id"
+    option-label="option_label"
+    selected="{{selectedId}}"
+    update-selected no-change-event>
+</etools-searchable-multiselection-menu>
 ```
 
 ## Styling

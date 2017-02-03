@@ -161,7 +161,7 @@ Custom property | Description | Default
           cursor: pointer;
         };
       }
-      .multiInputContainer {
+      .multi-input-container {
         outline: none;
       }
 
@@ -176,7 +176,7 @@ Custom property | Description | Default
           on-tap="_openMenu"
           on-focus="_openMenu"
           label="[[label]]"
-          value="[[value.label]]"
+          value="[[_getSingleSelectedOptionLabel(value)]]"
           disabled="[[disabled]]"
           error-message="[[errorMessage]]"
           required$="[[_simpleRequired(required)]]"
@@ -191,7 +191,7 @@ Custom property | Description | Default
         <div class="multi-container">
 
           <paper-input-container
-            class="multiInputContainer"
+            class="multi-input-container"
             id="customPaperInput"
             tabindex="0"
             on-tap="_openMenu"
@@ -208,6 +208,9 @@ Custom property | Description | Default
             <deletable-option-list on-option-delete="_removeItem"
               class="paper-input-input"
               option-value="{{value}}"
+              custom-object-options="[[customObjectOptions]]"
+              option-value-attribute="[[optionValue]]"
+              option-label-attribute="[[optionLabel]]"
               disabled="[[disabled]]"
               placeholder=[[placeholder]]>
             </deletable-option-list>
@@ -223,7 +226,7 @@ Custom property | Description | Default
         horizontal-align="right"
         id="dropdownMenu"
         ignore-select
-        opened="{{menuOpened}}"
+        opened="[[menuOpened]]"
         restore-focus-on-close$="{{falseValue}}"
         on-paper-dropdown-close="_valueSelected"
         on-paper-dropdown-open="_onDropdownOpen"
@@ -333,7 +336,8 @@ Custom property | Description | Default
             reflectToAttribute: true
           },
           selectedValues: {
-            notify: true
+            notify: true,
+            observer: '_updateSelected'
           },
           menuOpened: {
             type: Boolean,
@@ -353,6 +357,33 @@ Custom property | Description | Default
           dynamicAlign: {
             type: Boolean,
             value: false
+          },
+          customObjectOptions: {
+            type: Boolean,
+            value: false
+          },
+          optionValue: {
+            type: String,
+            value: 'value'
+          },
+          optionLabel: {
+            type: String,
+            value: 'label'
+          },
+          selected: {
+            // this will be populated with integer value, in case of single selection,
+            // or will be an Array of integer values (example: you may need an array of integer values selected, IDs,
+            // without having the need to map the selectedValues in parent and convert to integer values)
+            // it will work only if optionValue is set to 'id'
+            notify: true
+          },
+          updateSelected: {
+            type: Boolean,
+            value: false
+          },
+          noChangeEvent: {
+            type: Boolean,
+            value: false
           }
         },
         ready: function() {
@@ -366,11 +397,20 @@ Custom property | Description | Default
           var filtered = JSON.parse(JSON.stringify(options));
           if (searchKey && searchKey.length > 0) {
             filtered = options.filter(function(item) {
-              return item.label && item.label.toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
-            });
+              return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
+            }.bind(this));
             filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
           } else if (options.length > this.shownItemsLimit) {
             filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
+          }
+
+          if (this.customObjectOptions) {
+            filtered = filtered.map(function(filteredOption) {
+              return {
+                value: filteredOption[this.optionValue],
+                label: filteredOption[this.optionLabel]
+              };
+            }.bind(this));
           }
 
           if (emptyValue) {
@@ -398,56 +438,138 @@ Custom property | Description | Default
           }
         },
         _valueChanged: function(value) {
-          if (this.multi && value && value.length > 0 ) {
+          if (!value) {
+            // empty value/reset selection
+            this.set('selectedValues', null);
+            return;
+          }
+          if (this.multi && Array.isArray(value) && value.length > 0 ) {
+            // multiple selection on
             this.set('selectedValues', value.map(function(item) {
-              return '' + item.value;
-            }));
+              return '' + item[this.optionValue];
+            }.bind(this)));
           } else if (!this.multi && Array.isArray(value) && value.length > 0) {
             /**
              * In case the single selection dropdown is initialized with an array of one object
              * value and selectedValues must be updated with that object data
              */
             this.set('value', value[0]);
-            this.set('selectedValues', [value[0].value]);
-          } else if (!value) {
-            this.set('selectedValues', null);
+            this.set('selectedValues', [value[0][this.optionValue]]);
           }
         },
-        _valueSelected: function() {
-          var self = this;
-          if(this.selectedValues === null) {
-            this.set('value', null);
-            this._fireValueChangeEvent();
+        // get esmm single selection selected label to be displayed
+        _getSingleSelectedOptionLabel: function(value) {
+          if (typeof value === 'object' && value[this.optionLabel]) {
+            return value[this.optionLabel];
           }
-          if (this.selectedValues instanceof Array) {
-            var newValue = [];
-            this.selectedValues.forEach(function(selected) {
-              self.options.forEach(function(option) {
-                if (parseInt(option.value, 10) === parseInt(selected, 10)) {
+          return null;
+        },
+        _valueSelected: function() {
+          // this could be fired twice almost in the same time (on item tap and on dropdown close)
+          this.debounce('etoolsEsmmValueSelected', function() {
+            var self = this;
+            this.set('menuOpened', false);
+            if(this.selectedValues === null) {
+              // reset selected
+              this.set('value', null);
+              this._fireValueChangeEvent();
+              this.openedClass = '';
+              return;
+            }
+            if (this.selectedValues instanceof Array) {
+              // multiple selection
+              this._multipleValuesSelected();
+            } else {
+              // single selection
+              this._singleValueSelected();
+            }
+            this.openedClass = '';
+          }.bind(this), 50);
+        },
+
+        _singleValueSelected: function() {
+          this.options.forEach(function(item) {
+            if (this.customObjectOptions) {
+              var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
+              if (itemValue === this.selectedValues) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
+              }
+            } else {
+              // option values as integer value (old way)
+              if (item[this.optionValue] === parseInt(this.selectedValues, 10)) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
+              }
+            }
+          }.bind(this));
+        },
+
+        _multipleValuesSelected: function() {
+          var newValue = [];
+          this.selectedValues.forEach(function(selected) {
+            this.options.forEach(function(option) {
+              if (this.customObjectOptions) {
+                var optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
+                if (optionValue === selected) {
                   newValue.push(option);
                 }
-              });
-            });
-            this._autoValidateMulti();
-            self.set('value', newValue);
-            self._fireValueChangeEvent();
-          } else {
-            this.options.forEach(function(item) {
-              if (item.value === parseInt(self.selectedValues, 10)) {
-                self.set('value', item);
-                self._fireValueChangeEvent();
+              } else {
+                if (parseInt(option[this.optionValue], 10) === parseInt(selected, 10)) {
+                  newValue.push(option);
+                }
               }
-            });
+            }.bind(this));
+          }.bind(this));
+          this._autoValidateMulti();
+          this.set('value', newValue);
+          this._fireValueChangeEvent();
+        },
+
+        _prepareCustomOptionObjValue: function(item, optionValue) {
+          // option values as any value (new way)
+          var itemValue = item[optionValue];
+          // some tweaks to ensure item value type
+          if (!itemValue) {
+            itemValue = '';
+          } else {
+            // convert to string because selectedValues it's gonna be a string for single selection
+            itemValue = itemValue + '';
           }
-          this.openedClass = '';
+          return itemValue;
+        },
+
+        _updateSelected: function(selectedValues) {
+          if (!this.updateSelected || this.optionValue !== 'id'
+              || !selectedValues || Array.isArray(selectedValues) && selectedValues.length === 0) {
+            // do not update selected value
+            return;
+          }
+
+          if (this.multi && Array.isArray(selectedValues) && selectedValues.length > 0) {
+            var selectedVals = selectedValues.map(function(s) {
+              return parseInt(s, 10);
+            });
+            this.set('selected', selectedVals);
+          }
+
+          if (!this.multi) {
+            this.set('selected', parseInt(selectedValues, 10));
+          }
         },
 
         _removeItem: function(event, details) {
           var newSelected = [];
           if (this.selectedValues) {
+            var detailsValue = details[this.optionValue] ? (details[this.optionValue] + '') : '';
             newSelected = this.selectedValues.filter(function(item) {
-              return parseInt(item, 10) !== parseInt(details.value, 10);
-            });
+              if (this.customObjectOptions) {
+                var itemValue = item ? (item + '') : '';
+                return itemValue !== detailsValue;
+              } else {
+                return parseInt(item, 10) !== parseInt(details.value, 10);
+              }
+            }.bind(this));
           }
           this._autoValidateMulti();
           this.set('selectedValues', newSelected);
@@ -475,6 +597,9 @@ Custom property | Description | Default
         },
 
         _fireValueChangeEvent: function() {
+          if (this.noChangeEvent) {
+            return;
+          }
           this.debounce('fireValueChanged', function () {
             var selectedValues = null;
             if ((typeof this.value === 'object' && this.value !== null) ||
