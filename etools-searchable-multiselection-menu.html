@@ -459,7 +459,7 @@ Custom property | Description | Default
         },
         // get esmm single selection selected label to be displayed
         _getSingleSelectedOptionLabel: function(value) {
-          if (typeof value === 'object' && value[this.optionLabel]) {
+          if (value && typeof value === 'object' && value[this.optionLabel]) {
             return value[this.optionLabel];
           }
           return null;
