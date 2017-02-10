@@ -2,94 +2,116 @@
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 
 <dom-module id="deletable-option-list">
-    <template>
-        <style>
-            :host {
-                height: 100%;
-            }
+  <template>
+    <style>
+      :host {
+        height: 100%;
+      }
 
-            span {
-                display: inline-block;
-                width: auto;
-                height: auto;
-                margin-right: 8px;
-                font-size: 16px;
-                line-height: 24px;
-                color: var(--esmm-option-list-color, #212121);
-            }
+      span {
+        display: inline-block;
+        width: auto;
+        height: auto;
+        margin-right: 8px;
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--esmm-option-list-color, #212121);
+      }
 
-            span.placeholder {
-                color: rgba(0,0,0,.38);
-            }
+      span.placeholder {
+        color: rgba(0, 0, 0, .38);
+      }
 
-            paper-icon-button {
-                color: red;
-                opacity: 0.54;
-                padding: 0;
-                height: 18px;
-                width: 18px;
-            }
+      paper-icon-button {
+        color: red;
+        opacity: 0.54;
+        padding: 0;
+        height: 18px;
+        width: 18px;
+      }
 
-            .custom-input {
-                height: auto;
-                padding-right: 24px;
-            }
+      .custom-input {
+        height: auto;
+        padding-right: 24px;
+      }
 
-            *[hidden] {
-                display: none;
-            }
-        </style>
+      *[hidden] {
+        display: none;
+      }
+    </style>
 
-        <div class="paper-input-input custom-input">
+    <div class="paper-input-input custom-input">
 
-            <template is="dom-if" if="[[_showPlaceHolder(optionValue)]]">
-                <span class="placeholder">[[placeholder]]</span>
-            </template>
+      <template is="dom-if" if="[[_showPlaceHolder(optionValue)]]">
+        <span class="placeholder">[[placeholder]]</span>
+      </template>
 
-            <template is="dom-repeat" items="[[optionValue]]">
-                <span>
-                    {{item.label}}
-                    <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_fireClose"></paper-icon-button>
-                </span>
-            </template>
-        </div>
+      <template is="dom-repeat" items="[[optionValue]]">
+        <span>
+          {{_getItemLabel(item)}}
+          <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_fireClose"></paper-icon-button>
+        </span>
+      </template>
+    </div>
 
+  </template>
 
-    </template>
+  <script>
+    Polymer({
+      is: 'deletable-option-list',
 
-    <script>
-        Polymer({
-            is: 'deletable-option-list',
+      properties: {
+        placeholder: String,
+        optionValue: {
+          type: Array,
+          value: [],
+          notify: true
+        },
+        disabled: {
+          type: Boolean,
+          value: false
+        },
+        customObjectOptions: {
+          type: Boolean,
+          value: false
+        },
+        optionValueAttribute: {
+          type: String,
+          value: 'value'
+        },
+        optionLabelAttribute: {
+          type: String,
+          value: 'label'
+        }
+      },
 
-            properties: {
-                placeholder: String,
-                optionValue: {
-                    type: Array,
-                    value: [],
-                    notify: true
-                },
-                disabled: {
-                    type: Boolean,
-                    value: false
-                }
-            },
+      _getItemLabel: function(item) {
+        return item[this.optionLabelAttribute];
+      },
 
-            _showPlaceHolder: function(optionValue) {
-                return !optionValue || !optionValue.length;
-            },
+      _showPlaceHolder: function(optionValue) {
+        return !optionValue || !optionValue.length;
+      },
 
-            _fireClose: function(e) {
-                if(this.disabled) {
-                    return;
-                }
-                var details = e.model.item;
-                var newValue = this.optionValue.filter(function(item) {
-                    return parseInt(item.value, 10) !== parseInt(details.value, 10)
-                });
-                newValue = newValue.length > 0 ? newValue : null;
-                this.set('optionValue', newValue);
-                this.fire('option-delete', details);
-            },
-        });
-    </script>
+      _fireClose: function(e) {
+        if (this.disabled) {
+          return;
+        }
+        var details = e.model.item;
+        var removedItemStrValue = (details[this.optionValueAttribute])
+            ? (details[this.optionValueAttribute] + '') : '';
+        var newValue = this.optionValue.filter(function(item) {
+          if (this.customObjectOptions) {
+            var optValue = (item[this.optionValueAttribute]) ? (item[this.optionValueAttribute] + '') : '';
+            return optValue !== removedItemStrValue;
+          } else {
+            return parseInt(item[this.optionValueAttribute], 10) !== parseInt(details[this.optionValueAttribute], 10);
+          }
+        }.bind(this));
+        newValue = newValue.length > 0 ? newValue : null;
+        this.set('optionValue', newValue);
+        this.fire('option-delete', details);
+      },
+    });
+  </script>
 </dom-module>
