@@ -114,8 +114,13 @@ Custom property | Description | Default
         min-width: 150px;
         width: 100%;
         overflow-y: auto;
-        padding-top: 12px;
+        margin-top: 12px;
         background: #fff;
+        font-size: 0;
+      }
+
+      .list-wrapper.no-search {
+        margin-top: 0;
       }
 
       .list-wrapper paper-listbox {
@@ -128,16 +133,22 @@ Custom property | Description | Default
 
       .list-wrapper paper-item:not(.warning) {
         --paper-item: {
-          padding: 0 24px 0 24px;
+          padding: 0 16px;
           cursor: pointer;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
+          box-sizing: border-box;
+          display: inline-block;
+          line-height: 48px;
+          width: 100%;
         }
       }
       .tick-icon {
         display: none;
         padding-right: 8px;
+        float: left;
+        margin-top: 12px;
       }
 
       .iron-selected .tick-icon {
@@ -157,7 +168,7 @@ Custom property | Description | Default
       .emptyValue {
         --paper-item: {
           color: rgba(0,0,0,0.38);
-          padding: 0 24px 0 24px;
+          padding: 0 16px;
           cursor: pointer;
         };
       }
@@ -177,6 +188,7 @@ Custom property | Description | Default
           on-focus="_openMenu"
           label="[[label]]"
           value="[[_getSingleSelectedOptionLabel(value)]]"
+          title="[[_getSingleSelectedOptionLabel(value)]]"
           disabled="[[disabled]]"
           error-message="[[errorMessage]]"
           required$="[[_simpleRequired(required)]]"
@@ -249,7 +261,7 @@ Custom property | Description | Default
             </paper-input>
           </div>
 
-          <div class="list-wrapper">
+          <div class$="list-wrapper [[_withoutSearchClass(hideSearch)]]">
 
             <paper-listbox
               multi="[[multi]]"
@@ -260,13 +272,13 @@ Custom property | Description | Default
               <template is="dom-repeat" items="[[shownItems]]">
 
                 <paper-item
-                  internal-id$="{{item.value}}"
+                  internal-id$="[[item.value]]"
                   on-tap="_elementSelected"
                   class$="[[item.style]]"
                   title$="[[item.label]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  {{item.label}}
+                  <span>[[item.label]]</span>
 
                 </paper-item>
               </template>
@@ -393,6 +405,14 @@ Custom property | Description | Default
             this.set('_autoValidateMultiSelection', true);
           }
         },
+
+        _withoutSearchClass(hideSearch) {
+          if (hideSearch) {
+            return 'no-search';
+          }
+          return '';
+        },
+
         _computeShowItems: function(options, searchKey, emptyValue) {
           var filtered = JSON.parse(JSON.stringify(options));
           if (searchKey && searchKey.length > 0) {
