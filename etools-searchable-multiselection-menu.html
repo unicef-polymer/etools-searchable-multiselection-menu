@@ -474,7 +474,11 @@ Custom property | Description | Default
              * value and selectedValues must be updated with that object data
              */
             this.set('value', value[0]);
-            this.set('selectedValues', [value[0][this.optionValue]]);
+            this.set('selectedValues', value[0][this.optionValue]);
+          } else if (!this.multi && !Array.isArray(value) && 
+            typeof value === 'object' && value[this.optionValue]) {
+            // single selection, value is just an object from options 
+            this.set('selectedValues', value[this.optionValue]);   
           }
         },
         // get esmm single selection selected label to be displayed
