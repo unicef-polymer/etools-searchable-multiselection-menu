@@ -307,7 +307,11 @@ Custom property | Description | Default
           required: Boolean,
           placeholder: String,
           autoValidate: Boolean,
-          invalid: Boolean,
+          invalid: {
+            type: Boolean,
+            value: function() { return false; },
+            reflectToAttribute: true
+          },
           options: {
             type: Array
           },
@@ -406,7 +410,7 @@ Custom property | Description | Default
           }
         },
 
-        _withoutSearchClass(hideSearch) {
+        _withoutSearchClass: function(hideSearch) {
           if (hideSearch) {
             return 'no-search';
           }
@@ -643,7 +647,14 @@ Custom property | Description | Default
         validate: function() {
           if (!this.multi) {
             // single selection validation
-            return this.$$('#singleSelectionDropdown').validate();
+            var valid = this.$$('#singleSelectionDropdown').validate();
+            if (valid) {
+              this.set('invalid', false);
+              return true;
+            } else {
+              this.set('invalid', true);
+              return false;
+            }
           } else {
             // multiple selection validation
             var valid = false;
