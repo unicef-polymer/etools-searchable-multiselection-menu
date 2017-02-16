@@ -106,11 +106,6 @@
         }
       },
 
-      _hideReadonlySeparator: function(readonly, index) {
-        console.log(index < this.optionValue.length - 1, this.optionValue.length - 1, index)
-        return !readonly && index < this.optionValue.length - 1;
-      },
-
       _getItemLabel: function(item) {
         return item[this.optionLabelAttribute];
       },

@@ -187,7 +187,7 @@ Custom property | Description | Default
 `--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
 `--esmm-readonly-input-container` | Mixin applied to paper-input-container, readonly | `{}`
 `--esmm-readonly-input-container-underline` | Mixin applied to paper-input-container underline, readonly | `{}`
---esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
+`--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
 `--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 
 
