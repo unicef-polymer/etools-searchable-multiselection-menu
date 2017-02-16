@@ -346,7 +346,8 @@ Custom property | Description | Default
           readonly: {
             type: Boolean,
             value: function() { return false; },
-            reflectToAttribute: true
+            reflectToAttribute: true,
+            observer: '_readonlyStateChanged'
           },
           invalid: {
             type: Boolean,
@@ -453,6 +454,12 @@ Custom property | Description | Default
 
         _disableMenuBtn: function(disabled, readonly) {
           return disabled || readonly;
+        },
+
+        _readonlyStateChanged: function(readonly, oldReadonly) {
+          if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+            this.updateStyles();
+          }
         },
 
         _withoutSearchClass: function(hideSearch) {
