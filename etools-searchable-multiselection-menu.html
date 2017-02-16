@@ -26,6 +26,10 @@ Custom property | Description | Default
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
 `--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
+`--esmm-readonly-input-container` | Mixin applied to paper-input-container, readonly | `{}`
+`--esmm-readonly-input-container-underline` | Mixin applied to paper-input-container underline, readonly | `{}`
+`--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
+`--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 
 @demo demo/index.html
 -->
@@ -39,7 +43,7 @@ Custom property | Description | Default
       }
 
       *[hidden] {
-        display: none;
+        display: none !important;
       }
 
       .external-wrapper {
@@ -176,6 +180,27 @@ Custom property | Description | Default
         outline: none;
       }
 
+      :host([readonly]) {
+        --paper-input-container: {
+          @apply(--esmm-readonly-input-container);
+        };
+        --paper-input-container-underline: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-focus: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-disabled: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-label: {
+          @apply(--esmm-readonly-input-container-label);
+        };
+        --paper-input-container-label-focus: {
+          @apply(--esmm-readonly-input-container-label-focus);
+        };
+      }
+
     </style>
 
     <div id="main" class$="external-wrapper [[openedClass]]">
@@ -194,7 +219,8 @@ Custom property | Description | Default
           required$="[[_simpleRequired(required)]]"
           placeholder="[[placeholder]]"
           auto-validate$="[[autoValidate]]"
-          invalid$="[[invalid]]">
+          invalid$="[[invalid]]"
+          readonly$="[[readonly]]">
         </paper-input>
       </template>
 
@@ -223,7 +249,8 @@ Custom property | Description | Default
               custom-object-options="[[customObjectOptions]]"
               option-value-attribute="[[optionValue]]"
               option-label-attribute="[[optionLabel]]"
-              disabled="[[disabled]]"
+              disabled="[[_disableMenuBtn(disabled, readonly)]]"
+              readonly$="[[readonly]]"
               placeholder=[[placeholder]]>
             </deletable-option-list>
 
@@ -244,7 +271,8 @@ Custom property | Description | Default
         on-paper-dropdown-open="_onDropdownOpen"
         allow-outside-scroll
         dynamic-align$="[[dynamicAlign]]"
-        disabled="[[disabled]]">
+        disabled="[[_disableMenuBtn(disabled, readonly)]]"
+        hidden$=[[readonly]]>
 
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
 
@@ -303,10 +331,23 @@ Custom property | Description | Default
 
         properties: {
 
-          errorMessage: String,
-          required: Boolean,
-          placeholder: String,
-          autoValidate: Boolean,
+          errorMessage: {
+            type: String
+          },
+          required: {
+            type: Boolean
+          },
+          placeholder: {
+            type: String
+          },
+          autoValidate: {
+            type: Boolean
+          },
+          readonly: {
+            type: Boolean,
+            value: function() { return false; },
+            reflectToAttribute: true
+          },
           invalid: {
             type: Boolean,
             value: function() { return false; },
@@ -410,6 +451,10 @@ Custom property | Description | Default
           }
         },
 
+        _disableMenuBtn: function(disabled, readonly) {
+          return disabled || readonly;
+        },
+
         _withoutSearchClass: function(hideSearch) {
           if (hideSearch) {
             return 'no-search';
@@ -455,6 +500,9 @@ Custom property | Description | Default
         },
 
         _elementSelected: function(e, detail) {
+          if (this.readonly) {
+            return;
+          }
           if(!this.multi) {
             this.selectedValues = e.model.item.value;
             this._valueSelected();
@@ -493,6 +541,9 @@ Custom property | Description | Default
           return null;
         },
         _valueSelected: function() {
+          if (this.readonly) {
+            return;
+          }
           // this could be fired twice almost in the same time (on item tap and on dropdown close)
           this.debounce('etoolsEsmmValueSelected', function() {
             var self = this;
@@ -587,6 +638,9 @@ Custom property | Description | Default
         },
 
         _removeItem: function(event, details) {
+          if (this.readonly) {
+            return;
+          }
           var newSelected = [];
           if (this.selectedValues) {
             var detailsValue = details[this.optionValue] ? (details[this.optionValue] + '') : '';
@@ -605,6 +659,9 @@ Custom property | Description | Default
         },
 
         _openMenu: function() {
+          if (this.readonly) {
+            return;
+          }
           this.debounce('openDropdown', function () {
             if (this.value && this.value instanceof Array && this.value.length > 0) {
               return;
@@ -616,6 +673,9 @@ Custom property | Description | Default
         },
 
         _onDropdownOpen: function() {
+          if (this.readonly) {
+            return;
+          }
           this.openedClass = 'dropdown-opened';
           var dropDown = this.$.dropdownMenu;
           dropDown.$.dropdown.style.width = this.$.main.offsetWidth + 'px';
@@ -625,7 +685,7 @@ Custom property | Description | Default
         },
 
         _fireValueChangeEvent: function() {
-          if (this.noChangeEvent) {
+          if (this.noChangeEvent || this.readonly) {
             return;
           }
           this.debounce('fireValueChanged', function () {

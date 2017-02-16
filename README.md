@@ -22,6 +22,7 @@ Dropdown menu with search and multiple options selection
 * options - Array
 * optionValue - String, Default: 'value'
 * placeholder - string
+* readonly - Boolean, Default: false
 * required - boolean
 * search - String
 * selected - Number/Array - notifies
@@ -184,6 +185,10 @@ Custom property | Description | Default
 `--esmm-option-list-color` | Multiple selected options color | `#212121`
 `--esmm-list-item-selected-color` | Selected options bg color | `#DCDCDC`
 `--esmm-external-wrapper` | Mixin applied to element wrapper | `{}`
+`--esmm-readonly-input-container` | Mixin applied to paper-input-container, readonly | `{}`
+`--esmm-readonly-input-container-underline` | Mixin applied to paper-input-container underline, readonly | `{}`
+`--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
+`--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 
 
 ## Install

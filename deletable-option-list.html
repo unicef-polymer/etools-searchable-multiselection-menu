@@ -34,8 +34,21 @@
         height: auto;
         padding-right: 24px;
       }
+      .readonly-separator {
+        display: inline-block;
+        padding: 0 5px;
+        margin: 0;
+      }
 
       *[hidden] {
+        display: none;
+      }
+
+      :host([readonly]) .option-string {
+        margin-right: 0;
+      }
+
+      :host([readonly]) .option-string:last-of-type .readonly-separator {
         display: none;
       }
     </style>
@@ -47,8 +60,9 @@
       </template>
 
       <template is="dom-repeat" items="[[optionValue]]">
-        <span>
+        <span class="option-string">
           {{_getItemLabel(item)}}
+          <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
           <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_fireClose"></paper-icon-button>
         </span>
       </template>
@@ -61,7 +75,9 @@
       is: 'deletable-option-list',
 
       properties: {
-        placeholder: String,
+        placeholder: {
+          type: String
+        },
         optionValue: {
           type: Array,
           value: [],
@@ -70,6 +86,11 @@
         disabled: {
           type: Boolean,
           value: false
+        },
+        readonly: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true
         },
         customObjectOptions: {
           type: Boolean,
