@@ -429,21 +429,23 @@ Custom property | Description | Default
             value: 'label'
           },
           selected: {
-            // this will be populated with integer value, in case of single selection,
-            // or will be an Array of integer values (example: you may need an array of integer values selected, IDs,
-            // without having the need to map the selectedValues in parent and convert to integer values)
-            // it will work only if optionValue is set to 'id'
             notify: true
           },
           updateSelected: {
             type: Boolean,
-            value: false
+            value: false,
+            observer: '_updateSelectedFlagChanged'
           },
           noChangeEvent: {
             type: Boolean,
             value: false
           }
         },
+
+        observers: [
+          '_selectedChanged(selected, options)'
+        ],
+
         ready: function() {
           if (this.autoValidate === true && this.multi === true) {
             // autoValidate for multi selection will not work, we will use a new flag in this case
@@ -517,6 +519,7 @@ Custom property | Description | Default
           }
         },
         _valueChanged: function(value) {
+          console.log('value changed', value);
           if (!value) {
             // empty value/reset selection
             this.set('selectedValues', null);
@@ -625,23 +628,95 @@ Custom property | Description | Default
           return itemValue;
         },
 
-        _updateSelected: function(selectedValues) {
-          if (!this.updateSelected || this.optionValue !== 'id'
-              || !selectedValues || Array.isArray(selectedValues) && selectedValues.length === 0) {
-            // do not update selected value
+        _updateSelectedFlagChanged: function(updateSelected) {
+          if (updateSelected) {
+            // disable change events if this flag is `true`
+            this.set('noChangeEvent', true);
+          }
+        },
+
+        _selectedChanged: function(selected, options) {
+          if (!this.updateSelected) {
             return;
           }
-
-          if (this.multi && Array.isArray(selectedValues) && selectedValues.length > 0) {
-            var selectedVals = selectedValues.map(function(s) {
-              return parseInt(s, 10);
-            });
-            this.set('selected', selectedVals);
+          if (this.multi) {
+            var multiSelectedValues = [];
+            if (selected instanceof Array && selected.length > 0) {
+              if (options instanceof Array && options.length > 0) {
+                selected.forEach(function(selectedVal) {
+                  for (var i = 0; i <= options.length; i++) {
+                    if (this._prepareValue(options[i][this.optionValue]) === this._prepareValue(selectedVal)) {
+                      multiSelectedValues.push(options[i]);
+                      break;
+                    }
+                  }
+                }.bind(this));
+              }
+            }
+            this.set('value', multiSelectedValues);
+          } else {
+            var singleSelectedValue = null;
+            if ((selected && (typeof selected === 'string' || typeof selected === 'number')) && 
+                options instanceof Array && options.length > 0) {
+              for (var i = 0; i <= options.length; i++) {
+                var selectedVal = this._prepareValue(selected);
+                if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
+                  singleSelectedValue = options[i];
+                  break;
+                }
+              }
+            }
+            this.set('value', singleSelectedValue);
           }
+          console.log('selected changed, update value to:', this.value);
+        },
 
-          if (!this.multi) {
-            this.set('selected', parseInt(selectedValues, 10));
+        _updateSelected: function(selectedValues) {
+          this.debounce('updateSelectedValue', function() {
+            if (!this.updateSelected || !selectedValues ||
+              Array.isArray(selectedValues) && selectedValues.length === 0) {
+              // do not update selected value
+              return;
+            }
+
+            if (this.multi && Array.isArray(selectedValues)) {
+              // multiselection
+              // selected will be empty array if selectedValues.length === 0
+              var selectedVals = [];
+              if (selectedValues.length > 0) {
+                selectedVals = selectedValues.map(function(s) {
+                  return this._prepareValue(s);
+                }.bind(this));
+              }
+              this.set('selected', selectedVals);
+            }
+
+            if (!this.multi) {
+              // single selection
+              if (!selectedValues || (typeof selectedValues === 'string' && selectedValues === '')) {
+                // empty string, false, null or undefined 
+                this.set('selected', null);
+              } else {
+                this.set('selected', this._prepareValue(selectedValues));
+              }
+            }
+            console.log('selected updated: ', this.selected);
+          }.bind(this), 50);
+        },
+
+        _prepareValue: function(value) {
+          if (typeof value === 'number') {
+            return value;
           }
+          if (typeof value === 'string') {
+            var val = parseInt(value, 10);
+            if (isNaN(val)) {
+              return value;
+            } else {
+              return val;
+            }
+          }
+          return value;
         },
 
         _removeItem: function(event, details) {
