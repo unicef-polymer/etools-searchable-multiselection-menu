@@ -3,11 +3,6 @@
 
 <dom-module id="demo-custom-objects-as-options">
   <template>
-    <h3>Old way type of objects with integer value and label string (still working)</h3>
-    <etools-searchable-multiselection-menu
-        label="Searchable menu"
-        options="[[realOptions]]"
-        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
 
     <h3>Single selection, custom objects as options</h3>
     <etools-searchable-multiselection-menu
@@ -16,15 +11,7 @@
         custom-object-options
         option-value="option_key"
         option-label="option_label"
-        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
-
-    <h3>Multiple selection. Old way type of objects with integer value and label string (still working)</h3>
-    <etools-searchable-multiselection-menu
-        label="Multi searchable menu"
-        options="[[realOptions]]"
-        placeholder="Please select the options"
-        on-value-change="_multiSelectionChanged"
-        multi></etools-searchable-multiselection-menu>
+        on-value-change="_singleSelectionChanged" dynamic-align></etools-searchable-multiselection-menu>
 
     <h3>Multiple selection, custom objects as options</h3>
     <etools-searchable-multiselection-menu
@@ -35,7 +22,7 @@
         option-label="option_label"
         placeholder="Please select the options"
         on-value-change="_multiSelectionChanged"
-        multi></etools-searchable-multiselection-menu>
+        multi dynamic-align></etools-searchable-multiselection-menu>
 
     <h3>Custom objects as options and selected property with no change events</h3>
 
@@ -47,7 +34,7 @@
         option-value="id"
         option-label="option_label"
         selected="{{selectedId}}"
-        update-selected no-change-event></etools-searchable-multiselection-menu>
+        update-selected dynamic-align style="width: 350px;"></etools-searchable-multiselection-menu>
 
     <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
     <etools-searchable-multiselection-menu
@@ -57,32 +44,10 @@
         option-value="id"
         option-label="option_label"
         selected="{{selectedIds}}"
-        update-selected no-change-event
+        update-selected
         placeholder="Please select the options"
-        multi></etools-searchable-multiselection-menu>
-
-    <h3>A few options selected by default example</h3>
-    <etools-searchable-multiselection-menu
-        label="Searchable menu, custom objects"
-        options="[[customObjOptions]]"
-        value="[[selectedObjOptions]]"
-        custom-object-options
-        option-value="option_key"
-        option-label="option_label"
-        on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
-
-    <etools-searchable-multiselection-menu
-        label="Multi searchable menu, custom objects"
-        options="[[customObjOptions]]"
-        value="[[selectedObjOptions]]"
-        custom-object-options
-        option-value="id"
-        option-label="option_label"
-        selected="{{selectedIds}}"
-        update-selected no-change-event
-        placeholder="Please select the options"
-        multi></etools-searchable-multiselection-menu>
-
+        multi
+        dynamic-align></etools-searchable-multiselection-menu>
 
   </template>
   <script>
@@ -108,48 +73,29 @@
 
           customObjOptions: {
             type: Array,
-            value: function() {
-              var opt = [];
-              for(var i = 1; i <= 100; i++) {
-                opt.push({
-                  id: i,
-                  option_key: 'opt' + i,
-                  option_label: 'Option ' + i,
-                  some_other_property: 'dummy propery for objIdx' + (i -1)
-                });
-              }
-              return opt;
-            }
-          },
-
-          selectedObjOptions: {
-            type: Array,
-            value: function() {
-              var opt = [];
-              for(var i = 3; i <= 5; i++) {
-                opt.push({
-                  id: i,
-                  option_key: 'opt' + i,
-                  option_label: 'Option ' + i,
-                  some_other_property: 'dummy propery for objIdx' + (i -1)
-                });
-              }
-              return opt;
-            }
+            value: []
           },
 
           selectedId: {
-            type: Number,
-            value: null
+            value: 1001
           },
           selectedIds: {
             type: Array,
-            value: []
+            value: [3, 5, 7, 101, 102]
           }
         },
 
         ready: function() {
-//          this.set('selectedValues',  [{value: 2, label: 'Option 2'}]);
+          //  this.set('selectedValues',  [{value: 2, label: 'Option 2'}]);
+          // this.set('selectedId', 3);
+
+          setTimeout(function() {
+            this.set('customObjOptions', this.generateOptions());
+          }.bind(this), 3000);
+          
+          // setTimeout(function() {
+          //   this.set('selectedId', 3);
+          // }.bind(this), 3000);
         },
 
         _returnIdsString: function(vals) {
@@ -162,6 +108,18 @@
 
         _multiSelectionChanged: function(event) {
           console.log('_multiSelectionChanged', event.detail);
+        },
+        generateOptions: function() {
+          var opt = [];
+          for(var i = 1; i <= 100; i++) {
+            opt.push({
+              id: i,
+              option_key: 'opt' + i,
+              option_label: 'Option ' + i,
+              some_other_property: 'dummy propery for objIdx' + (i -1)
+            });
+          }
+          return opt;
         }
       });
 
