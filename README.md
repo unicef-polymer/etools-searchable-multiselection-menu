@@ -159,9 +159,9 @@ customObjOptions: {
         on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
 ```
 
-If you need only select an option and get option ID (most use cases) or an array of IDs(for multiselection) 
-you can use `selected` property of the element. It only works for integer values, for other types use `selectedValues` property.
-Additionally you can chose to block the change event. Example:
+If you need only to bind a custom element property to the esmm dropdown use `selected` property 
+to update dropdown's selection or get selected value(s). 
+In this case change event is automatically disabled. Example:
 
 ```html
 <p>SelectedID: [[selectedId]]</p>
@@ -172,7 +172,7 @@ Additionally you can chose to block the change event. Example:
     option-value="id"
     option-label="option_label"
     selected="{{selectedId}}"
-    update-selected no-change-event>
+    update-selected>
 </etools-searchable-multiselection-menu>
 ```
 

@@ -6,7 +6,7 @@
 <link rel="import" href="../iron-icon/iron-icon.html">
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input-error.html">
-<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 
 <link rel="import" href="deletable-option-list.html">
 <!--
@@ -36,7 +36,7 @@ Custom property | Description | Default
 
 <dom-module id="etools-searchable-multiselection-menu">
   <template>
-    <style include="iron-flex iron-flex-alignment iron-flex-factors">
+    <style>
       :host {
         display: block;
         width: 100%;
@@ -78,13 +78,21 @@ Custom property | Description | Default
           padding-right: 24px;
           box-sizing: border-box;
         };
+        --paper-input-container-label: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
       }
 
       #dropdownMenu {
         position: absolute;
         right: 0;
+        /*left: 0;*/
         bottom: 0;
         padding: 0;
+
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
       }
 
       .dropdown-trigger {
@@ -269,7 +277,7 @@ Custom property | Description | Default
         restore-focus-on-close$="{{falseValue}}"
         on-paper-dropdown-close="_valueSelected"
         on-paper-dropdown-open="_onDropdownOpen"
-        allow-outside-scroll
+        allow-outside-scroll="[[allowOutsideScroll]]"
         dynamic-align$="[[dynamicAlign]]"
         disabled="[[_disableMenuBtn(disabled, readonly)]]"
         hidden$=[[readonly]]>
@@ -313,6 +321,10 @@ Custom property | Description | Default
 
               <paper-item hidden$="[[!showLimitWarning]]" class="warning">
                 More than [[shownItemsLimit]] items, use the search function to reveal more
+              </paper-item>
+
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning">
+                No options available
               </paper-item>
 
             </paper-listbox>
@@ -369,6 +381,10 @@ Custom property | Description | Default
             type: Boolean,
             computed: '_computeShowLimitWarning(shownItemsLimit, shownItems)'
           },
+          noOptionsAvailable: {
+            type: Boolean,
+            computed: '_computeNoOptionsAvailable(options)'
+          },
           emptyValue: {
             type: Boolean,
             value: false
@@ -412,6 +428,10 @@ Custom property | Description | Default
             type: Boolean,
             value: false
           },
+          allowOutsideScroll: {
+            type: Boolean,
+            value: false
+          },
           dynamicAlign: {
             type: Boolean,
             value: false
@@ -431,6 +451,9 @@ Custom property | Description | Default
           selected: {
             notify: true
           },
+          _prevSelectedValues: {
+            type: Object
+          },
           updateSelected: {
             type: Boolean,
             value: false,
@@ -443,7 +466,8 @@ Custom property | Description | Default
         },
 
         observers: [
-          '_selectedChanged(selected, options)'
+          '_selectedChanged(selected, options)',
+          '_optionsLengthChanged(options.length)'
         ],
 
         ready: function() {
@@ -500,6 +524,13 @@ Custom property | Description | Default
           return shownItems.length >= limit;
         },
 
+        _computeNoOptionsAvailable: function(options) {
+          if (!Array.isArray(options) || (Array.isArray(options) && options.length === 0)) {
+            return true;
+          }
+          return false;
+        },
+
         _simpleRequired: function(required) {
           return !this.multi && required;
         },
@@ -519,7 +550,6 @@ Custom property | Description | Default
           }
         },
         _valueChanged: function(value) {
-          console.log('value changed', value);
           if (!value) {
             // empty value/reset selection
             this.set('selectedValues', null);
@@ -639,68 +669,88 @@ Custom property | Description | Default
           if (!this.updateSelected) {
             return;
           }
+          var currentValue = null;
+          var notFoundValue = [];
           if (this.multi) {
-            var multiSelectedValues = [];
+            currentValue = [];
             if (selected instanceof Array && selected.length > 0) {
               if (options instanceof Array && options.length > 0) {
                 selected.forEach(function(selectedVal) {
-                  for (var i = 0; i <= options.length; i++) {
-                    if (this._prepareValue(options[i][this.optionValue]) === this._prepareValue(selectedVal)) {
-                      multiSelectedValues.push(options[i]);
+                  var s = this._prepareValue(selectedVal);
+                  notFoundValue.push(s);
+                  for (var i = 0; i < options.length; i++) {
+                    if (this._prepareValue(options[i][this.optionValue]) === s) {
+                      currentValue.push(options[i]);
+                      notFoundValue.splice(notFoundValue.indexOf(s), 1);
                       break;
                     }
                   }
                 }.bind(this));
               }
             }
-            this.set('value', multiSelectedValues);
+            
           } else {
-            var singleSelectedValue = null;
             if ((selected && (typeof selected === 'string' || typeof selected === 'number')) && 
                 options instanceof Array && options.length > 0) {
-              for (var i = 0; i <= options.length; i++) {
-                var selectedVal = this._prepareValue(selected);
+              var selectedVal = this._prepareValue(selected);
+              notFoundValue.push(selectedVal);
+              for (var i = 0; i < options.length; i++) {
                 if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
-                  singleSelectedValue = options[i];
+                  currentValue = options[i];
+                  notFoundValue.splice(notFoundValue.indexOf(selectedVal), 1);
                   break;
                 }
               }
             }
-            this.set('value', singleSelectedValue);
           }
-          console.log('selected changed, update value to:', this.value);
+          
+          if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
+            this.set('value', currentValue);
+          }
+
+          // not found selected values in options
+          if (notFoundValue.length > 0) {
+            var warnMsg = '[etools-esmm] Selected ';
+            if (notFoundValue.length === 1) {
+              warnMsg += 'value ';
+            } else {
+              warnMsg += 'values '
+            }
+            warnMsg += notFoundValue.join(', ') + ' not found in dropdown\'s options!' ;
+            console.warn(warnMsg);
+          }
         },
 
         _updateSelected: function(selectedValues) {
+          if (JSON.stringify(selectedValues) === JSON.stringify(this._prevSelectedValues)) {
+            return;
+          }
           this.debounce('updateSelectedValue', function() {
             if (!this.updateSelected || !selectedValues ||
               Array.isArray(selectedValues) && selectedValues.length === 0) {
               // do not update selected value
               return;
             }
-
+            var selectedVals = null;
             if (this.multi && Array.isArray(selectedValues)) {
               // multiselection
               // selected will be empty array if selectedValues.length === 0
-              var selectedVals = [];
+              selectedVals = [];
               if (selectedValues.length > 0) {
                 selectedVals = selectedValues.map(function(s) {
                   return this._prepareValue(s);
                 }.bind(this));
               }
-              this.set('selected', selectedVals);
             }
 
             if (!this.multi) {
               // single selection
-              if (!selectedValues || (typeof selectedValues === 'string' && selectedValues === '')) {
-                // empty string, false, null or undefined 
-                this.set('selected', null);
-              } else {
-                this.set('selected', this._prepareValue(selectedValues));
+              if (selectedValues && !(typeof selectedValues === 'string' && selectedValues === '')) {
+                selectedVals = this._prepareValue(selectedValues);
               }
             }
-            console.log('selected updated: ', this.selected);
+            this.set('_prevSelectedValues', selectedVals);
+            this.set('selected', selectedVals);
           }.bind(this), 50);
         },
 
@@ -759,11 +809,31 @@ Custom property | Description | Default
             return;
           }
           this.openedClass = 'dropdown-opened';
+          var ironDropdown = this._getIronDropdown();
+          if (ironDropdown) {
+            // set position target to align dropdown content properly
+            ironDropdown.set('positionTarget', this.$.main);
+            ironDropdown.style.width = this.$.main.offsetWidth + 'px';
+            var style = ironDropdown.querySelector('.dropdown-content').style;
+            style.overflow = 'hidden';
+          }
+        },
+
+        _getIronDropdown: function() {
           var dropDown = this.$.dropdownMenu;
-          dropDown.$.dropdown.style.width = this.$.main.offsetWidth + 'px';
-          var style = dropDown.$.dropdown.querySelector('.dropdown-content').style;
-          style.overflow = 'hidden';
-          style.marginTop = '-20px';
+          var ironDropdown = dropDown.$.dropdown;
+          return ironDropdown;
+        },
+
+        _resizeDropdown: function() {
+          var ironDropdown = this._getIronDropdown();
+          if (ironDropdown) {
+            ironDropdown.notifyResize();
+          }
+        },
+
+        _optionsLengthChanged: function(optionsLength) {
+          this._resizeDropdown();
         },
 
         _fireValueChangeEvent: function() {
