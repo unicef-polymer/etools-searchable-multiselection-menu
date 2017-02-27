@@ -5,32 +5,33 @@ Dropdown menu with search and multiple options selection
 ### Element properties
 
 
+* allowOutsideScroll - boolean, default: false
 * autoValidate - boolean
-* customObjectOptions - Boolean, Default: false
-* disabled - Boolean Default: false
-* dynamicAlign - Boolean Default: false
-* emptyValue - Boolean Default: false
+* customObjectOptions - Boolean, default: false
+* disabled - Boolean, default: false
+* dynamicAlign - Boolean, default: false
+* emptyValue - Boolean, default: false
 * errorMessage - string
-* falseValue - Boolean Default: false
-* hideSearch - Boolean Default: false
+* falseValue - Boolean, default: false
+* hideSearch - Boolean, default: false
 * invalid - boolean
 * label - String
-* menuOpened - Boolean Default: false – notifies
-* multi - Boolean Default: false
-* noChangeEvent - Boolean, Default: false
-* optionLabel - String, Default: label
+* menuOpened - Boolean, default: false – notifies
+* multi - Boolean, default: false
+* noChangeEvent - Boolean, default: false
+* optionLabel - String, default: label
 * options - Array
-* optionValue - String, Default: 'value'
+* optionValue - String, default: 'value'
 * placeholder - string
-* readonly - Boolean, Default: false
+* readonly - Boolean, default: false
 * required - boolean
 * search - String
 * selected - Number/Array - notifies
 * selectedValues - Object notifies
 * showLimitWarning - Boolean
 * shownItems - Array
-* shownItemsLimit - Number Default: 50
-* updateSelected - Boolean, Default: false
+* shownItemsLimit - Number, default: 50
+* updateSelected - Boolean, default: false
 * value - String
 
 ## Usage
