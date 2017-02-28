@@ -549,7 +549,7 @@ Custom property | Description | Default
           }
         },
         _valueChanged: function(value) {
-          if (!value) {
+          if (!value || (value instanceof Array && value.length === 0)) {
             // empty value/reset selection
             this.set('selectedValues', null);
             return;

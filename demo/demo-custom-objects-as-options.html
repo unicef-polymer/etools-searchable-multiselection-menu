@@ -93,13 +93,13 @@
             this.set('customObjOptions', this.generateOptions());
           }.bind(this), 3000);
           
-          // setTimeout(function() {
-          //   this.set('selectedId', 3);
-          // }.bind(this), 3000);
+          setTimeout(function() {
+            this.set('selectedIds', null);
+          }.bind(this), 7000);
         },
 
         _returnIdsString: function(vals) {
-          return vals.join(', ');
+          return vals instanceof Array ? vals.join(', ') : null;
         },
 
         _singleSelectionChanged: function(event) {
