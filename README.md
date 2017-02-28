@@ -5,32 +5,33 @@ Dropdown menu with search and multiple options selection
 ### Element properties
 
 
+* allowOutsideScroll - boolean, default: false
 * autoValidate - boolean
-* customObjectOptions - Boolean, Default: false
-* disabled - Boolean Default: false
-* dynamicAlign - Boolean Default: false
-* emptyValue - Boolean Default: false
+* customObjectOptions - Boolean, default: false
+* disabled - Boolean, default: false
+* dynamicAlign - Boolean, default: false
+* emptyValue - Boolean, default: false
 * errorMessage - string
-* falseValue - Boolean Default: false
-* hideSearch - Boolean Default: false
+* falseValue - Boolean, default: false
+* hideSearch - Boolean, default: false
 * invalid - boolean
 * label - String
-* menuOpened - Boolean Default: false – notifies
-* multi - Boolean Default: false
-* noChangeEvent - Boolean, Default: false
-* optionLabel - String, Default: label
+* menuOpened - Boolean, default: false – notifies
+* multi - Boolean, default: false
+* noChangeEvent - Boolean, default: false
+* optionLabel - String, default: label
 * options - Array
-* optionValue - String, Default: 'value'
+* optionValue - String, default: 'value'
 * placeholder - string
-* readonly - Boolean, Default: false
+* readonly - Boolean, default: false
 * required - boolean
 * search - String
 * selected - Number/Array - notifies
 * selectedValues - Object notifies
 * showLimitWarning - Boolean
 * shownItems - Array
-* shownItemsLimit - Number Default: 50
-* updateSelected - Boolean, Default: false
+* shownItemsLimit - Number, default: 50
+* updateSelected - Boolean, default: false
 * value - String
 
 ## Usage
@@ -159,9 +160,9 @@ customObjOptions: {
         on-value-change="_singleSelectionChanged"></etools-searchable-multiselection-menu>
 ```
 
-If you need only select an option and get option ID (most use cases) or an array of IDs(for multiselection) 
-you can use `selected` property of the element. It only works for integer values, for other types use `selectedValues` property.
-Additionally you can chose to block the change event. Example:
+If you need only to bind a custom element property to the esmm dropdown use `selected` property 
+to update dropdown's selection or get selected value(s). 
+In this case change event is automatically disabled. Example:
 
 ```html
 <p>SelectedID: [[selectedId]]</p>
@@ -172,7 +173,7 @@ Additionally you can chose to block the change event. Example:
     option-value="id"
     option-label="option_label"
     selected="{{selectedId}}"
-    update-selected no-change-event>
+    update-selected>
 </etools-searchable-multiselection-menu>
 ```
 
