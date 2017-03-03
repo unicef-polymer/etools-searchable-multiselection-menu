@@ -744,11 +744,11 @@ Custom property | Description | Default
             }
             
             var selectedVals = null;
-            if (this.multi && Array.isArray(selectedValues)) {
+            if (this.multi) {
               // multiselection
               // selected will be empty array if selectedValues.length === 0
               selectedVals = [];
-              if (selectedValues.length > 0) {
+              if (Array.isArray(selectedValues) && selectedValues.length > 0) {
                 selectedVals = selectedValues.map(function(s) {
                   return this._prepareValue(s);
                 }.bind(this));
