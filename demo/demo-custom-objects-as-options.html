@@ -26,7 +26,7 @@
 
     <h3>Custom objects as options and selected property with no change events</h3>
 
-    <p><span>SelectedID:</span> [[selectedId]]</p>
+    <!--<p><span>SelectedID:</span> [[selectedId]]</p>
     <etools-searchable-multiselection-menu
         label="Searchable menu, custom objects"
         options="[[customObjOptions]]"
@@ -34,7 +34,7 @@
         option-value="id"
         option-label="option_label"
         selected="{{selectedId}}"
-        update-selected dynamic-align style="width: 350px;"></etools-searchable-multiselection-menu>
+        update-selected dynamic-align empty-value style="width: 350px;"></etools-searchable-multiselection-menu>-->
 
     <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
     <etools-searchable-multiselection-menu
@@ -93,9 +93,9 @@
             this.set('customObjOptions', this.generateOptions());
           }.bind(this), 3000);
           
-          setTimeout(function() {
-            this.set('selectedIds', null);
-          }.bind(this), 7000);
+          // setTimeout(function() {
+          //   this.set('selectedIds', null);
+          // }.bind(this), 7000);
         },
 
         _returnIdsString: function(vals) {
