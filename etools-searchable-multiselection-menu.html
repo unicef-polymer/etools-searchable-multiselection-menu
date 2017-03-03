@@ -722,16 +722,27 @@ Custom property | Description | Default
           }
         },
 
-        _updateSelected: function(selectedValues) {
+        _updateSelected: function(selectedValues, oldSelectedValues) {
           if (JSON.stringify(selectedValues) === JSON.stringify(this._prevSelectedValues)) {
             return;
           }
           this.debounce('updateSelectedValue', function() {
-            if (!this.updateSelected || !selectedValues ||
-              Array.isArray(selectedValues) && selectedValues.length === 0) {
-              // do not update selected value
+            if (!this.updateSelected) {
               return;
             }
+            if (!this.multi) {
+              if (!selectedValues && !oldSelectedValues) {
+                return;
+              }
+            } else {
+              if (selectedValues === null && Array.isArray(this._prevSelectedValues) && this._prevSelectedValues.length === 0) {
+                return;
+              }
+              if (!this._prevSelectedValues && (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
+                return;
+              }
+            }
+            
             var selectedVals = null;
             if (this.multi && Array.isArray(selectedValues)) {
               // multiselection
