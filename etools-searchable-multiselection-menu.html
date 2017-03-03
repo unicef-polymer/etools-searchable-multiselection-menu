@@ -882,7 +882,20 @@ Custom property | Description | Default
             this.set('invalid', !valid);
             return valid;
           }
+        },
+        
+        resetInvalidState: function() {
+          this.set('invalid', false);
+          var selector = '#singleSelectionDropdown';
+          if (this.multi) {
+            selector = '#customPaperInput';
+          }
+          var el = this.$$(selector);
+          if (el) {
+            el.invalid = false;
+          }
         }
+        
       });
     })();
   </script>
