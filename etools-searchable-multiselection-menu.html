@@ -225,7 +225,7 @@ Custom property | Description | Default
       <template is="dom-if" if="{{!multi}}">
         <paper-input
           id="singleSelectionDropdown"
-          class$="value-container [[capitalizeInputValueClass(capitalizeInputShown)]]"
+          class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
           on-tap="_openMenu"
           on-focus="_openMenu"
           label="[[label]]"
@@ -594,7 +594,7 @@ Custom property | Description | Default
           return null;
         },
 
-        capitalizeInputValueClass: function() {
+        _capitalizeInputValueClass: function() {
           return this.capitalizeInputShown ? 'capitalize' : '';
         },
 
