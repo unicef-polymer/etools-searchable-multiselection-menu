@@ -85,6 +85,14 @@ Custom property | Description | Default
         };
       }
 
+      paper-input.value-container.capitalize {
+        --paper-input-container-input: {
+          text-transform: capitalize !important;
+          padding-right: 24px;
+          box-sizing: border-box;
+        }
+      }
+
       #dropdownMenu {
         position: absolute;
         right: 0;
@@ -217,7 +225,7 @@ Custom property | Description | Default
       <template is="dom-if" if="{{!multi}}">
         <paper-input
           id="singleSelectionDropdown"
-          class="value-container"
+          class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
           on-tap="_openMenu"
           on-focus="_openMenu"
           label="[[label]]"
@@ -463,7 +471,11 @@ Custom property | Description | Default
           noChangeEvent: {
             type: Boolean,
             value: false
-          }
+          },
+          capitalizeInputShown: {
+            type: Boolean,
+            reflectToAttribute: true,
+          },
         },
 
         observers: [
@@ -581,6 +593,11 @@ Custom property | Description | Default
           }
           return null;
         },
+
+        _capitalizeInputValueClass: function() {
+          return this.capitalizeInputShown ? 'capitalize' : '';
+        },
+
         _valueSelected: function() {
           if (this.readonly) {
             return;
