@@ -73,7 +73,7 @@ Custom property | Description | Default
       .value-container {
         position: relative;
       }
-      
+
       paper-input.value-container {
         --paper-input-container-input: {
           padding-right: 24px;
@@ -297,6 +297,7 @@ Custom property | Description | Default
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
+              id="searchInput"
               no-label-float
               class="search-input"
               label="Search"
@@ -580,10 +581,10 @@ Custom property | Description | Default
              */
             this.set('value', value[0]);
             this.set('selectedValues', value[0][this.optionValue]);
-          } else if (!this.multi && !Array.isArray(value) && 
+          } else if (!this.multi && !Array.isArray(value) &&
             typeof value === 'object' && value[this.optionValue]) {
-            // single selection, value is just an object from options 
-            this.set('selectedValues', value[this.optionValue]);   
+            // single selection, value is just an object from options
+            this.set('selectedValues', value[this.optionValue]);
           }
         },
         // get esmm single selection selected label to be displayed
@@ -605,7 +606,7 @@ Custom property | Description | Default
           // this could be fired twice almost in the same time (on item tap and on dropdown close)
           this.debounce('etoolsEsmmValueSelected', function() {
             var self = this;
-            this.set('menuOpened', false);
+              this.set('menuOpened', false);
             if(this.selectedValues === null) {
               // reset selected
               this.set('value', null);
@@ -621,7 +622,7 @@ Custom property | Description | Default
               this._singleValueSelected();
             }
             this.openedClass = '';
-          }.bind(this), 50);
+          }.bind(this), 150);
         },
 
         _singleValueSelected: function() {
@@ -706,9 +707,9 @@ Custom property | Description | Default
                 }.bind(this));
               }
             }
-            
+
           } else {
-            if ((selected && (typeof selected === 'string' || typeof selected === 'number')) && 
+            if ((selected && (typeof selected === 'string' || typeof selected === 'number')) &&
                 options instanceof Array && options.length > 0) {
               var selectedVal = this._prepareValue(selected);
               notFoundValue.push(selectedVal);
@@ -721,7 +722,7 @@ Custom property | Description | Default
               }
             }
           }
-          
+
           if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
             this.set('value', currentValue);
           }
@@ -759,7 +760,7 @@ Custom property | Description | Default
                 return;
               }
             }
-            
+
             var selectedVals = null;
             if (this.multi) {
               // multiselection
@@ -819,17 +820,24 @@ Custom property | Description | Default
           this._fireValueChangeEvent();
         },
 
-        _openMenu: function() {
-          if (this.readonly) {
+        _openMenu: function(e) {
+          if (this.readonly || this.menuOpened) {
             return;
           }
           this.debounce('openDropdown', function () {
             if (this.value && this.value instanceof Array && this.value.length > 0) {
               return;
             }
-            if (!this.menuOpened) {
-              this.set('menuOpened', true);
+
+            this.set('menuOpened', true);
+
+            var searchInput = this.$$('#searchInput');
+            if (searchInput) {
+              this.debounce('focusOnDropdown', function() {
+                Polymer.dom(searchInput.root).querySelector('#input').focus();
+              }, 100);
             }
+
           }.bind(this), 100);
         },
 
@@ -911,7 +919,7 @@ Custom property | Description | Default
             return valid;
           }
         },
-        
+
         resetInvalidState: function() {
           this.set('invalid', false);
           var selector = '#singleSelectionDropdown';
@@ -923,7 +931,7 @@ Custom property | Description | Default
             el.invalid = false;
           }
         }
-        
+
       });
     })();
   </script>
