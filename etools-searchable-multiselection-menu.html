@@ -297,6 +297,7 @@ Custom property | Description | Default
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
+              id="searchInput"
               no-label-float
               class="search-input"
               label="Search"
@@ -819,7 +820,7 @@ Custom property | Description | Default
           this._fireValueChangeEvent();
         },
 
-        _openMenu: function() {
+        _openMenu: function(e) {
           if (this.readonly || this.menuOpened) {
             return;
           }
@@ -829,6 +830,13 @@ Custom property | Description | Default
             }
 
             this.set('menuOpened', true);
+
+            var searchInput = this.$$('#searchInput');
+            if (searchInput) {
+              this.debounce('focusOnDropdown', function() {
+                Polymer.dom(searchInput.root).querySelector('#input').focus();
+              }, 100);
+            }
 
           }.bind(this), 100);
         },
