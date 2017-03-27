@@ -477,6 +477,11 @@ Custom property | Description | Default
             type: Boolean,
             reflectToAttribute: true,
           },
+          selectedRequiresValidOptions: {
+            type: Boolean,
+            value: false
+          }
+          
         },
 
         observers: [
@@ -688,6 +693,13 @@ Custom property | Description | Default
           if (!this.updateSelected) {
             return;
           }
+          
+          if (this.selectedRequiresValidOptions &&
+            (options instanceof Array === false ||
+            (options instanceof Array && options.length === 0))) {
+            return;
+          }
+          
           var currentValue = null;
           var notFoundValue = [];
           if (this.multi) {
