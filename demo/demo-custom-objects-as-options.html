@@ -4,25 +4,25 @@
 <dom-module id="demo-custom-objects-as-options">
   <template>
 
-    <h3>Single selection, custom objects as options</h3>
-    <etools-searchable-multiselection-menu
-        label="Searchable menu, custom objects"
-        options="[[customObjOptions]]"
-        custom-object-options
-        option-value="option_key"
-        option-label="option_label"
-        on-value-change="_singleSelectionChanged" dynamic-align></etools-searchable-multiselection-menu>
+    <!--<h3>Single selection, custom objects as options</h3>-->
+    <!--<etools-searchable-multiselection-menu-->
+        <!--label="Searchable menu, custom objects"-->
+        <!--options="[[customObjOptions]]"-->
+        <!--custom-object-options-->
+        <!--option-value="option_key"-->
+        <!--option-label="option_label"-->
+        <!--on-value-change="_singleSelectionChanged" dynamic-align></etools-searchable-multiselection-menu>-->
 
-    <h3>Multiple selection, custom objects as options</h3>
-    <etools-searchable-multiselection-menu
-        label="Multi searchable menu, custom objects"
-        options="[[customObjOptions]]"
-        custom-object-options
-        option-value="option_key"
-        option-label="option_label"
-        placeholder="Please select the options"
-        on-value-change="_multiSelectionChanged"
-        multi dynamic-align></etools-searchable-multiselection-menu>
+    <!--<h3>Multiple selection, custom objects as options</h3>-->
+    <!--<etools-searchable-multiselection-menu-->
+        <!--label="Multi searchable menu, custom objects"-->
+        <!--options="[[customObjOptions]]"-->
+        <!--custom-object-options-->
+        <!--option-value="option_key"-->
+        <!--option-label="option_label"-->
+        <!--placeholder="Please select the options"-->
+        <!--on-value-change="_multiSelectionChanged"-->
+        <!--multi dynamic-align></etools-searchable-multiselection-menu>-->
 
     <h3>Custom objects as options and selected property with no change events</h3>
 
@@ -37,17 +37,17 @@
         update-selected dynamic-align empty-value style="width: 350px;"></etools-searchable-multiselection-menu>
 
     <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
-    <etools-searchable-multiselection-menu
-        label="Multi searchable menu, custom objects"
-        options="[[customObjOptions]]"
-        custom-object-options
-        option-value="id"
-        option-label="option_label"
-        selected="{{selectedIds}}"
-        update-selected
-        placeholder="Please select the options"
-        multi
-        dynamic-align></etools-searchable-multiselection-menu>
+    <!--<etools-searchable-multiselection-menu-->
+        <!--label="Multi searchable menu, custom objects"-->
+        <!--options="[[customObjOptions]]"-->
+        <!--custom-object-options-->
+        <!--option-value="id"-->
+        <!--option-label="option_label"-->
+        <!--selected="{{selectedIds}}"-->
+        <!--update-selected-->
+        <!--placeholder="Please select the options"-->
+        <!--multi-->
+        <!--dynamic-align></etools-searchable-multiselection-menu>-->
 
   </template>
   <script>
@@ -89,9 +89,9 @@
           //  this.set('selectedValues',  [{value: 2, label: 'Option 2'}]);
           // this.set('selectedId', 3);
 
-          setTimeout(function() {
+          //setTimeout(function() {
             this.set('customObjOptions', this.generateOptions());
-          }.bind(this), 3000);
+          //}.bind(this), 3000);
           
           // setTimeout(function() {
           //   this.set('selectedIds', null);

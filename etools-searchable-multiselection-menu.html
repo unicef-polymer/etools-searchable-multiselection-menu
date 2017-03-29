@@ -377,7 +377,8 @@ Custom property | Description | Default
             reflectToAttribute: true
           },
           options: {
-            type: Array
+            type: Array,
+            observer: '_optionsChanged'
           },
           shownItems: {
             type: Array,
@@ -459,7 +460,8 @@ Custom property | Description | Default
             value: 'label'
           },
           selected: {
-            notify: true
+            notify: true,
+            observer: '_selectedOptionsChanged'
           },
           _prevSelectedValues: {
             type: Object
@@ -480,12 +482,15 @@ Custom property | Description | Default
           selectedRequiresValidOptions: {
             type: Boolean,
             value: false
+          },
+          notFoundValues: {
+            type: Array,
+            notify: true,
+            value: []
           }
-          
         },
 
         observers: [
-          '_selectedChanged(selected, options)',
           '_optionsLengthChanged(options.length)'
         ],
 
@@ -564,6 +569,14 @@ Custom property | Description | Default
           }
           if(!this.multi) {
             this.selectedValues = e.model.item.value;
+
+            if (this.selectedValues === null) {
+              if (this.value === null && this.updateSelected &&
+                this.notFoundValues instanceof Array && this.notFoundValues.length) {
+                this.set('selected', null);
+              }
+            }
+
             this._valueSelected();
             this.$.dropdownMenu.close();
           }
@@ -689,67 +702,86 @@ Custom property | Description | Default
           }
         },
 
-        _selectedChanged: function(selected, options) {
-          if (!this.updateSelected) {
+        _optionsChanged: function(options) {
+          if (options instanceof Array) {
+            this._selectionChanged(this.selected, options);
+          }
+        },
+
+        _selectedOptionsChanged: function(selected, oldSelected) {
+          if (this.multi && JSON.stringify(selected) === JSON.stringify(oldSelected)) {
             return;
           }
-          
-          if (this.selectedRequiresValidOptions &&
-            (options instanceof Array === false ||
-            (options instanceof Array && options.length === 0))) {
-            return;
-          }
-          
-          var currentValue = null;
-          var notFoundValue = [];
-          if (this.multi) {
-            currentValue = [];
-            if (selected instanceof Array && selected.length > 0) {
-              if (options instanceof Array && options.length > 0) {
-                selected.forEach(function(selectedVal) {
-                  var s = this._prepareValue(selectedVal);
-                  notFoundValue.push(s);
-                  for (var i = 0; i < options.length; i++) {
-                    if (this._prepareValue(options[i][this.optionValue]) === s) {
-                      currentValue.push(options[i]);
-                      notFoundValue.splice(notFoundValue.indexOf(s), 1);
+          this._selectionChanged(selected, this.options);
+        },
+
+        _selectionChanged: function(selected, options) {
+          this.debounce('selectionChanged', function() {
+            if (!this.updateSelected) {
+              return;
+            }
+
+            if (this.selectedRequiresValidOptions &&
+              (options instanceof Array === false ||
+              (options instanceof Array && options.length === 0))) {
+              return;
+            }
+
+            var currentValue = null;
+            var notFoundValues = [];
+            var i;
+            if (this.multi) {
+              // multiple selection
+              currentValue = [];
+              if (selected instanceof Array && selected.length > 0) {
+                notFoundValues = JSON.parse(JSON.stringify(selected));
+                if (options instanceof Array && options.length > 0) {
+                  selected.forEach(function(selectedVal) {
+                    var s = this._prepareValue(selectedVal);
+                    for (i = 0; i < options.length; i++) {
+                      if (this._prepareValue(options[i][this.optionValue]) === s) {
+                        currentValue.push(options[i]);
+                        notFoundValues.splice(notFoundValues.indexOf(selectedVal), 1);
+                        break;
+                      }
+                    }
+                  }.bind(this));
+                }
+              }
+            } else {
+              // single selection
+              if (selected && (typeof selected === 'string' || typeof selected === 'number')) {
+                var selectedVal = this._prepareValue(selected);
+                notFoundValues.push(selectedVal);
+                if (options instanceof Array && options.length > 0) {
+                  for (i = 0; i < options.length; i++) {
+                    if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
+                      currentValue = options[i];
+                      notFoundValues.splice(notFoundValues.indexOf(selectedVal), 1);
                       break;
                     }
                   }
-                }.bind(this));
-              }
-            }
-
-          } else {
-            if ((selected && (typeof selected === 'string' || typeof selected === 'number')) &&
-                options instanceof Array && options.length > 0) {
-              var selectedVal = this._prepareValue(selected);
-              notFoundValue.push(selectedVal);
-              for (var i = 0; i < options.length; i++) {
-                if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
-                  currentValue = options[i];
-                  notFoundValue.splice(notFoundValue.indexOf(selectedVal), 1);
-                  break;
                 }
               }
             }
-          }
 
-          if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
-            this.set('value', currentValue);
-          }
-
-          // not found selected values in options
-          if (notFoundValue.length > 0) {
-            var warnMsg = '[etools-esmm] Selected ';
-            if (notFoundValue.length === 1) {
-              warnMsg += 'value ';
-            } else {
-              warnMsg += 'values '
+            this.set('notFoundValues', notFoundValues);
+            if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
+              this.set('value', currentValue);
             }
-            warnMsg += notFoundValue.join(', ') + ' not found in dropdown\'s options!' ;
-            console.warn(warnMsg);
-          }
+
+            // not found selected values in options
+            if (notFoundValues.length > 0) {
+              var warnMsg = '[etools-esmm] Selected ';
+              if (notFoundValues.length === 1) {
+                warnMsg += 'value ';
+              } else {
+                warnMsg += 'values '
+              }
+              warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!' ;
+              console.warn(warnMsg);
+            }
+          }.bind(this), 50);
         },
 
         _updateSelected: function(selectedValues, oldSelectedValues) {
@@ -783,6 +815,11 @@ Custom property | Description | Default
                   return this._prepareValue(s);
                 }.bind(this));
               }
+              if (this.notFoundValues.length) {
+                this.notFoundValues.forEach(function(notFoundVal) {
+                  selectedVals.push(this._prepareValue(notFoundVal));
+                }.bind(this));
+              }
             }
 
             if (!this.multi) {
@@ -790,7 +827,12 @@ Custom property | Description | Default
               if (selectedValues && !(typeof selectedValues === 'string' && selectedValues === '')) {
                 selectedVals = this._prepareValue(selectedValues);
               }
+              if (!selectedVals && this.notFoundValues.length) {
+                this.set('_prevSelectedValues', this.notFoundValues[0]);
+                return;
+              }
             }
+
             this.set('_prevSelectedValues', selectedVals);
             this.set('selected', selectedVals);
           }.bind(this), 50);
