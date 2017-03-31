@@ -4,9 +4,9 @@ Dropdown menu with search and multiple options selection
 
 ### Element properties
 
-
-* allowOutsideScroll - boolean, default: false
-* autoValidate - boolean
+* allowOutsideScroll - Boolean, default: false
+* autoValidate - Boolean
+* capitalizeInputShown - Boolean
 * customObjectOptions - Boolean, default: false
 * disabled - Boolean, default: false
 * dynamicAlign - Boolean, default: false
@@ -19,6 +19,8 @@ Dropdown menu with search and multiple options selection
 * menuOpened - Boolean, default: false – notifies
 * multi - Boolean, default: false
 * noChangeEvent - Boolean, default: false
+* noOptionsAvailable - Boolean, default: false
+* notFoundValues - Array
 * optionLabel - String, default: label
 * options - Array
 * optionValue - String, default: 'value'
@@ -27,6 +29,8 @@ Dropdown menu with search and multiple options selection
 * required - boolean
 * search - String
 * selected - Number/Array - notifies
+* selectedRequiresValidOptions - Boolean, default: false; using this and selected will ensure selected values will 
+be set only if the options are not empty
 * selectedValues - Object notifies
 * showLimitWarning - Boolean
 * shownItems - Array
