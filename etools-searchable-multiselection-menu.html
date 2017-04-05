@@ -7,6 +7,7 @@
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input-error.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 
 <link rel="import" href="deletable-option-list.html">
 <!--
@@ -220,6 +221,13 @@ Custom property | Description | Default
 
     </style>
 
+    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
+      <etools-ajax id="missingOptionsAjax"
+                   params="[[ajaxParams]]"
+                   on-success="_handleMissingOptionsReqResponse"
+                   on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    </template>
+
     <div id="main" class$="external-wrapper [[openedClass]]">
 
       <template is="dom-if" if="{{!multi}}">
@@ -382,7 +390,7 @@ Custom property | Description | Default
           },
           shownItems: {
             type: Array,
-            computed: '_computeShowItems(options, search, emptyValue)'
+            computed: '_computeShowItems(options, search, emptyValue, options.length)'
           },
           shownItemsLimit: {
             type: Number,
@@ -394,7 +402,7 @@ Custom property | Description | Default
           },
           noOptionsAvailable: {
             type: Boolean,
-            computed: '_computeNoOptionsAvailable(options)'
+            computed: '_computeNoOptionsAvailable(options, options.length)'
           },
           emptyValue: {
             type: Boolean,
@@ -487,6 +495,12 @@ Custom property | Description | Default
             type: Array,
             notify: true,
             value: []
+          },
+          url: String,
+          ajaxParams: Object,
+          _resetReqUrlOnOptionsChange: {
+            type: Boolean,
+            value: true
           }
         },
 
@@ -548,8 +562,8 @@ Custom property | Description | Default
           return shownItems.length >= limit;
         },
 
-        _computeNoOptionsAvailable: function(options) {
-          if (!Array.isArray(options) || (Array.isArray(options) && options.length === 0)) {
+        _computeNoOptionsAvailable: function(options, optionsLength) {
+          if (!Array.isArray(options) || (Array.isArray(options) && optionsLength === 0)) {
             return true;
           }
           return false;
@@ -703,6 +717,14 @@ Custom property | Description | Default
         },
 
         _optionsChanged: function(options) {
+          if (this.updateSelected) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              // reset ajax el url to force request to fire when options are changed
+              missingOptionsEtoolsAjax.url = null;
+            }
+          }
+
           if (options instanceof Array) {
             this._selectionChanged(this.selected, options);
           }
@@ -772,6 +794,8 @@ Custom property | Description | Default
 
             // not found selected values in options
             if (notFoundValues.length > 0) {
+              this._requestMissingOptions(notFoundValues);
+              // show console warning
               var warnMsg = '[etools-esmm] Selected ';
               if (notFoundValues.length === 1) {
                 warnMsg += 'value ';
@@ -984,6 +1008,77 @@ Custom property | Description | Default
           if (el) {
             el.invalid = false;
           }
+        },
+
+        _shouldRequestMissingOption: function(url) {
+          if (typeof url === 'string' && url !== '') {
+            return true;
+          }
+          return false;
+        },
+
+        /**
+         * If there are no selected options that are not found in dropdown options then request them from server using
+         * url and ajaxParams(values property will contain missing values)
+         * ajaxParams = {
+         *    values: 1 // single value
+         * }
+         *
+         * ajaxParams = {
+         *    values: 1,2,3,4 // multiple values
+         * }
+         */
+        _requestMissingOptions: function(notFoundValues) {
+          if (!(notFoundValues instanceof Array && notFoundValues.length)) {
+            return;
+          }
+          if (this._shouldRequestMissingOption(this.url)) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              var notFoundV = notFoundValues.join(',');
+              if (this.ajaxParams && typeof this.ajaxParams === 'object') {
+                if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
+                  // missing values changed, reset url to force request to fire
+                  missingOptionsEtoolsAjax.url = null;
+                }
+                this.ajaxParams.values = notFoundV;
+              } else {
+                this.ajaxParams = {
+                  values: notFoundV
+                };
+              }
+              missingOptionsEtoolsAjax.url = this.url;
+            }
+          }
+        },
+
+        _isValidOption: function(optionObj) {
+          return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
+        },
+
+        _handleMissingOptionsReqResponse: function(response) {
+          try {
+            if (this._isValidOption(response.detail)) {
+              // single option object received, add it to dropdown's options
+              this.push('options', response.detail);
+              this._selectionChanged(this.selected, this.options);
+            }
+            if (response.detail instanceof Array && response.detail.length) {
+              if (this._isValidOption(response.detail[0])) {
+                // assuming all objects from response array have same properties
+                // we just need to make sure the first one is valid, no need to use a loop here
+                var optionsLength = this.options.length;
+                this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
+                this._selectionChanged(this.selected, this.options);
+              }
+            }
+          } catch (error) {
+            console.error('[etools-esmm] Error occurred on missing options request response handling', error);
+          }
+        },
+
+        _handleMissingOptionsReqError: function(errorResponse) {
+          console.error('[etools-esmm] Missing options request failed!', errorResponse.detail);
         }
 
       });
