@@ -716,7 +716,7 @@ Custom property | Description | Default
           }
         },
 
-        _optionsChanged: function(options) {
+        _resetMissingOptionsUrl: function() {
           if (this.updateSelected) {
             var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
             if (missingOptionsEtoolsAjax) {
@@ -724,6 +724,10 @@ Custom property | Description | Default
               missingOptionsEtoolsAjax.url = null;
             }
           }
+        },
+
+        _optionsChanged: function(options) {
+          this._resetMissingOptionsUrl();
 
           if (options instanceof Array) {
             this._selectionChanged(this.selected, options);
@@ -734,6 +738,7 @@ Custom property | Description | Default
           if (this.multi && JSON.stringify(selected) === JSON.stringify(oldSelected)) {
             return;
           }
+          this._resetMissingOptionsUrl();
           this._selectionChanged(selected, this.options);
         },
 

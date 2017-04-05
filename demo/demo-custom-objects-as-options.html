@@ -37,21 +37,22 @@
         update-selected
         dynamic-align
         empty-value
-        url="http://silex-test-app.local/get-custom-options"
+        url="http://192.168.1.184/silex-test-app/web/index.php/get-custom-options"
         style="width: 350px;"></etools-searchable-multiselection-menu>
 
-    <!--<p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>-->
-    <!--<etools-searchable-multiselection-menu-->
-        <!--label="Multi searchable menu, custom objects"-->
-        <!--options="[[customObjOptions]]"-->
-        <!--custom-object-options-->
-        <!--option-value="id"-->
-        <!--option-label="option_label"-->
-        <!--selected="{{selectedIds}}"-->
-        <!--update-selected-->
-        <!--placeholder="Please select the options"-->
-        <!--multi-->
-        <!--dynamic-align></etools-searchable-multiselection-menu>-->
+    <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
+    <etools-searchable-multiselection-menu
+        label="Multi searchable menu, custom objects"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="id"
+        option-label="option_label"
+        selected="{{selectedIds}}"
+        update-selected
+        placeholder="Please select the options"
+        multi
+        dynamic-align
+        url="http://192.168.1.184/silex-test-app/web/index.php/get-custom-options"></etools-searchable-multiselection-menu>
 
   </template>
   <script>
