@@ -806,7 +806,7 @@ Custom property | Description | Default
             if (notFoundValues.length > 0) {
               this._requestMissingOptions(notFoundValues);
               // show console warning
-              var warnMsg = '[etools-esmm] Selected ';
+              var warnMsg = '[etools-esmm ' + this.label + '] Selected ';
               if (notFoundValues.length === 1) {
                 warnMsg += 'value ';
               } else {
@@ -1079,16 +1079,16 @@ Custom property | Description | Default
               this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
               this._selectionChanged(this.selected, this.options);
             } else {
-              console.warn('[etools-esmm] Missing options received(from ' + this.url + ') are not valid(missing \'' +
+              console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
                 this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
             }
           } catch (error) {
-            console.error('[etools-esmm] Error occurred on missing options request response handling', error);
+            console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
           }
         },
 
         _handleMissingOptionsReqError: function(errorResponse) {
-          console.error('[etools-esmm] Missing options request failed!', errorResponse.detail);
+          console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
         }
 
       });
