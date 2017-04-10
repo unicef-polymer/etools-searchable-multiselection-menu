@@ -36,7 +36,7 @@ be set only if the options are not empty
 * shownItems - Array
 * shownItemsLimit - Number, default: 50
 * updateSelected - Boolean, default: false
-* url - String, the url used request selected missing options from server(one missing option `someUrl?values=1`, 
+* url - String, the url used to request selected missing options from server(one missing option `someUrl?values=1`, 
 many missing options `someUrl?values=1,2,3`). This can be used only with `selected` and `updateSelected` properties. 
 The response of the missing options request should be an array with one or more objects with the same properties 
 dropdown options have. 
