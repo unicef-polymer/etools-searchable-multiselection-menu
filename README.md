@@ -3,7 +3,7 @@
 Dropdown menu with search and multiple options selection
 
 ### Element properties
-
+* ajaxParams - Object(optional) used to set build query string for the URL of missing options request.
 * allowOutsideScroll - Boolean, default: false
 * autoValidate - Boolean
 * capitalizeInputShown - Boolean
@@ -36,6 +36,10 @@ be set only if the options are not empty
 * shownItems - Array
 * shownItemsLimit - Number, default: 50
 * updateSelected - Boolean, default: false
+* url - String, the url used to request selected missing options from server(one missing option `someUrl?values=1`, 
+many missing options `someUrl?values=1,2,3`). This can be used only with `selected` and `updateSelected` properties. 
+The response of the missing options request should be an array with one or more objects with the same properties 
+dropdown options have. 
 * value - String
 
 ## Usage
@@ -177,7 +181,8 @@ In this case change event is automatically disabled. Example:
     option-value="id"
     option-label="option_label"
     selected="{{selectedId}}"
-    update-selected>
+    update-selected
+    url="http://some-url-to-get-missing-selected-options">
 </etools-searchable-multiselection-menu>
 ```
 

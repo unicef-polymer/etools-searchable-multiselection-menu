@@ -20,7 +20,6 @@
       .vertical-section-container {
         max-width: 900px;
       }
-
     </style>
   </head>
   <body>
@@ -28,109 +27,109 @@
     <div class="vertical-section-container centered">
       <h1>etools-searchable-multiselection-menu demo</h1>
       
-      <h2>Single selection, with search</h2>
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  options="[[realOptions]]"
-                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
+      <!--<h2>Single selection, with search</h2>-->
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu-->
+                  <!--label="Searchable menu"-->
+                  <!--options="[[realOptions]]"-->
+                  <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
-      <h2>Single selection, with search, always display an empty value</h2>
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu
-              label="Searchable menu"
-              options="[[realOptions]]"
-              empty-value
-              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
-
-
-      <h2>Single selection, with search, limit of 3 elements</h2>
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu
-              label="Searchable menu"
-              options="[[realOptions]]"
-              shown-items-limit="3"
-              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>Single selection, without search</h2>
-
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu label="Searchable menu"
-                                                 options="[[realOptions]]"
-                                                 value="{{selectedValues}}"
-                                                 hide-search></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>Single selection, disabled</h2>
-
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu label="Searchable menu"
-                                                 options="[[realOptions]]"
-                                                 value="{{selectedValues}}"
-                                                 disabled></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
+      <!--<h2>Single selection, with search, always display an empty value</h2>-->
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu-->
+              <!--label="Searchable menu"-->
+              <!--options="[[realOptions]]"-->
+              <!--empty-value-->
+              <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
 
-      <h2>Multi selection, with search</h2>
+      <!--<h2>Single selection, with search, limit of 3 elements</h2>-->
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu-->
+              <!--label="Searchable menu"-->
+              <!--options="[[realOptions]]"-->
+              <!--shown-items-limit="3"-->
+              <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"
-                       massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
-          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
-                                                 options="[[realOptions]]"
-                                                 value="{{massiveSelectedValues}}"
-                                                 multi></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
+      <!--<h2>Single selection, without search</h2>-->
+
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu label="Searchable menu"-->
+                                                 <!--options="[[realOptions]]"-->
+                                                 <!--value="{{selectedValues}}"-->
+                                                 <!--hide-search></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
+
+      <!--<h2>Single selection, disabled</h2>-->
+
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu label="Searchable menu"-->
+                                                 <!--options="[[realOptions]]"-->
+                                                 <!--value="{{selectedValues}}"-->
+                                                 <!--disabled></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
 
-      <h2>Multi selection, disabled</h2>
+      <!--<h2>Multi selection, with search</h2>-->
 
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
-                                                 options="[[realOptions]]"
-                                                 value="{{selectedValues}}"
-                                                 multi
-                                                 disabled></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"-->
+                       <!--massive-selected-values="{{massiveSelectedValues}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu label="Multiselection Searchable menu"-->
+                                                 <!--options="[[realOptions]]"-->
+                                                 <!--value="{{massiveSelectedValues}}"-->
+                                                 <!--multi></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
-      <h2>Change event('value-change') examples</h2>
 
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-with-change-event></demo-with-change-event>
-        </template>
-      </demo-snippet>
+      <!--<h2>Multi selection, disabled</h2>-->
 
-      <h2>Error messages and validations</h2>
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu label="Multiselection Searchable menu"-->
+                                                 <!--options="[[realOptions]]"-->
+                                                 <!--value="{{selectedValues}}"-->
+                                                 <!--multi-->
+                                                 <!--disabled></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
-      <demo-snippet>
-        <template>
-          <demo-error-messages-and-validations></demo-error-messages-and-validations>
-        </template>
-      </demo-snippet>
+      <!--<h2>Change event('value-change') examples</h2>-->
+
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-with-change-event></demo-with-change-event>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
+
+      <!--<h2>Error messages and validations</h2>-->
+
+      <!--<demo-snippet>-->
+        <!--<template>-->
+          <!--<demo-error-messages-and-validations></demo-error-messages-and-validations>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
 
       <h2>Custom objects as options. You can specify value and label properties from object option to be used.</h2>
@@ -141,13 +140,13 @@
         </template>
       </demo-snippet>
 
-      <h2>Readonly state</h2>
+      <!--<h2>Readonly state</h2>-->
 
-      <demo-snippet>
-        <template>
-          <demo-readonly-state></demo-readonly-state>
-        </template>
-      </demo-snippet>
+      <!--<demo-snippet>-->
+        <!--<template>-->
+          <!--<demo-readonly-state></demo-readonly-state>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
     </div>
 
