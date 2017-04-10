@@ -7,6 +7,7 @@
 <link rel="import" href="../paper-input/paper-input-container.html">
 <link rel="import" href="../paper-input/paper-input-error.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 
 <link rel="import" href="deletable-option-list.html">
 <!--
@@ -220,6 +221,13 @@ Custom property | Description | Default
 
     </style>
 
+    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
+      <etools-ajax id="missingOptionsAjax"
+                   params="[[ajaxParams]]"
+                   on-success="_handleMissingOptionsReqResponse"
+                   on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    </template>
+
     <div id="main" class$="external-wrapper [[openedClass]]">
 
       <template is="dom-if" if="{{!multi}}">
@@ -382,7 +390,7 @@ Custom property | Description | Default
           },
           shownItems: {
             type: Array,
-            computed: '_computeShowItems(options, search, emptyValue)'
+            computed: '_computeShowItems(options, search, emptyValue, options.length)'
           },
           shownItemsLimit: {
             type: Number,
@@ -394,7 +402,7 @@ Custom property | Description | Default
           },
           noOptionsAvailable: {
             type: Boolean,
-            computed: '_computeNoOptionsAvailable(options)'
+            computed: '_computeNoOptionsAvailable(options, options.length)'
           },
           emptyValue: {
             type: Boolean,
@@ -487,7 +495,10 @@ Custom property | Description | Default
             type: Array,
             notify: true,
             value: []
-          }
+          },
+          url: String,
+          ajaxParams: Object
+
         },
 
         observers: [
@@ -548,8 +559,8 @@ Custom property | Description | Default
           return shownItems.length >= limit;
         },
 
-        _computeNoOptionsAvailable: function(options) {
-          if (!Array.isArray(options) || (Array.isArray(options) && options.length === 0)) {
+        _computeNoOptionsAvailable: function(options, optionsLength) {
+          if (!Array.isArray(options) || (Array.isArray(options) && optionsLength === 0)) {
             return true;
           }
           return false;
@@ -589,9 +600,15 @@ Custom property | Description | Default
           }
           if (this.multi && Array.isArray(value) && value.length > 0 ) {
             // multiple selection on
-            this.set('selectedValues', value.map(function(item) {
-              return '' + item[this.optionValue];
-            }.bind(this)));
+            var selectedValues = [];
+            var selVal;
+            value.forEach(function(item) {
+              selVal = '' + item[this.optionValue];
+              if (selectedValues.indexOf(selVal) === -1) {
+                selectedValues.push(selVal);
+              }
+            }.bind(this));
+            this.set('selectedValues', selectedValues);
           } else if (!this.multi && Array.isArray(value) && value.length > 0) {
             /**
              * In case the single selection dropdown is initialized with an array of one object
@@ -663,17 +680,19 @@ Custom property | Description | Default
 
         _multipleValuesSelected: function() {
           var newValue = [];
+          var optionValue;
+          var selectedValue;
           this.selectedValues.forEach(function(selected) {
             this.options.forEach(function(option) {
               if (this.customObjectOptions) {
-                var optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
-                if (optionValue === selected) {
-                  newValue.push(option);
-                }
+                optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
+                selectedValue = selected;
               } else {
-                if (parseInt(option[this.optionValue], 10) === parseInt(selected, 10)) {
-                  newValue.push(option);
-                }
+                optionValue = parseInt(option[this.optionValue], 10);
+                selectedValue = parseInt(selected, 10);
+              }
+              if (optionValue === selectedValue && newValue.indexOf(selectedValue) === -1) {
+                newValue.push(option);
               }
             }.bind(this));
           }.bind(this));
@@ -702,7 +721,19 @@ Custom property | Description | Default
           }
         },
 
+        _resetMissingOptionsUrl: function() {
+          if (this.updateSelected) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              // reset ajax el url to force request to fire when options are changed
+              missingOptionsEtoolsAjax.url = null;
+            }
+          }
+        },
+
         _optionsChanged: function(options) {
+          this._resetMissingOptionsUrl();
+
           if (options instanceof Array) {
             this._selectionChanged(this.selected, options);
           }
@@ -712,6 +743,7 @@ Custom property | Description | Default
           if (this.multi && JSON.stringify(selected) === JSON.stringify(oldSelected)) {
             return;
           }
+          this._resetMissingOptionsUrl();
           this._selectionChanged(selected, this.options);
         },
 
@@ -772,13 +804,15 @@ Custom property | Description | Default
 
             // not found selected values in options
             if (notFoundValues.length > 0) {
-              var warnMsg = '[etools-esmm] Selected ';
+              this._requestMissingOptions(notFoundValues);
+              // show console warning
+              var warnMsg = '[etools-esmm ' + this.label + '] Selected ';
               if (notFoundValues.length === 1) {
                 warnMsg += 'value ';
               } else {
                 warnMsg += 'values '
               }
-              warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!' ;
+              warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!';
               console.warn(warnMsg);
             }
           }.bind(this), 50);
@@ -984,6 +1018,77 @@ Custom property | Description | Default
           if (el) {
             el.invalid = false;
           }
+        },
+
+        _shouldRequestMissingOption: function(url) {
+          if (typeof url === 'string' && url !== '') {
+            return true;
+          }
+          return false;
+        },
+
+        /**
+         * If there are no selected options that are not found in dropdown options then request them from server using
+         * url and ajaxParams(values property will contain missing values)
+         * ajaxParams = {
+         *    values: 1 // single value
+         * }
+         *
+         * ajaxParams = {
+         *    values: 1,2,3,4 // multiple values
+         * }
+         */
+        _requestMissingOptions: function(notFoundValues) {
+          if (!(notFoundValues instanceof Array && notFoundValues.length)) {
+            return;
+          }
+          if (this._shouldRequestMissingOption(this.url)) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              var notFoundV = notFoundValues.join(',');
+              if (this.ajaxParams && typeof this.ajaxParams === 'object') {
+                if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
+                  // missing values changed, reset url to force request to fire
+                  missingOptionsEtoolsAjax.url = null;
+                }
+                this.ajaxParams.values = notFoundV;
+              } else {
+                this.ajaxParams = {
+                  values: notFoundV
+                };
+              }
+              missingOptionsEtoolsAjax.url = this.url;
+            }
+          }
+        },
+
+        _isValidOption: function(optionObj) {
+          return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
+        },
+
+        _handleMissingOptionsReqResponse: function(response) {
+          if (!(response.detail instanceof Array && response.detail.length)) {
+            // reponse details must a not empty array to continue
+            return;
+          }
+          try {
+            if (this._isValidOption(response.detail[0])) {
+              // assuming all objects from response array have same properties
+              // we just need to make sure the first one is valid, no need to use a loop here
+              var optionsLength = this.options.length;
+              this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
+              this._selectionChanged(this.selected, this.options);
+            } else {
+              console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
+                this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
+            }
+          } catch (error) {
+            console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
+          }
+        },
+
+        _handleMissingOptionsReqError: function(errorResponse) {
+          console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
         }
 
       });

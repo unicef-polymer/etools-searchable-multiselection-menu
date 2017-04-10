@@ -34,7 +34,11 @@
         option-value="id"
         option-label="option_label"
         selected="{{selectedId}}"
-        update-selected dynamic-align empty-value style="width: 350px;"></etools-searchable-multiselection-menu>
+        update-selected
+        dynamic-align
+        empty-value
+        url="http://192.168.1.184/silex-test-app/web/index.php/get-custom-options"
+        style="width: 350px;"></etools-searchable-multiselection-menu>
 
     <p><span>SelectedIDs:</span> [[_returnIdsString(selectedIds)]]</p>
     <etools-searchable-multiselection-menu
@@ -47,7 +51,8 @@
         update-selected
         placeholder="Please select the options"
         multi
-        dynamic-align></etools-searchable-multiselection-menu>
+        dynamic-align
+        url="http://192.168.1.184/silex-test-app/web/index.php/get-custom-options"></etools-searchable-multiselection-menu>
 
   </template>
   <script>
@@ -77,11 +82,15 @@
           },
 
           selectedId: {
-            value: 1001
+            value: 101
           },
           selectedIds: {
             type: Array,
             value: [3, 5, 7, 101, 102]
+          },
+          selectedValue: {
+            type: Array,
+            value: [{option_key: 1003, option_label: 'Some value 1003'}]
           }
         },
 
