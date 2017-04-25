@@ -4,7 +4,14 @@
     <title>etools-searchable-multiselection-menu demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <script>
+      window.Polymer = {
+        dom: 'shadow',
+        lazyRegister: true
+      };
+    </script>
 
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
@@ -14,6 +21,7 @@
     <link rel="import" href="demo-with-change-event.html">
     <link rel="import" href="demo-error-messages-and-validations.html">
     <link rel="import" href="demo-custom-objects-as-options.html">
+    <link rel="import" href="demo-searchable-singleselection-menu.html">"
     <link rel="import" href="demo-readonly-state.html">
 
     <style is="custom-style" include="demo-pages-shared-styles">
@@ -26,7 +34,7 @@
 
     <div class="vertical-section-container centered">
       <h1>etools-searchable-multiselection-menu demo</h1>
-      
+
       <!--<h2>Single selection, with search</h2>-->
       <!--<demo-snippet>-->
         <!--<template is="dom-bind">-->
@@ -132,13 +140,13 @@
       <!--</demo-snippet>-->
 
 
-      <h2>Custom objects as options. You can specify value and label properties from object option to be used.</h2>
+      <!--<h2>Custom objects as options. You can specify value and label properties from object option to be used.</h2>
 
       <demo-snippet>
         <template>
           <demo-custom-objects-as-options></demo-custom-objects-as-options>
         </template>
-      </demo-snippet>
+      </demo-snippet>-->
 
       <!--<h2>Readonly state</h2>-->
 
@@ -147,6 +155,14 @@
           <!--<demo-readonly-state></demo-readonly-state>-->
         <!--</template>-->
       <!--</demo-snippet>-->
+
+      <h2>Single selectable with search</h2>
+
+      <demo-snippet>
+        <template>
+          <demo-searchable-singleselection-menu></demo-searchable-singleselection-menu>
+        </template>
+      </demo-snippet>
 
     </div>
 
