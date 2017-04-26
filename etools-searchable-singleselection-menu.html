@@ -6,6 +6,7 @@
 <link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="scripts/es6-polyfills.html">
+<link rel="import" href="missing-options-behavior.html">
 
 
 <!--
@@ -137,12 +138,14 @@ Dropdown with search and single selection capabilities
 <div id="main" class$="external-wrapper [[openedClass]]">
     <paper-dropdown-menu id="dropdownMenu" label="[[label]]"
      disabled="[[_disabled(disabled)]]"
-     invalid="[[invalid]]"
+     invalid$="[[invalid]]"
      error-message="[[errorMessage]]"
-     required$="[[_simpleRequired(required)]]"
+     required$="[[required]]"
      dynamic-align$="[[dynamicAlign]]"
      on-paper-dropdown-open="_onDropdownOpen"
-     tabindex="0">
+     on-blur="_onBlur"
+     error-message="[[errorMessage]]"
+     >
       <div class="dropdown-content">
 
        <div class="input-wrapper" hidden$="{{hideSearch}}">
@@ -153,7 +156,8 @@ Dropdown with search and single selection capabilities
               label="Search"
               type="text"
               value="{{search}}"
-              auto-focus>
+              auto-focus
+              tabindex="0">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
         </div>
@@ -191,6 +195,9 @@ Dropdown with search and single selection capabilities
       is: 'etools-searchable-singleselection-menu',
       behaviors: [etoolsSearchableDropdown.MissingOptionsBehavior],
       properties: {
+        required: {
+            type: Boolean
+          },
          search: {
             type: String
           },
@@ -215,17 +222,20 @@ Dropdown with search and single selection capabilities
           },
           selected: {
             type: String,
+            notify: true,
             observer: '_selectedChanged'
           },
           selectedItem: {
             type: Object,
-
+            notify:true
           },
           dynamicAlign: {
             type: Boolean,
             value: true
           },
-
+          autoValidate: {
+            type: Boolean
+          },
           shownOptionsLimit: {
             type: Number,
             value: 50
@@ -269,6 +279,20 @@ Dropdown with search and single selection capabilities
       observers: [
         '_optionsLengthChanged(shownOptions.length)'
       ],
+      _onBlur: function() {
+        if (this.autoValidate) {
+          this.validate();
+        }
+      },
+      _openMenu: function() {
+        var dropdown = this.$.dropdownMenu;
+        if (!dropdown.opened) {
+           dropdown.open();
+        }
+      },
+      _closeMenu: function() {
+        this.$.dropdownMenu.close();
+      },
       _getValue: function(item) {
         return item[this.optionValue];
       },
@@ -287,6 +311,7 @@ Dropdown with search and single selection capabilities
         if (!selected || !this.options || !this.options.length) {
           return;
         }
+        this.updateStyles();
         this._handleSelectedNotFoundInOptions();
       },
       _handleSelectedNotFoundInOptions: function(selected) {
@@ -305,6 +330,7 @@ Dropdown with search and single selection capabilities
 
       },
       validate: function() {
+        console.log("validate");
            var valid = this.$.dropdownMenu.validate();
            this.set('invalid', valid);
            return valid;
