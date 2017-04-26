@@ -1,0 +1,85 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../etools-searchable-singleselection-menu.html">
+
+<dom-module id="demo-searchable-singleselection-menu">
+  <template>
+    <paper-input></paper-input>
+    <etools-searchable-singleselection-menu
+        label="Searchable single select"
+        options="[[customObjOptions]]"
+        option-value="option_key"
+        option-label="option_label"
+        >
+        </etools-searchable-singleselection-menu>
+  </template>
+  <script>
+    (function() {
+      // jscs:disable
+      'use strict';
+
+      Polymer({
+        is: 'demo-searchable-singleselection-menu',
+
+        properties: {
+
+          realOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 1; i <= 10; i++) {
+                opt.push({value: i, label: 'Option ' + i});
+              }
+              return opt;
+            }
+          },
+
+          customObjOptions: {
+            type: Array,
+            value: []
+          },
+
+          selectedId: {
+            value: 101
+          },
+          selectedIds: {
+            type: Array,
+            value: [3, 5, 7, 101, 102]
+          },
+          selectedValue: {
+            type: Array,
+            value: [{option_key: 1003, option_label: 'Some value 1003'}]
+          }
+        },
+
+        ready: function() {
+            this.set('customObjOptions', this.generateOptions());
+        },
+
+        _returnIdsString: function(vals) {
+          return vals instanceof Array ? vals.join(', ') : null;
+        },
+
+        _singleSelectionChanged: function(event) {
+          console.log('_singleSelectionChanged', event.detail);
+        },
+
+        _multiSelectionChanged: function(event) {
+          console.log('_multiSelectionChanged', event.detail);
+        },
+        generateOptions: function() {
+          var opt = [];
+          for(var i = 1; i <= 100; i++) {
+            opt.push({
+              id: i,
+              option_key: 'opt' + i,
+              option_label: 'Option ' + i,
+              some_other_property: 'dummy propery for objIdx' + (i -1)
+            });
+          }
+          return opt;
+        }
+      });
+
+    })();
+  </script>
+</dom-module>
