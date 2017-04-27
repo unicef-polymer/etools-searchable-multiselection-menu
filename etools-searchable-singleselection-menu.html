@@ -144,7 +144,8 @@ Dropdown with search and single selection capabilities
      dynamic-align$="[[dynamicAlign]]"
      on-paper-dropdown-open="_onDropdownOpen"
      on-blur="_onBlur"
-     error-message="[[errorMessage]]"
+     on-focus="_openMenu"
+     restore-focus-on-close$="{{falseValue}}"
      >
       <div class="dropdown-content">
 
@@ -274,15 +275,21 @@ Dropdown with search and single selection capabilities
           },
           errorMessage: {
             type: String
+          },
+          falseValue: {
+            type: Boolean,
+            value: function() {
+              return false;
+            }
           }
       },
       observers: [
         '_optionsLengthChanged(shownOptions.length)'
       ],
       _onBlur: function() {
-        if (this.autoValidate) {
-          this.validate();
-        }
+         if (this.autoValidate && !this.$.dropdownMenu.opened) {
+           this.validate(this.selected);
+         }
       },
       _openMenu: function() {
         var dropdown = this.$.dropdownMenu;
@@ -308,10 +315,12 @@ Dropdown with search and single selection capabilities
         return disabled || this.hasAttribute('readonly');
       },
       _selectedChanged: function(selected, oldSelected) {
+        if (this.autoValidate) {
+           this.validate(selected);
+         }
         if (!selected || !this.options || !this.options.length) {
           return;
         }
-        this.updateStyles();
         this._handleSelectedNotFoundInOptions();
       },
       _handleSelectedNotFoundInOptions: function(selected) {
@@ -329,25 +338,26 @@ Dropdown with search and single selection capabilities
         console.warn(warnMsg);
 
       },
-      validate: function() {
-        console.log("validate");
-           var valid = this.$.dropdownMenu.validate();
-           this.set('invalid', valid);
-           return valid;
-        },
-        resetInvalidState: function() {
-          this.set('invalid', false);
-        },
-        _onDropdownOpen: function() {
-          this.openedClass = 'dropdown-opened';
-          var ironDropdown = this._getIronDropdown();
-          if (ironDropdown) {
-            // set position target to align dropdown content properly
-            ironDropdown.set('positionTarget', this.$.dropdownMenu);
-            ironDropdown.style.width = this.$.dropdownMenu.offsetWidth + 'px';
-            // style.overflow = 'hidden';//TODO
-          }
-        },
+      validate: function(selected) {
+        if (!this.hasAttribute('required')) {
+          return;
+        }
+        this.set('invalid', !!!selected);
+        return !!selected;
+      },
+      resetInvalidState: function() {
+        this.set('invalid', false);
+      },
+      _onDropdownOpen: function() {
+        this.openedClass = 'dropdown-opened';
+        var ironDropdown = this._getIronDropdown();
+        if (ironDropdown) {
+          // set position target to align dropdown content properly
+          ironDropdown.set('positionTarget', this.$.dropdownMenu);
+          ironDropdown.style.width = this.$.dropdownMenu.offsetWidth + 'px';
+          // style.overflow = 'hidden';//TODO
+        }
+      },
       _getIronDropdown: function() {
           return this.$.dropdownMenu.$.menuButton.$.dropdown;
         },
