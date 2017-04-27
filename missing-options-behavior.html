@@ -43,7 +43,6 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
     },
    _handleMissingOptionsReqResponse: function(response) {
     if (!(response.detail instanceof Array && response.detail.length)) {
-      // reponse details must a not empty array to continue
       return;
     }
     try {
@@ -52,7 +51,7 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
         // we just need to make sure the first one is valid, no need to use a loop here
         var optionsLength = this.options.length;
         this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
-        this._selectionChanged(this.selected, this.options);
+       // this._selectionChanged(this.selected, this.options); //TODO - is this still required?
       } else {
         console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
           this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
@@ -70,6 +69,9 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
           return true;
         }
         return false;
+   },
+   _isValidOption: function(optionObj) {
+          return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
    },
 
 }

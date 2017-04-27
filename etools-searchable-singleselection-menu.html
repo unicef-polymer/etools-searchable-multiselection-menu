@@ -120,12 +120,46 @@ Dropdown with search and single selection capabilities
           cursor: pointer;
         };
       }
-      paper-dropdown-menu[disabled] {
-        border: 1px solid black;
+
+      :host([readonly]) {
+        --paper-input-container: {
+          @apply(--esmm-readonly-input-container);
+        };
+        --paper-input-container-underline: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-focus: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-disabled: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-label: {
+          @apply(--esmm-readonly-input-container-label);
+        };
+        --paper-input-container-label-focus: {
+          @apply(--esmm-readonly-input-container-label-focus);
+        };
+      }
+       paper-input {
+        --paper-input-container-input: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
+        --paper-input-container-label: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
       }
 
-      :host([readonly]) paper-dropdown-menu[disabled] {
-        border: 1px solid red;
+      /*TODO*/
+      .capitalize {
+        --paper-input-container-input: {
+          text-transform: capitalize !important;
+          color: red !important;
+          padding-right: 24px;
+          box-sizing: border-box;
+        }
       }
 
 </style>
@@ -136,7 +170,10 @@ Dropdown with search and single selection capabilities
                    on-fail="_handleMissingOptionsReqError"></etools-ajax>
 </template>
 <div id="main" class$="external-wrapper [[openedClass]]">
-    <paper-dropdown-menu id="dropdownMenu" label="[[label]]"
+    <paper-dropdown-menu id="dropdownMenu"
+     label="[[label]]"
+     placeholder="[[placeholder]]"
+     selected-item="{{selectedItem}}"
      disabled="[[_disabled(disabled)]]"
      invalid$="[[invalid]]"
      error-message="[[errorMessage]]"
@@ -145,6 +182,7 @@ Dropdown with search and single selection capabilities
      on-paper-dropdown-open="_onDropdownOpen"
      on-blur="_onBlur"
      on-focus="_openMenu"
+     on-tap="_openMenu"
      restore-focus-on-close$="{{falseValue}}"
      >
       <div class="dropdown-content">
@@ -281,13 +319,27 @@ Dropdown with search and single selection capabilities
             value: function() {
               return false;
             }
-          }
+          },
+          capitalizeInputShown: {
+            type: Boolean,
+            value: false,
+            reflectToAttribute: true,
+            observer: '_capitalizeInputShownChanged'
+          },
+           placeholder: {
+            type: String
+          },
       },
       observers: [
-        '_optionsLengthChanged(shownOptions.length)'
+        '_shownOptionsLengthChanged(shownOptions.length)'
       ],
+      _capitalizeInputShownChanged: function(newValue) {
+        if (newValue) {
+          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
+        }
+      },
       _onBlur: function() {
-         if (this.autoValidate && !this.$.dropdownMenu.opened) {
+         if (this.autoValidate ) {
            this.validate(this.selected);
          }
       },
@@ -318,21 +370,32 @@ Dropdown with search and single selection capabilities
         if (this.autoValidate) {
            this.validate(selected);
          }
-        if (!selected || !this.options || !this.options.length) {
+        if (!selected || this._noOptions()) {
+          this.set('selectedItem', null);
           return;
         }
-        this._handleSelectedNotFoundInOptions();
+        this.set("selectedItem", this._getItemFromOptions(selected));
+        this._handleSelectedNotFoundInOptions(selected);
+      },
+      _noOptions: function() {
+        return (!this.options || !this.options.length);
+      },
+      _getItemFromOptions: function(value) {
+       if (!this.options) {
+         return null;
+       }
+       return this.options.find(function(item) {
+          return item[this.optionValue] == value;
+        }.bind(this));
       },
       _handleSelectedNotFoundInOptions: function(selected) {
-        var selectedInOptions = this.options.find(function(item) {
-          return item[this.optionValue] == selected;
-        })
-        if (selectedInOptions) {
+        var selectedItem = this._getItemFromOptions(selected);
+        if (selectedItem) {
           return;
         }
         this._requestMissingOptions([selected]);
         // show console warning
-        var warnMsg = '[etools-esmm ' + this.label + '] Selected value';
+        var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
 
         warnMsg += selected + ' not found in dropdown\'s options!';
         console.warn(warnMsg);
@@ -340,7 +403,7 @@ Dropdown with search and single selection capabilities
       },
       validate: function(selected) {
         if (!this.hasAttribute('required')) {
-          return;
+          return true;
         }
         this.set('invalid', !!!selected);
         return !!selected;
@@ -361,7 +424,7 @@ Dropdown with search and single selection capabilities
       _getIronDropdown: function() {
           return this.$.dropdownMenu.$.menuButton.$.dropdown;
         },
-      _optionsLengthChanged: function(optionsLength) {
+      _shownOptionsLengthChanged: function(shownOptionsLength) {
           this._resizeDropdown();
        },
       _resizeDropdown: function() {
@@ -374,13 +437,14 @@ Dropdown with search and single selection capabilities
           }
        },
       _itemSelected: function(e) {
-        this.selectedItem = e.model.item;
+        this.set("selectedItem", e.model.item);
       },
       _optionsChanged: function(options, oldOptions) {
         if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
-          this.selectedItem = null;
-          this.selected = null;
+          this.set("selectedItem", null);
+          this.set("selected", null);
         }
+        this.set('selectedItem', this._getItemFromOptions(this.selected));
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
          return shownOptions.length >= limit;
