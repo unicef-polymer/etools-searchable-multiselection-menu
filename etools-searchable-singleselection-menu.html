@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../iron-icon/iron-icon.html">
@@ -174,6 +175,19 @@ Dropdown with search and single selection capabilities
         }
       }
 
+      .content-wrapper {
+        /*@apply(--layout-horizontal);*/
+      }
+      #dropdownMenu {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 0;
+
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
+
     </style>
     <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
       <etools-ajax id="missingOptionsAjax"
@@ -181,24 +195,28 @@ Dropdown with search and single selection capabilities
                    on-success="_handleMissingOptionsReqResponse"
                    on-fail="_handleMissingOptionsReqError"></etools-ajax>
     </template>
-    <div id="main" class$="external-wrapper [[openedClass]]">
-      <paper-dropdown-menu id="dropdownMenu"
-                           label="[[label]]"
-                           placeholder="[[placeholder]]"
-                           selected-item="{{selectedItem}}"
-                           disabled="[[_disabled(disabled)]]"
-                           invalid$="[[invalid]]"
-                           error-message="[[errorMessage]]"
-                           required$="[[required]]"
-                           dynamic-align$="[[dynamicAlign]]"
-                           on-paper-dropdown-open="_onDropdownOpen"
-                           on-blur="_onBlur"
-                           on-focus="_openMenu"
-                           on-tap="_openMenu"
-                           restore-focus-on-close$="{{falseValue}}"
-      >
-        <div class="dropdown-content">
 
+    <paper-input-container id="main1"
+                           class$="external-wrapper [[openedClass]]"
+                           always-float-label
+                           disabled$="[[disabled]]"
+                           invalid$="[[invalid]]">
+      <label aria-hidden="true">[[label]]</label>
+      <div class="content-wrapper">
+        <span class="paper-input-input">[[_getLabel(selectedItem)]]</span>
+      </div>
+      <paper-menu-button
+          id="dropdownMenu"
+          horizontal-align="right"
+          ignore-select
+          opened="[[menuOpened]]"
+          restore-focus-on-close$="{{falseValue}}"
+          allow-outside-scroll="[[allowOutsideScroll]]"
+          dynamic-align$="[[dynamicAlign]]">
+
+        <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
+
+        <div class="dropdown-content">
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
                 id="searchInput"
@@ -237,8 +255,67 @@ Dropdown with search and single selection capabilities
             </paper-listbox>
           </div>
         </div>
-      </paper-dropdown-menu>
-    </div>
+      </paper-menu-button>
+    </paper-input-container>
+
+    <!--<div id="main" class$="external-wrapper [[openedClass]]">-->
+      <!--<paper-dropdown-menu id="dropdownMenu"-->
+                           <!--label="[[label]]"-->
+                           <!--placeholder="[[placeholder]]"-->
+                           <!--selected-item="{{selectedItem}}"-->
+                           <!--disabled="[[_disabled(disabled)]]"-->
+                           <!--invalid$="[[invalid]]"-->
+                           <!--error-message="[[errorMessage]]"-->
+                           <!--required$="[[required]]"-->
+                           <!--dynamic-align$="[[dynamicAlign]]"-->
+                           <!--on-paper-dropdown-open="_onDropdownOpen"-->
+                           <!--on-blur="_onBlur"-->
+                           <!--on-focus="_openMenu"-->
+                           <!--on-tap="_openMenu"-->
+                           <!--restore-focus-on-close$="{{falseValue}}"-->
+      <!--&gt;-->
+        <!--<div class="dropdown-content">-->
+
+          <!--<div class="input-wrapper" hidden$="{{hideSearch}}">-->
+            <!--<paper-input-->
+                <!--id="searchInput"-->
+                <!--no-label-float-->
+                <!--class="search-input"-->
+                <!--label="Search"-->
+                <!--type="text"-->
+                <!--value="{{search}}"-->
+                <!--auto-focus-->
+                <!--tabindex="0">-->
+              <!--<iron-icon icon="search" prefix></iron-icon>-->
+            <!--</paper-input>-->
+          <!--</div>-->
+          <!--<div class$="list-wrapper">-->
+            <!--<paper-listbox attr-for-selected="internal-id"-->
+                           <!--selected={{selected}}>-->
+              <!--<template is="dom-repeat" items="[[shownOptions]]">-->
+                <!--<paper-item-->
+                    <!--item=[[item]]-->
+                    <!--internal-id$="[[_getValue(item)]]"-->
+                    <!--on-tap="_itemSelected"-->
+                    <!--title$="[[_getLabel(item)]]">-->
+
+                  <!--<iron-icon class="tick-icon" icon="check"></iron-icon>-->
+                  <!--<span>[[_getLabel(item)]]</span>-->
+                <!--</paper-item>-->
+              <!--</template>-->
+
+              <!--<paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>-->
+                <!--More than [[shownOptionsLimit]] items, use the search function to reveal more-->
+              <!--</paper-item>-->
+
+              <!--<paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>-->
+                <!--No options available-->
+              <!--</paper-item>-->
+            <!--</paper-listbox>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</paper-dropdown-menu>-->
+    <!--</div>-->
   </template>
 
   <script>
@@ -355,7 +432,7 @@ Dropdown with search and single selection capabilities
       ],
       _capitalizeInputShownChanged: function(newValue) {
         if (newValue) {
-          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
+//          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
         }
       },
       _onBlur: function() {
@@ -376,7 +453,7 @@ Dropdown with search and single selection capabilities
         return item[this.optionValue];
       },
       _getLabel: function(item) {
-        return item[this.optionLabel];
+        return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
       },
       _readonlyChanged: function(readonly, oldReadonly) {
         if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
@@ -448,16 +525,16 @@ Dropdown with search and single selection capabilities
         this._resizeDropdown();
       },
       _resizeDropdown: function() {
-        var ironDropdown = this._getIronDropdown();
-        if (ironDropdown) {
-          //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
-          var dropdownContent = ironDropdown.querySelector('.dropdown-content');
-          //if (dropdownContent.style.height) {
-            dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
-          //}
-          //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
-          ironDropdown.notifyResize();
-        }
+//        var ironDropdown = this._getIronDropdown();
+//        if (ironDropdown) {
+//          //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
+//          var dropdownContent = ironDropdown.querySelector('.dropdown-content');
+//          //if (dropdownContent.style.height) {
+//            dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
+//          //}
+//          //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
+//          ironDropdown.notifyResize();
+//        }
       },
       _itemSelected: function(e) {
         this.set('selectedItem', e.model.item);
