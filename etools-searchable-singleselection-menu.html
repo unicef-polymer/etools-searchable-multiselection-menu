@@ -180,10 +180,9 @@ Dropdown with search and single selection capabilities
      required$="[[required]]"
      dynamic-align$="[[dynamicAlign]]"
      on-paper-dropdown-open="_onDropdownOpen"
-     on-blur="_onBlur"
-     on-focus="_openMenu"
-     on-tap="_openMenu"
-     restore-focus-on-close$="{{falseValue}}"
+
+
+
      >
       <div class="dropdown-content">
 
@@ -329,6 +328,10 @@ Dropdown with search and single selection capabilities
            placeholder: {
             type: String
           },
+          shownItemsLimit: {
+            type: Number,
+            value: 50
+          }
       },
       observers: [
         '_shownOptionsLengthChanged(shownOptions.length)'
@@ -450,23 +453,23 @@ Dropdown with search and single selection capabilities
          return shownOptions.length >= limit;
       },
       _computeShownOptions: function(options, search, showEmptyValue) {
-          var shownOptions = JSON.parse(JSON.stringify(options));
+         var shownOptions = JSON.parse(JSON.stringify(options));
 
-          if (search) {
+         if (search) {
             shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-          }
-          shownOptions = this._trimByShownOptionsLimit(shownOptions);
+            shownOptions = this._trimByShownOptionsLimit(shownOptions, shownOptions.length);
+         } else if(options.length > this.shownItemsLimit) {
+            shownOptions = this._trimByShownOptionsLimit(options, options.length);
+         }
+         console.log(this.shownItemsLimit);
 
-          if (showEmptyValue) {
+         if (showEmptyValue) {
             shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
-          }
-          return shownOptions;
+         }
+         return shownOptions;
        },
-       _trimByShownOptionsLimit: function(options) {
-          if (options.length > this.shownOptionsLimit) {
-             return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
-          }
-          return options;
+       _trimByShownOptionsLimit: function(options, optionsLength) {
+         return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
        },
        _itemContainsSearchString: function(item) {
           return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
