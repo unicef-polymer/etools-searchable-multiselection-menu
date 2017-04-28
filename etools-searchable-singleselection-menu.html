@@ -1,0 +1,538 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="scripts/es6-polyfills.html">
+<link rel="import" href="missing-options-behavior.html">
+
+
+<!--
+`etools-searchable-singleselection-menu`
+Dropdown with search and single selection capabilities
+
+@demo demo/index.html
+-->
+
+<dom-module id="etools-searchable-singleselection-menu">
+  <template>
+    <style>
+      :host {
+        display: block;
+        position: relative;
+        width: 100%;
+      }
+
+      .external-wrapper {
+        width: calc(100% - 24px);
+        margin-right: 12px;
+        margin-left: 12px;
+        position: relative;
+        @apply(--esmm-external-wrapper);
+      }
+
+      .iron-selected .tick-icon {
+        display: block;
+      }
+
+      .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+
+      .input-wrapper {
+        position: relative;
+        z-index: 10;
+        background: #fff;
+        width: 100%;
+        height: 45px;
+        margin-right: 16px;
+      }
+
+      .search-input {
+        background-color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 32px);
+        margin: 16px;
+      }
+
+      .search-input iron-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+      }
+
+      .tick-icon {
+        display: none;
+        padding-right: 8px;
+        float: left;
+        margin-top: 12px;
+      }
+
+      .iron-selected .tick-icon {
+        display: block;
+      }
+
+      .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+
+      .list-wrapper {
+        position: relative;
+        z-index: 5;
+        max-height: 50vh;
+        min-width: 150px;
+        width: 100%;
+        overflow-y: auto;
+        margin-top: 12px;
+        background: #fff;
+        font-size: 0;
+        @apply(--esmm-list-wrapper);
+      }
+
+      .list-wrapper paper-item:not(.warning) {
+        --paper-item: {
+          padding: 0 16px;
+          cursor: pointer;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          box-sizing: border-box;
+          display: inline-block;
+          line-height: 48px;
+          width: 100%;
+        }
+      }
+
+      .list-wrapper paper-listbox {
+        --paper-listbox-background-color: #fff;
+        --paper-listbox: {
+          margin: 0;
+          padding: 8px 0 0 0;
+        };
+      }
+
+      .warning {
+        font-family: Roboto;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0, 0, 0, 0.54);
+        background-color: #EEEEEE;
+      }
+
+      .emptyValue {
+        --paper-item: {
+          color: rgba(0, 0, 0, 0.38);
+          padding: 0 16px;
+          cursor: pointer;
+        };
+      }
+
+      :host([readonly]) {
+        --paper-input-container: {
+          @apply(--esmm-readonly-input-container);
+        };
+        --paper-input-container-underline: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-focus: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-underline-disabled: {
+          @apply(--esmm-readonly-input-container-underline);
+        };
+        --paper-input-container-label: {
+          @apply(--esmm-readonly-input-container-label);
+        };
+        --paper-input-container-label-focus: {
+          @apply(--esmm-readonly-input-container-label-focus);
+        };
+      }
+
+      paper-input {
+        --paper-input-container-input: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
+        --paper-input-container-label: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
+      }
+
+      /*TODO*/
+      .capitalize {
+        --paper-input-container-input: {
+          text-transform: capitalize !important;
+          color: red !important;
+          padding-right: 24px;
+          box-sizing: border-box;
+        }
+      }
+
+    </style>
+    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
+      <etools-ajax id="missingOptionsAjax"
+                   params="[[ajaxParams]]"
+                   on-success="_handleMissingOptionsReqResponse"
+                   on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    </template>
+    <div id="main" class$="external-wrapper [[openedClass]]">
+      <paper-dropdown-menu id="dropdownMenu"
+                           label="[[label]]"
+                           on-iron-select="_onIronSelect"
+                           placeholder="[[placeholder]]"
+                           disabled="[[_disabled(disabled)]]"
+                           invalid$="[[invalid]]"
+                           error-message="[[errorMessage]]"
+                           required$="[[required]]"
+                           dynamic-align$="[[dynamicAlign]]"
+                           on-paper-dropdown-open="_onDropdownOpen"
+                           on-blur="_onBlur"
+                           on-focus="_openMenu"
+                           on-tap="_openMenu"
+                           restore-focus-on-close$="{{falseValue}}">
+        <div class="dropdown-content">
+
+          <div class="input-wrapper" hidden$="{{hideSearch}}">
+            <paper-input
+                id="searchInput"
+                no-label-float
+                class="search-input"
+                label="Search"
+                type="text"
+                value="{{search}}"
+                auto-focus
+                tabindex="0">
+              <iron-icon icon="search" prefix></iron-icon>
+            </paper-input>
+          </div>
+          <div class$="list-wrapper">
+            <paper-listbox attr-for-selected="internal-id"
+                           selected={{selected}}>
+              <template is="dom-repeat" items="[[shownOptions]]">
+                <paper-item
+                    item=[[item]]
+                    internal-id$="[[_getValue(item)]]"
+                    on-tap="_itemSelected"
+                    title$="[[_getLabel(item)]]">
+
+                  <iron-icon class="tick-icon" icon="check"></iron-icon>
+                  <span>[[_getLabel(item)]]</span>
+                </paper-item>
+              </template>
+
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
+                More than [[shownOptionsLimit]] items, use the search function to reveal more
+              </paper-item>
+
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
+                No options available
+              </paper-item>
+            </paper-listbox>
+          </div>
+        </div>
+      </paper-dropdown-menu>
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'etools-searchable-singleselection-menu',
+      behaviors: [etoolsSearchableDropdown.MissingOptionsBehavior],
+      properties: {
+        required: {
+          type: Boolean
+        },
+        search: {
+          type: String
+        },
+        label: {
+          type: String
+        },
+        options: {
+          type: Array,
+          observer: '_optionsChanged'
+        },
+        shownOptions: {
+          type: Array,
+          computed: '_computeShownOptions(options, search, showEmptyValue, options.length)'
+        },
+        optionValue: {
+          type: String,
+          value: 'value'
+        },
+        optionLabel: {
+          type: String,
+          value: 'label'
+        },
+        selected: {
+          type: String,
+          notify: true,
+          observer: '_selectedChanged'
+        },
+        selectedItem: {
+          type: Object,
+          notify: true
+        },
+        dynamicAlign: {
+          type: Boolean,
+          value: true
+        },
+        autoValidate: {
+          type: Boolean
+        },
+        shownOptionsLimit: {
+          type: Number,
+          value: 50
+        },
+        showLimitWarning: {
+          type: Boolean,
+          computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
+        },
+        showEmptyValue: {
+          type: Boolean,
+          value: false
+        },
+        noOptionsAvailable: {
+          type: Boolean,
+          value: true,
+          computed: '_computeNoOptionsAvailable(options, options.length)'
+        },
+        hideSearch: {
+          type: Boolean,
+          value: false
+        },
+        disabled: {
+          type: Boolean,
+          value: false
+        },
+        readonly: {
+          type: Boolean,
+          value: function() {
+            return false;
+          },
+          reflectToAttribute: true,
+          observer: '_readonlyChanged'
+        },
+        invalid: {
+          type: Boolean,
+          value: function() {
+            return false;
+          },
+          reflectToAttribute: true
+        },
+        errorMessage: {
+          type: String
+        },
+        falseValue: {
+          type: Boolean,
+          value: function() {
+            return false;
+          }
+        },
+        capitalizeInputShown: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_capitalizeInputShownChanged'
+        },
+        placeholder: {
+          type: String
+        },
+        shownItemsLimit: {
+          type: Number,
+          value: 50
+        }
+      },
+      observers: [
+        '_shownOptionsLengthChanged(shownOptions.length)'
+      ],
+      _onIronSelect: function(e) {
+        console.log(e);
+      },
+      _capitalizeInputShownChanged: function(newValue) {
+        if (newValue) {
+          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
+        }
+      },
+      _onBlur: function() {
+        if (this.autoValidate) {
+          this.validate(this.selected);
+        }
+      },
+      _openMenu: function() {
+        var dropdown = this.$.dropdownMenu;
+        if (!dropdown.opened) {
+          dropdown.open();
+        }
+      },
+      _closeMenu: function() {
+        this.$.dropdownMenu.close();
+      },
+      _getValue: function(item) {
+        return item[this.optionValue];
+      },
+      _getLabel: function(item) {
+        return item[this.optionLabel];
+      },
+      _readonlyChanged: function(readonly, oldReadonly) {
+        if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+          this.updateStyles();
+        }
+      },
+      _disabled: function(disabled) {
+        return disabled || this.hasAttribute('readonly');
+      },
+      _selectedChanged: function(selected, oldSelected) {
+        if (this.autoValidate) {
+          this.validate(selected);
+        }
+        if (!selected) {
+          this.set('selectedItem', null);
+           return;
+        }
+        if (this._noOptions()) {
+          return;
+        }
+        var selectedItem = this._getItemFromOptions(selected);
+        this.set('selectedItem', selectedItem) ;
+        if (!selectedItem) {
+          this._handleSelectedNotFoundInOptions(selected);
+        }
+        // else {
+        //      if (!this._itemIsInShownOptions(selectedItem)) {
+        //       this.shownOptions.unshift(selectedItem);
+        //   }
+        // }
+
+      },
+      _noOptions: function() {
+        return (!this.options || !this.options.length);
+      },
+      _itemIsInShownOptions: function(item, shownOptions) {
+        console.log(this.shownOptions);
+        var shownOptions = this.shownOptions || shownOptions;
+         if (!shownOptions) {
+          return false;
+        }
+        var shownOptItem = shownOptions.find(function(i) {
+          return i[this.optionValue] == item[this.optionValue];
+        }.bind(this));
+        if (shownOptItem) {
+          return true;
+        }
+        return false;
+      },
+      _getItemFromOptions: function(value) {
+        if (!this.options) {
+          return null;
+        }
+        return this.options.find(function(item) {
+          return item[this.optionValue] == value;
+        }.bind(this));
+      },
+      _handleSelectedNotFoundInOptions: function(selected) {
+        this._requestMissingOptions([selected]);
+        // show console warning
+        var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
+
+        warnMsg += selected + ' not found in dropdown\'s options!';
+        console.warn(warnMsg);
+
+      },
+      validate: function(selected) {
+        if (!this.hasAttribute('required')) {
+          return true;
+        }
+        this.set('invalid', !!!selected);
+        return !!selected;
+      },
+      resetInvalidState: function() {
+        this.set('invalid', false);
+      },
+      _onDropdownOpen: function() {
+        this.openedClass = 'dropdown-opened';
+        var ironDropdown = this._getIronDropdown();
+        if (ironDropdown) {
+          // set position target to align dropdown content properly
+          ironDropdown.set('positionTarget', this.$.dropdownMenu);
+          ironDropdown.style.width = this.$.dropdownMenu.offsetWidth + 'px';
+          // style.overflow = 'hidden';//TODO
+        }
+      },
+      _getIronDropdown: function() {
+        return this.$.dropdownMenu.$.menuButton.$.dropdown;
+      },
+      _shownOptionsLengthChanged: function(shownOptionsLength) {
+        this._resizeDropdown();
+      },
+      _resizeDropdown: function() {
+        var ironDropdown = this._getIronDropdown();
+        if (ironDropdown) {
+          //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
+          var dropdownContent = ironDropdown.querySelector('.dropdown-content');
+          //if (dropdownContent.style.height) {
+            dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
+          //}
+          //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
+          ironDropdown.notifyResize();
+        }
+      },
+      _itemSelected: function(e) {
+        this.set('selectedItem', e.model.item);
+      },
+      _optionsChanged: function(options, oldOptions) {
+        if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
+          this.set('selectedItem', null);
+          this.set('selected', null);
+        }
+        this.set('selectedItem', this._getItemFromOptions(this.selected));
+      },
+      _computeShowLimitWarning: function(limit, shownOptions) {
+        return shownOptions.length >= limit;
+      },
+      _computeShownOptions: function(options, search, showEmptyValue) {
+        var shownOptions = JSON.parse(JSON.stringify(options));
+
+        if (search) {
+          shownOptions = options.filter(this._itemContainsSearchString.bind(this));
+          shownOptions = this._trimByShownOptionsLimit(shownOptions, shownOptions.length);
+        } else if (options.length > this.shownItemsLimit) {
+          shownOptions = this._trimByShownOptionsLimit(options, options.length);
+        }
+
+       // this._handleSelectedNotInShownOptions(shownOptions);
+
+        if (showEmptyValue) {
+          shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+        }
+        return shownOptions;
+      },
+      _handleSelectedNotInShownOptions: function(shownOptions) {
+        if (this.selected) {
+          var selectedItem = this.selectedItem || this._getItemFromOptions(this.selected);
+          if (selectedItem && !this._itemIsInShownOptions(selectedItem, shownOptions)){
+            shownOptions.unshift(selectedItem);
+          }
+        }
+      },
+      _trimByShownOptionsLimit: function(options, optionsLength) {
+        return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
+      },
+      _itemContainsSearchString: function(item) {
+        return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      },
+      _computeNoOptionsAvailable: function(options, optionsLength) {
+        if (!Array.isArray(options) || !optionsLength) {
+          return true;
+        }
+        return false;
+      },
+    });
+  </script>
+</dom-module>
