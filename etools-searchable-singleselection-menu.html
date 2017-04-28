@@ -215,6 +215,7 @@ Dropdown with search and single selection capabilities
           restore-focus-on-close$="{{falseValue}}"
           allow-outside-scroll="[[allowOutsideScroll]]"
           dynamic-align$="[[dynamicAlign]]"
+          on-paper-dropdown-close="_onPaperDropdownClose"
           >
 
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger" on-focus="_openMenu"></paper-icon-button>
@@ -265,65 +266,6 @@ Dropdown with search and single selection capabilities
       </template>
 
     </paper-input-container>
-
-    <!--<div id="main" class$="external-wrapper [[openedClass]]">-->
-      <!--<paper-dropdown-menu id="dropdownMenu"-->
-                           <!--label="[[label]]"-->
-                           <!--placeholder="[[placeholder]]"-->
-                           <!--selected-item="{{selectedItem}}"-->
-                           <!--disabled="[[_disabled(disabled)]]"-->
-                           <!--invalid$="[[invalid]]"-->
-                           <!--error-message="[[errorMessage]]"-->
-                           <!--required$="[[required]]"-->
-                           <!--dynamic-align$="[[dynamicAlign]]"-->
-                           <!--on-paper-dropdown-open="_onDropdownOpen"-->
-                           <!--on-blur="_onBlur"-->
-                           <!--on-focus="_openMenu"-->
-                           <!--on-tap="_openMenu"-->
-                           <!--restore-focus-on-close$="{{falseValue}}"-->
-      <!--&gt;-->
-        <!--<div class="dropdown-content">-->
-
-          <!--<div class="input-wrapper" hidden$="{{hideSearch}}">-->
-            <!--<paper-input-->
-                <!--id="searchInput"-->
-                <!--no-label-float-->
-                <!--class="search-input"-->
-                <!--label="Search"-->
-                <!--type="text"-->
-                <!--value="{{search}}"-->
-                <!--auto-focus-->
-                <!--tabindex="0">-->
-              <!--<iron-icon icon="search" prefix></iron-icon>-->
-            <!--</paper-input>-->
-          <!--</div>-->
-          <!--<div class$="list-wrapper">-->
-            <!--<paper-listbox attr-for-selected="internal-id"-->
-                           <!--selected={{selected}}>-->
-              <!--<template is="dom-repeat" items="[[shownOptions]]">-->
-                <!--<paper-item-->
-                    <!--item=[[item]]-->
-                    <!--internal-id$="[[_getValue(item)]]"-->
-                    <!--on-tap="_itemSelected"-->
-                    <!--title$="[[_getLabel(item)]]">-->
-
-                  <!--<iron-icon class="tick-icon" icon="check"></iron-icon>-->
-                  <!--<span>[[_getLabel(item)]]</span>-->
-                <!--</paper-item>-->
-              <!--</template>-->
-
-              <!--<paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>-->
-                <!--More than [[shownOptionsLimit]] items, use the search function to reveal more-->
-              <!--</paper-item>-->
-
-              <!--<paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>-->
-                <!--No options available-->
-              <!--</paper-item>-->
-            <!--</paper-listbox>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</paper-dropdown-menu>-->
-    <!--</div>-->
   </template>
 
   <script>
@@ -443,7 +385,7 @@ Dropdown with search and single selection capabilities
 //          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
         }
       },
-      _onBlur: function() {
+      _onPaperDropdownClose: function() {
         if (this.autoValidate) {
           this.validate(this.selected);
         }
@@ -458,7 +400,7 @@ Dropdown with search and single selection capabilities
         this.$.dropdownMenu.close();
       },
       _getValue: function(item) {
-        return item[this.optionValue];
+        return item ? item[this.optionValue] : null;
       },
       _getLabel: function(item) {
         return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
@@ -549,7 +491,7 @@ Dropdown with search and single selection capabilities
       },
       _itemSelected: function(e) {
         this.set('selected', e.model.item[this.optionValue])
-        this.$.dropdownMenu.close();
+        this._closeMenu();
       },
       _optionsChanged: function(options, oldOptions) {
         if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
