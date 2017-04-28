@@ -200,7 +200,9 @@ Dropdown with search and single selection capabilities
                            class$="external-wrapper [[openedClass]]"
                            always-float-label
                            disabled$="[[disabled]]"
-                           invalid$="[[invalid]]">
+                           invalid$="[[invalid]]"
+                           on-tap="_openMenu"
+                           >
       <label aria-hidden="true">[[label]]</label>
       <div class="content-wrapper">
         <span class="paper-input-input">[[_getLabel(selectedItem)]]</span>
@@ -208,13 +210,14 @@ Dropdown with search and single selection capabilities
       <paper-menu-button
           id="dropdownMenu"
           horizontal-align="right"
+          on-tap="_openMenu"
           ignore-select
-          opened="[[menuOpened]]"
           restore-focus-on-close$="{{falseValue}}"
           allow-outside-scroll="[[allowOutsideScroll]]"
-          dynamic-align$="[[dynamicAlign]]">
+          dynamic-align$="[[dynamicAlign]]"
+          >
 
-        <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
+        <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger" on-focus="_openMenu"></paper-icon-button>
 
         <div class="dropdown-content">
           <div class="input-wrapper" hidden$="{{hideSearch}}">
@@ -232,7 +235,7 @@ Dropdown with search and single selection capabilities
           </div>
           <div class$="list-wrapper">
             <paper-listbox attr-for-selected="internal-id"
-                           selected={{selected}}>
+                           selected=[[selected]]>
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item
                     item=[[item]]
@@ -256,6 +259,11 @@ Dropdown with search and single selection capabilities
           </div>
         </div>
       </paper-menu-button>
+
+      <template is="dom-if" if="[[invalid]]">
+        <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
+      </template>
+
     </paper-input-container>
 
     <!--<div id="main" class$="external-wrapper [[openedClass]]">-->
@@ -467,12 +475,19 @@ Dropdown with search and single selection capabilities
         if (this.autoValidate) {
           this.validate(selected);
         }
-        if (!selected || this._noOptions()) {
+        if (!selected) {
           this.set('selectedItem', null);
           return;
         }
-        this.set('selectedItem', this._getItemFromOptions(selected));
-        this._handleSelectedNotFoundInOptions(selected);
+        if (this._noOptions()) {
+          return;
+        }
+        var selectedItem = this._getItemFromOptions(selected);
+        this.set('selectedItem', selectedItem);
+        if (!selectedItem) {
+          this._handleSelectedNotFoundInOptions(selected, selectedItem);
+        }
+
       },
       _noOptions: function() {
         return (!this.options || !this.options.length);
@@ -486,10 +501,6 @@ Dropdown with search and single selection capabilities
         }.bind(this));
       },
       _handleSelectedNotFoundInOptions: function(selected) {
-        var selectedItem = this._getItemFromOptions(selected);
-        if (selectedItem) {
-          return;
-        }
         this._requestMissingOptions([selected]);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
@@ -537,12 +548,14 @@ Dropdown with search and single selection capabilities
 //        }
       },
       _itemSelected: function(e) {
-        this.set('selectedItem', e.model.item);
+        this.set('selected', e.model.item[this.optionValue])
+        this.$.dropdownMenu.close();
       },
       _optionsChanged: function(options, oldOptions) {
         if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
           this.set('selectedItem', null);
           this.set('selected', null);
+          return;
         }
         this.set('selectedItem', this._getItemFromOptions(this.selected));
       },
@@ -558,7 +571,6 @@ Dropdown with search and single selection capabilities
         } else if (options.length > this.shownItemsLimit) {
           shownOptions = this._trimByShownOptionsLimit(options, options.length);
         }
-        console.log(this.shownItemsLimit);
 
         if (showEmptyValue) {
           shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
