@@ -5,6 +5,7 @@
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+
 <link rel="import" href="scripts/es6-polyfills.html">
 <link rel="import" href="missing-options-behavior.html">
 
@@ -24,6 +25,7 @@ Dropdown with search and single selection capabilities
         position: relative;
         width: 100%;
       }
+
       .external-wrapper {
         width: calc(100% - 24px);
         margin-right: 12px;
@@ -31,6 +33,7 @@ Dropdown with search and single selection capabilities
         position: relative;
         @apply(--esmm-external-wrapper);
       }
+
       .iron-selected .tick-icon {
         display: block;
       }
@@ -38,6 +41,7 @@ Dropdown with search and single selection capabilities
       .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
+
       .input-wrapper {
         position: relative;
         z-index: 10;
@@ -46,7 +50,8 @@ Dropdown with search and single selection capabilities
         height: 45px;
         margin-right: 16px;
       }
-       .search-input {
+
+      .search-input {
         background-color: #fff;
         position: absolute;
         top: 0;
@@ -60,7 +65,8 @@ Dropdown with search and single selection capabilities
         height: 24px;
         font-size: 24px;
       }
-       .tick-icon {
+
+      .tick-icon {
         display: none;
         padding-right: 8px;
         float: left;
@@ -74,6 +80,7 @@ Dropdown with search and single selection capabilities
       .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
+
       .list-wrapper {
         position: relative;
         z-index: 5;
@@ -86,6 +93,7 @@ Dropdown with search and single selection capabilities
         font-size: 0;
         @apply(--esmm-list-wrapper);
       }
+
       .list-wrapper paper-item:not(.warning) {
         --paper-item: {
           padding: 0 16px;
@@ -99,6 +107,7 @@ Dropdown with search and single selection capabilities
           width: 100%;
         }
       }
+
       .list-wrapper paper-listbox {
         --paper-listbox-background-color: #fff;
         --paper-listbox: {
@@ -106,16 +115,18 @@ Dropdown with search and single selection capabilities
           padding: 8px 0 0 0;
         };
       }
+
       .warning {
         font-family: Roboto;
         font-size: 12px;
         line-height: 16px;
-        color: rgba(0,0,0,0.54);
+        color: rgba(0, 0, 0, 0.54);
         background-color: #EEEEEE;
       }
+
       .emptyValue {
         --paper-item: {
-          color: rgba(0,0,0,0.38);
+          color: rgba(0, 0, 0, 0.38);
           padding: 0 16px;
           cursor: pointer;
         };
@@ -141,7 +152,8 @@ Dropdown with search and single selection capabilities
           @apply(--esmm-readonly-input-container-label-focus);
         };
       }
-       paper-input {
+
+      paper-input {
         --paper-input-container-input: {
           padding-right: 24px;
           box-sizing: border-box;
@@ -162,72 +174,72 @@ Dropdown with search and single selection capabilities
         }
       }
 
-</style>
-<template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
+    </style>
+    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
       <etools-ajax id="missingOptionsAjax"
                    params="[[ajaxParams]]"
                    on-success="_handleMissingOptionsReqResponse"
                    on-fail="_handleMissingOptionsReqError"></etools-ajax>
-</template>
-<div id="main" class$="external-wrapper [[openedClass]]">
-    <paper-dropdown-menu id="dropdownMenu"
-     label="[[label]]"
-     placeholder="[[placeholder]]"
-     selected-item="{{selectedItem}}"
-     disabled="[[_disabled(disabled)]]"
-     invalid$="[[invalid]]"
-     error-message="[[errorMessage]]"
-     required$="[[required]]"
-     dynamic-align$="[[dynamicAlign]]"
-     on-paper-dropdown-open="_onDropdownOpen"
-     on-blur="_onBlur"
-     on-focus="_openMenu"
-     on-tap="_openMenu"
-     restore-focus-on-close$="{{falseValue}}"
-     >
-      <div class="dropdown-content">
+    </template>
+    <div id="main" class$="external-wrapper [[openedClass]]">
+      <paper-dropdown-menu id="dropdownMenu"
+                           label="[[label]]"
+                           placeholder="[[placeholder]]"
+                           selected-item="{{selectedItem}}"
+                           disabled="[[_disabled(disabled)]]"
+                           invalid$="[[invalid]]"
+                           error-message="[[errorMessage]]"
+                           required$="[[required]]"
+                           dynamic-align$="[[dynamicAlign]]"
+                           on-paper-dropdown-open="_onDropdownOpen"
+                           on-blur="_onBlur"
+                           on-focus="_openMenu"
+                           on-tap="_openMenu"
+                           restore-focus-on-close$="{{falseValue}}"
+      >
+        <div class="dropdown-content">
 
-       <div class="input-wrapper" hidden$="{{hideSearch}}">
+          <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
-              id="searchInput"
-              no-label-float
-              class="search-input"
-              label="Search"
-              type="text"
-              value="{{search}}"
-              auto-focus
-              tabindex="0">
+                id="searchInput"
+                no-label-float
+                class="search-input"
+                label="Search"
+                type="text"
+                value="{{search}}"
+                auto-focus
+                tabindex="0">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
-        </div>
-        <div class$="list-wrapper">
-          <paper-listbox attr-for-selected="internal-id"
-              selected={{selected}}>
+          </div>
+          <div class$="list-wrapper">
+            <paper-listbox attr-for-selected="internal-id"
+                           selected={{selected}}>
               <template is="dom-repeat" items="[[shownOptions]]">
-                  <paper-item
+                <paper-item
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
                     on-tap="_itemSelected"
                     title$="[[_getLabel(item)]]">
 
-                    <iron-icon class="tick-icon" icon="check"></iron-icon>
-                    <span>[[_getLabel(item)]]</span>
-                  </paper-item>
-                </template>
-
-                <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
-                  More than [[shownOptionsLimit]] items, use the search function to reveal more
+                  <iron-icon class="tick-icon" icon="check"></iron-icon>
+                  <span>[[_getLabel(item)]]</span>
                 </paper-item>
+              </template>
 
-                <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
-                  No options available
-                </paper-item>
-          </paper-listbox>
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
+                More than [[shownOptionsLimit]] items, use the search function to reveal more
+              </paper-item>
+
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
+                No options available
+              </paper-item>
+            </paper-listbox>
+          </div>
         </div>
-      </div>
-    </paper-dropdown-menu>
+      </paper-dropdown-menu>
+    </div>
   </template>
-</div>
 
   <script>
     Polymer({
@@ -235,104 +247,108 @@ Dropdown with search and single selection capabilities
       behaviors: [etoolsSearchableDropdown.MissingOptionsBehavior],
       properties: {
         required: {
-            type: Boolean
+          type: Boolean
+        },
+        search: {
+          type: String
+        },
+        label: {
+          type: String
+        },
+        options: {
+          type: Array,
+          observer: '_optionsChanged'
+        },
+        shownOptions: {
+          type: Array,
+          computed: '_computeShownOptions(options, search, showEmptyValue, options.length)'
+        },
+        optionValue: {
+          type: String,
+          value: 'value'
+        },
+        optionLabel: {
+          type: String,
+          value: 'label'
+        },
+        selected: {
+          type: String,
+          notify: true,
+          observer: '_selectedChanged'
+        },
+        selectedItem: {
+          type: Object,
+          notify: true
+        },
+        dynamicAlign: {
+          type: Boolean,
+          value: true
+        },
+        autoValidate: {
+          type: Boolean
+        },
+        shownOptionsLimit: {
+          type: Number,
+          value: 50
+        },
+        showLimitWarning: {
+          type: Boolean,
+          computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
+        },
+        showEmptyValue: {
+          type: Boolean,
+          value: false
+        },
+        noOptionsAvailable: {
+          type: Boolean,
+          value: true,
+          computed: '_computeNoOptionsAvailable(options, options.length)'
+        },
+        hideSearch: {
+          type: Boolean,
+          value: false
+        },
+        disabled: {
+          type: Boolean,
+          value: false
+        },
+        readonly: {
+          type: Boolean,
+          value: function() {
+            return false;
           },
-         search: {
-            type: String
+          reflectToAttribute: true,
+          observer: '_readonlyChanged'
+        },
+        invalid: {
+          type: Boolean,
+          value: function() {
+            return false;
           },
-          label: {
-            type: String
-          },
-          options: {
-            type: Array,
-            observer: '_optionsChanged'
-          },
-          shownOptions: {
-            type: Array,
-            computed: '_computeShownOptions(options, search, showEmptyValue, options.length)'
-          },
-          optionValue: {
-            type: String,
-            value: 'value'
-          },
-          optionLabel: {
-            type: String,
-            value: 'label'
-          },
-          selected: {
-            type: String,
-            notify: true,
-            observer: '_selectedChanged'
-          },
-          selectedItem: {
-            type: Object,
-            notify:true
-          },
-          dynamicAlign: {
-            type: Boolean,
-            value: true
-          },
-          autoValidate: {
-            type: Boolean
-          },
-          shownOptionsLimit: {
-            type: Number,
-            value: 50
-          },
-          showLimitWarning: {
-            type: Boolean,
-            computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
-          },
-          showEmptyValue: {
-            type: Boolean,
-            value: false
-          },
-          noOptionsAvailable: {
-            type: Boolean,
-            value: true,
-            computed: '_computeNoOptionsAvailable(options, options.length)'
-          },
-          hideSearch: {
-            type: Boolean,
-            value: false
-          },
-          disabled: {
-            type: Boolean,
-            value: false
-          },
-          readonly: {
-            type: Boolean,
-            value: function() { return false; },
-            reflectToAttribute: true,
-            observer: '_readonlyChanged'
-          },
-          invalid: {
-            type: Boolean,
-            value: function() { return false; },
-            reflectToAttribute: true
-          },
-          errorMessage: {
-            type: String
-          },
-          falseValue: {
-            type: Boolean,
-            value: function() {
-              return false;
-            }
-          },
-          capitalizeInputShown: {
-            type: Boolean,
-            value: false,
-            reflectToAttribute: true,
-            observer: '_capitalizeInputShownChanged'
-          },
-           placeholder: {
-            type: String
-          },
-          shownItemsLimit: {
-            type: Number,
-            value: 50
+          reflectToAttribute: true
+        },
+        errorMessage: {
+          type: String
+        },
+        falseValue: {
+          type: Boolean,
+          value: function() {
+            return false;
           }
+        },
+        capitalizeInputShown: {
+          type: Boolean,
+          value: false,
+          reflectToAttribute: true,
+          observer: '_capitalizeInputShownChanged'
+        },
+        placeholder: {
+          type: String
+        },
+        shownItemsLimit: {
+          type: Number,
+          value: 50
+        }
       },
       observers: [
         '_shownOptionsLengthChanged(shownOptions.length)'
@@ -343,14 +359,14 @@ Dropdown with search and single selection capabilities
         }
       },
       _onBlur: function() {
-         if (this.autoValidate ) {
-           this.validate(this.selected);
-         }
+        if (this.autoValidate) {
+          this.validate(this.selected);
+        }
       },
       _openMenu: function() {
         var dropdown = this.$.dropdownMenu;
         if (!dropdown.opened) {
-           dropdown.open();
+          dropdown.open();
         }
       },
       _closeMenu: function() {
@@ -364,7 +380,7 @@ Dropdown with search and single selection capabilities
       },
       _readonlyChanged: function(readonly, oldReadonly) {
         if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
-            this.updateStyles();
+          this.updateStyles();
         }
       },
       _disabled: function(disabled) {
@@ -372,23 +388,23 @@ Dropdown with search and single selection capabilities
       },
       _selectedChanged: function(selected, oldSelected) {
         if (this.autoValidate) {
-           this.validate(selected);
-         }
+          this.validate(selected);
+        }
         if (!selected || this._noOptions()) {
           this.set('selectedItem', null);
           return;
         }
-        this.set("selectedItem", this._getItemFromOptions(selected));
+        this.set('selectedItem', this._getItemFromOptions(selected));
         this._handleSelectedNotFoundInOptions(selected);
       },
       _noOptions: function() {
         return (!this.options || !this.options.length);
       },
       _getItemFromOptions: function(value) {
-       if (!this.options) {
-         return null;
-       }
-       return this.options.find(function(item) {
+        if (!this.options) {
+          return null;
+        }
+        return this.options.find(function(item) {
           return item[this.optionValue] == value;
         }.bind(this));
       },
@@ -426,61 +442,64 @@ Dropdown with search and single selection capabilities
         }
       },
       _getIronDropdown: function() {
-          return this.$.dropdownMenu.$.menuButton.$.dropdown;
-        },
+        return this.$.dropdownMenu.$.menuButton.$.dropdown;
+      },
       _shownOptionsLengthChanged: function(shownOptionsLength) {
-          this._resizeDropdown();
-       },
+        this._resizeDropdown();
+      },
       _resizeDropdown: function() {
-          var ironDropdown = this._getIronDropdown();
-          if (ironDropdown) {
-            //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
-            ironDropdown.querySelector('.dropdown-content').style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
-            //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
-            ironDropdown.notifyResize();
-          }
-       },
+        var ironDropdown = this._getIronDropdown();
+        if (ironDropdown) {
+          //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
+          var dropdownContent = ironDropdown.querySelector('.dropdown-content');
+          //if (dropdownContent.style.height) {
+            dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
+          //}
+          //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
+          ironDropdown.notifyResize();
+        }
+      },
       _itemSelected: function(e) {
-        this.set("selectedItem", e.model.item);
+        this.set('selectedItem', e.model.item);
       },
       _optionsChanged: function(options, oldOptions) {
         if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
-          this.set("selectedItem", null);
-          this.set("selected", null);
+          this.set('selectedItem', null);
+          this.set('selected', null);
         }
         this.set('selectedItem', this._getItemFromOptions(this.selected));
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
-         return shownOptions.length >= limit;
+        return shownOptions.length >= limit;
       },
       _computeShownOptions: function(options, search, showEmptyValue) {
-         var shownOptions = JSON.parse(JSON.stringify(options));
+        var shownOptions = JSON.parse(JSON.stringify(options));
 
-         if (search) {
-            shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-            shownOptions = this._trimByShownOptionsLimit(shownOptions, shownOptions.length);
-         } else if(options.length > this.shownItemsLimit) {
-            shownOptions = this._trimByShownOptionsLimit(options, options.length);
-         }
-         console.log(this.shownItemsLimit);
+        if (search) {
+          shownOptions = options.filter(this._itemContainsSearchString.bind(this));
+          shownOptions = this._trimByShownOptionsLimit(shownOptions, shownOptions.length);
+        } else if (options.length > this.shownItemsLimit) {
+          shownOptions = this._trimByShownOptionsLimit(options, options.length);
+        }
+        console.log(this.shownItemsLimit);
 
-         if (showEmptyValue) {
-            shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
-         }
-         return shownOptions;
-       },
-       _trimByShownOptionsLimit: function(options, optionsLength) {
-         return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
-       },
-       _itemContainsSearchString: function(item) {
-          return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
-       },
-       _computeNoOptionsAvailable: function(options, optionsLength) {
-          if (!Array.isArray(options) || !optionsLength) {
-            return true;
-          }
-          return false;
-       },
+        if (showEmptyValue) {
+          shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+        }
+        return shownOptions;
+      },
+      _trimByShownOptionsLimit: function(options, optionsLength) {
+        return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
+      },
+      _itemContainsSearchString: function(item) {
+        return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      },
+      _computeNoOptionsAvailable: function(options, optionsLength) {
+        if (!Array.isArray(options) || !optionsLength) {
+          return true;
+        }
+        return false;
+      },
     });
   </script>
 </dom-module>
