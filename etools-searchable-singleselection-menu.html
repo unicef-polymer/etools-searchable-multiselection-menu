@@ -184,8 +184,8 @@ Dropdown with search and single selection capabilities
     <div id="main" class$="external-wrapper [[openedClass]]">
       <paper-dropdown-menu id="dropdownMenu"
                            label="[[label]]"
+                           on-iron-select="_onIronSelect"
                            placeholder="[[placeholder]]"
-                           selected-item="{{selectedItem}}"
                            disabled="[[_disabled(disabled)]]"
                            invalid$="[[invalid]]"
                            error-message="[[errorMessage]]"
@@ -195,8 +195,7 @@ Dropdown with search and single selection capabilities
                            on-blur="_onBlur"
                            on-focus="_openMenu"
                            on-tap="_openMenu"
-                           restore-focus-on-close$="{{falseValue}}"
-      >
+                           restore-focus-on-close$="{{falseValue}}">
         <div class="dropdown-content">
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
@@ -353,6 +352,9 @@ Dropdown with search and single selection capabilities
       observers: [
         '_shownOptionsLengthChanged(shownOptions.length)'
       ],
+      _onIronSelect: function(e) {
+        console.log(e);
+      },
       _capitalizeInputShownChanged: function(newValue) {
         if (newValue) {
           Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
@@ -390,15 +392,41 @@ Dropdown with search and single selection capabilities
         if (this.autoValidate) {
           this.validate(selected);
         }
-        if (!selected || this._noOptions()) {
+        if (!selected) {
           this.set('selectedItem', null);
+           return;
+        }
+        if (this._noOptions()) {
           return;
         }
-        this.set('selectedItem', this._getItemFromOptions(selected));
-        this._handleSelectedNotFoundInOptions(selected);
+        var selectedItem = this._getItemFromOptions(selected);
+        this.set('selectedItem', selectedItem) ;
+        if (!selectedItem) {
+          this._handleSelectedNotFoundInOptions(selected);
+        }
+        // else {
+        //      if (!this._itemIsInShownOptions(selectedItem)) {
+        //       this.shownOptions.unshift(selectedItem);
+        //   }
+        // }
+
       },
       _noOptions: function() {
         return (!this.options || !this.options.length);
+      },
+      _itemIsInShownOptions: function(item, shownOptions) {
+        console.log(this.shownOptions);
+        var shownOptions = this.shownOptions || shownOptions;
+         if (!shownOptions) {
+          return false;
+        }
+        var shownOptItem = shownOptions.find(function(i) {
+          return i[this.optionValue] == item[this.optionValue];
+        }.bind(this));
+        if (shownOptItem) {
+          return true;
+        }
+        return false;
       },
       _getItemFromOptions: function(value) {
         if (!this.options) {
@@ -409,10 +437,6 @@ Dropdown with search and single selection capabilities
         }.bind(this));
       },
       _handleSelectedNotFoundInOptions: function(selected) {
-        var selectedItem = this._getItemFromOptions(selected);
-        if (selectedItem) {
-          return;
-        }
         this._requestMissingOptions([selected]);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
@@ -481,12 +505,21 @@ Dropdown with search and single selection capabilities
         } else if (options.length > this.shownItemsLimit) {
           shownOptions = this._trimByShownOptionsLimit(options, options.length);
         }
-        console.log(this.shownItemsLimit);
+
+       // this._handleSelectedNotInShownOptions(shownOptions);
 
         if (showEmptyValue) {
           shownOptions.unshift({value: null, label: '-- None --', style: 'emptyValue'});
         }
         return shownOptions;
+      },
+      _handleSelectedNotInShownOptions: function(shownOptions) {
+        if (this.selected) {
+          var selectedItem = this.selectedItem || this._getItemFromOptions(this.selected);
+          if (selectedItem && !this._itemIsInShownOptions(selectedItem, shownOptions)){
+            shownOptions.unshift(selectedItem);
+          }
+        }
       },
       _trimByShownOptionsLimit: function(options, optionsLength) {
         return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
