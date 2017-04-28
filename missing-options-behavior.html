@@ -51,7 +51,8 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
         // we just need to make sure the first one is valid, no need to use a loop here
         var optionsLength = this.options.length;
         this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
-       // this._selectionChanged(this.selected, this.options); //TODO - is this still required?
+       this._updateAfterMissingOptionsReceived(response.detail);
+       console.warn('[etools-esmm ' + this.label + '] Valid missing options received');
       } else {
         console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
           this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');

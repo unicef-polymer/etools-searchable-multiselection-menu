@@ -205,7 +205,7 @@ Dropdown with search and single selection capabilities
                            >
       <label aria-hidden="true">[[label]]</label>
       <div class="content-wrapper">
-        <span class="paper-input-input">[[_getLabel(selectedItem)]]</span>
+        <span class="paper-input-input">[[_getLabelOrPlaceholder(selectedItem)]]</span>
       </div>
       <paper-menu-button
           id="dropdownMenu"
@@ -370,7 +370,8 @@ Dropdown with search and single selection capabilities
           observer: '_capitalizeInputShownChanged'
         },
         placeholder: {
-          type: String
+          type: String,
+          value: '-'
         },
         shownItemsLimit: {
           type: Number,
@@ -402,6 +403,9 @@ Dropdown with search and single selection capabilities
       _getValue: function(item) {
         return item ? item[this.optionValue] : null;
       },
+      _getLabelOrPlaceholder: function(item) {
+        return this._getLabel(item) || this.placeholder;
+      },
       _getLabel: function(item) {
         return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
       },
@@ -414,6 +418,10 @@ Dropdown with search and single selection capabilities
         return disabled || this.hasAttribute('readonly');
       },
       _selectedChanged: function(selected, oldSelected) {
+         if(this.label == "CP Output") {
+          console.log('this.selected',this.selected);
+          console.log('no opt',this._noOptions());
+        }
         if (this.autoValidate) {
           this.validate(selected);
         }
@@ -424,12 +432,31 @@ Dropdown with search and single selection capabilities
         if (this._noOptions()) {
           return;
         }
+        this._setSelectedItem(selected);
+      },
+      _setSelectedItem: function(selected) {
+        selected = selected || this.selected;
+        console.log('_setSelectedItem', this.selected);
         var selectedItem = this._getItemFromOptions(selected);
-        this.set('selectedItem', selectedItem);
-        if (!selectedItem) {
-          this._handleSelectedNotFoundInOptions(selected, selectedItem);
+        if(this.label == "CP Output") {
+          console.log('this.selected',this.selected);
+          console.log('selectedItem',selectedItem);
         }
 
+        if (!selectedItem) {
+          this._handleSelectedNotFoundInOptions(selected);
+        } else {
+          this.set('selectedItem', selectedItem);
+        }
+      },
+      _updateAfterMissingOptionsReceived: function(detail){
+        var selectedItem;
+        if (typeof detail === 'Array' && detail.length) {
+          selectedItem = details[0];
+        } else {
+          selectedItem = detail;
+        }
+        this.set('selectedItem', selectedItem)
       },
       _noOptions: function() {
         return (!this.options || !this.options.length);
@@ -443,6 +470,9 @@ Dropdown with search and single selection capabilities
         }.bind(this));
       },
       _handleSelectedNotFoundInOptions: function(selected) {
+        if(this.label == "CP Output") {
+          console.log('_handleSelectedNotFoundInOptions');
+        }
         this._requestMissingOptions([selected]);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
@@ -499,7 +529,7 @@ Dropdown with search and single selection capabilities
           this.set('selected', null);
           return;
         }
-        this.set('selectedItem', this._getItemFromOptions(this.selected));
+        this._setSelectedItem();
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
