@@ -180,9 +180,10 @@ Dropdown with search and single selection capabilities
      required$="[[required]]"
      dynamic-align$="[[dynamicAlign]]"
      on-paper-dropdown-open="_onDropdownOpen"
-
-
-
+     on-blur="_onBlur"
+     on-focus="_openMenu"
+     on-tap="_openMenu"
+     restore-focus-on-close$="{{falseValue}}"
      >
       <div class="dropdown-content">
 
