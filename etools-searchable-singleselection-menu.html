@@ -189,12 +189,10 @@ Dropdown with search and single selection capabilities
       }
 
     </style>
-    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
       <etools-ajax id="missingOptionsAjax"
                    params="[[ajaxParams]]"
                    on-success="_handleMissingOptionsReqResponse"
                    on-fail="_handleMissingOptionsReqError"></etools-ajax>
-    </template>
 
     <paper-input-container id="main1"
                            class$="external-wrapper [[openedClass]]"
@@ -376,11 +374,28 @@ Dropdown with search and single selection capabilities
         shownItemsLimit: {
           type: Number,
           value: 50
+        },
+        notFoundOption: {
+          type: String
         }
       },
       observers: [
-        '_shownOptionsLengthChanged(shownOptions.length)'
+        '_shownOptionsLengthChanged(shownOptions.length)',
+        '_selectedAndOptionsChanged(selected, options)',
+        'notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
+      ready: function() {
+        console.log('READY');
+      },
+      //This observer makes sure request for missing option is triggered only after the url is set also
+      //notFoundOption is actually this.selected
+      notFoundOptionAndUrlChanged: function() {
+        console.log('here', this.notFoundOption);
+
+        if (this.notFoundOption) {
+          this._requestMissingOptions([this.notFoundOption]);
+        }
+      },
       _capitalizeInputShownChanged: function(newValue) {
         if (newValue) {
 //          Polymer.dom(this.$.dropdownMenu.$.menuButton).querySelector('paper-input').classList.add('capitalize')
@@ -417,6 +432,9 @@ Dropdown with search and single selection capabilities
       _disabled: function(disabled) {
         return disabled || this.hasAttribute('readonly');
       },
+      _selectedAndOptionsChanged: function() {
+        this._setSelectedItem();
+      },
       _selectedChanged: function(selected, oldSelected) {
         if (this.autoValidate) {
           this.validate(selected);
@@ -428,9 +446,9 @@ Dropdown with search and single selection capabilities
         if (this._noOptions()) {
           return;
         }
-        this._setSelectedItem(selected);
       },
       _setSelectedItem: function(selected, selectedItem) {
+        this.set('notFoundOption', null);
         if (selectedItem) {
           this.set('selectedItem', selectedItem);
           return;
@@ -441,7 +459,8 @@ Dropdown with search and single selection capabilities
         }
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
-          this._handleSelectedNotFoundInOptions(selected);
+          console.log('notFoundOption', this.notFoundOption);
+          this.set('notFoundOption', this.selected +'');
         } else {
           this.set('selectedItem', selectedItem);
         }
@@ -523,7 +542,6 @@ Dropdown with search and single selection capabilities
           this.set('selected', null);
           return;
         }
-        this._setSelectedItem();
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
