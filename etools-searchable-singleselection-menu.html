@@ -418,10 +418,6 @@ Dropdown with search and single selection capabilities
         return disabled || this.hasAttribute('readonly');
       },
       _selectedChanged: function(selected, oldSelected) {
-         if(this.label == "CP Output") {
-          console.log('this.selected',this.selected);
-          console.log('no opt',this._noOptions());
-        }
         if (this.autoValidate) {
           this.validate(selected);
         }
@@ -434,15 +430,16 @@ Dropdown with search and single selection capabilities
         }
         this._setSelectedItem(selected);
       },
-      _setSelectedItem: function(selected) {
-        selected = selected || this.selected;
-        console.log('_setSelectedItem', this.selected);
-        var selectedItem = this._getItemFromOptions(selected);
-        if(this.label == "CP Output") {
-          console.log('this.selected',this.selected);
-          console.log('selectedItem',selectedItem);
+      _setSelectedItem: function(selected, selectedItem) {
+        if (selectedItem) {
+          this.set('selectedItem', selectedItem);
+          return;
         }
-
+        var selected = selected || this.selected;
+        if (!selected) {
+          return;
+        }
+        var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this._handleSelectedNotFoundInOptions(selected);
         } else {
@@ -451,12 +448,12 @@ Dropdown with search and single selection capabilities
       },
       _updateAfterMissingOptionsReceived: function(detail){
         var selectedItem;
-        if (typeof detail === 'Array' && detail.length) {
-          selectedItem = details[0];
+        if (Array.isArray(detail) && detail.length) {
+          selectedItem = detail[0];
         } else {
           selectedItem = detail;
         }
-        this.set('selectedItem', selectedItem)
+        this._setSelectedItem(this.selected, selectedItem);
       },
       _noOptions: function() {
         return (!this.options || !this.options.length);
@@ -470,9 +467,6 @@ Dropdown with search and single selection capabilities
         }.bind(this));
       },
       _handleSelectedNotFoundInOptions: function(selected) {
-        if(this.label == "CP Output") {
-          console.log('_handleSelectedNotFoundInOptions');
-        }
         this._requestMissingOptions([selected]);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
