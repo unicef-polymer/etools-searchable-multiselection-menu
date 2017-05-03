@@ -194,7 +194,7 @@ Dropdown with search and single selection capabilities
                    on-success="_handleMissingOptionsReqResponse"
                    on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
-    <paper-input-container id="main1"
+    <paper-input-container id="main"
                            class$="external-wrapper [[openedClass]]"
                            always-float-label
                            disabled$="[[disabled]]"
@@ -281,8 +281,7 @@ Dropdown with search and single selection capabilities
           type: String
         },
         options: {
-          type: Array,
-          observer: '_optionsChanged'
+          type: Array
         },
         shownOptions: {
           type: Array,
@@ -453,7 +452,7 @@ Dropdown with search and single selection capabilities
           this.set('selectedItem', selectedItem);
           return;
         }
-        var selected = selected || this.selected;
+        selected = selected || this.selected;
         if (!selected) {
           return;
         }
@@ -509,40 +508,41 @@ Dropdown with search and single selection capabilities
         var ironDropdown = this._getIronDropdown();
         if (ironDropdown) {
           // set position target to align dropdown content properly
-          ironDropdown.set('positionTarget', this.$.dropdownMenu);
-          ironDropdown.style.width = this.$.dropdownMenu.offsetWidth + 'px';
-          // style.overflow = 'hidden';//TODO
+          ironDropdown.set('positionTarget', this.$.main);
+          ironDropdown.style.width = this.$.main.offsetWidth + 'px';
+          var style = ironDropdown.querySelector('.dropdown-content').style;
+           style.overflow = 'hidden';
         }
       },
       _getIronDropdown: function() {
-        return this.$.dropdownMenu.$.menuButton.$.dropdown;
+        return this.$.dropdownMenu.$.dropdown;
       },
       _shownOptionsLengthChanged: function(shownOptionsLength) {
         this._resizeDropdown();
       },
       _resizeDropdown: function() {
-//        var ironDropdown = this._getIronDropdown();
-//        if (ironDropdown) {
-//          //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
-//          var dropdownContent = ironDropdown.querySelector('.dropdown-content');
-//          //if (dropdownContent.style.height) {
-//            dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
-//          //}
-//          //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
-//          ironDropdown.notifyResize();
-//        }
+       var ironDropdown = this._getIronDropdown();
+       if (ironDropdown) {
+         //*Prevent dropdown floating above its parent when searching and dynamicAligned on top
+         var dropdownContent = ironDropdown.querySelector('.dropdown-content');
+         //if (dropdownContent.style.height) {
+           dropdownContent.style.height = ironDropdown.querySelector('.dropdown-content').style.maxHeight;
+         //}
+         //*Prevent dropdown vanish when searching for a value that doesn't exist in shownOptions
+         ironDropdown.notifyResize();
+       }
       },
       _itemSelected: function(e) {
         this.set('selected', e.model.item[this.optionValue])
         this._closeMenu();
       },
-      _optionsChanged: function(options, oldOptions) {
-        if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
-          this.set('selectedItem', null);
-          this.set('selected', null);
-          return;
-        }
-      },
+      // _optionsChanged: function(options, oldOptions) {
+      //   if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
+      //     this.set('selectedItem', null);
+      //     this.set('selected', null);
+      //     return;
+      //   }
+      // },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
       },
