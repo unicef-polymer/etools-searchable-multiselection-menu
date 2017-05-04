@@ -146,28 +146,30 @@ TODO: move styles that can be used for multiselection menu is a separate, create
       }
 
       :host([capitalize-input-shown]) .paper-input-input,
-      :host([capitalize-options]) paper-listbox paper-item  {
+      :host([capitalize-options]) paper-listbox paper-item {
         text-transform: capitalize;
       }
 
       .content-wrapper {
         min-height: 24px;
       }
+
       #dropdownMenu {
         position: absolute;
         right: 0;
         bottom: 0;
         padding: 0;
       }
+
       #dropdownMenu .dropdown-trigger {
         opacity: 0.54;
       }
 
     </style>
-      <etools-ajax id="missingOptionsAjax"
-                   params="[[ajaxParams]]"
-                   on-success="_handleMissingOptionsReqResponse"
-                   on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    <etools-ajax id="missingOptionsAjax"
+                 params="[[ajaxParams]]"
+                 on-success="_handleMissingOptionsReqResponse"
+                 on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
     <paper-input-container id="main"
                            class="external-wrapper"
@@ -228,7 +230,8 @@ TODO: move styles that can be used for multiselection menu is a separate, create
                 </paper-item>
               </template>
 
-              <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]" class="warning" disabled>
+              <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]"
+                          class="warning" disabled>
                 No results found. Try other keywords.
               </paper-item>
 
@@ -430,12 +433,12 @@ TODO: move styles that can be used for multiselection menu is a separate, create
         }
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
-          this.set('notFoundOption', this.selected +'');
+          this.set('notFoundOption', this.selected + '');
         } else {
           this.set('selectedItem', selectedItem);
         }
       },
-      _updateAfterMissingOptionsReceived: function(detail){
+      _updateAfterMissingOptionsReceived: function(detail) {
         var selectedItem;
         if (Array.isArray(detail) && detail.length) {
           selectedItem = detail[0];
