@@ -181,14 +181,14 @@ TODO: move styles that can be used for multiselection menu is a separate, create
                placeholder="[[placeholder]]"
                value="[[_getLabel(selectedItem)]]"
                on-focus="_openMenu"
-               on-tap="_ignoreClickOrTap"
-               on-click="_ignoreClickOrTap">
+               on-tap="_handleClickOrTap"
+               on-click="_handleClickOrTap">
       </div>
       <paper-menu-button
           id="dropdownMenu"
           horizontal-align="right"
           ignore-select
-          restore-focus-on-close$="{{falseValue}}"
+          restore-focus-on-close$="[[restoreFocusOnClose]]"
           allow-outside-scroll="[[allowOutsideScroll]]"
           dynamic-align$="[[dynamicAlign]]"
           on-paper-dropdown-open="_onDropdownOpen"
@@ -266,8 +266,7 @@ TODO: move styles that can be used for multiselection menu is a separate, create
           type: String
         },
         options: {
-          type: Array,
-          observer: '_optionsChanged'
+          type: Array
         },
         shownOptions: {
           type: Array,
@@ -341,7 +340,7 @@ TODO: move styles that can be used for multiselection menu is a separate, create
         errorMessage: {
           type: String
         },
-        falseValue: {
+        restoreFocusOnClose: {
           type: Boolean,
           value: function() {
             return false;
@@ -376,10 +375,10 @@ TODO: move styles that can be used for multiselection menu is a separate, create
           this.validate(this.selected);
         }
       },
-      _ignoreClickOrTap: function(e) {
+      _handleClickOrTap: function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        return false;
+        this._openMenu();
       },
       _openMenu: function() {
         var dropdown = this.$.dropdownMenu;
@@ -425,7 +424,7 @@ TODO: move styles that can be used for multiselection menu is a separate, create
           this.set('selectedItem', selectedItem);
           return;
         }
-        var selected = selected || this.selected;
+        selected = selected || this.selected;
         if (!selected) {
           return;
         }
@@ -478,7 +477,6 @@ TODO: move styles that can be used for multiselection menu is a separate, create
         var ironDropdown = this._getIronDropdown();
         if (ironDropdown) {
           // set position target to align dropdown content properly
-          var mainPaperContainer = this.$.main;
           ironDropdown.set('positionTarget', this);
           ironDropdown.style.width = this.offsetWidth + 'px';
           var style = ironDropdown.querySelector('.dropdown-content').style;
@@ -492,13 +490,6 @@ TODO: move styles that can be used for multiselection menu is a separate, create
       _itemSelected: function(e) {
         this.set('selected', e.model.item[this.optionValue]);
         this._closeMenu();
-      },
-      _optionsChanged: function(options, oldOptions) {
-        if ((!options || !options.length) && (oldOptions && oldOptions.length)) {
-          this.set('selectedItem', null);
-          this.set('selected', null);
-          return;
-        }
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
@@ -531,7 +522,8 @@ TODO: move styles that can be used for multiselection menu is a separate, create
         return !Array.isArray(options) || !optionsLength;
       },
       _showNoSearchResultsWarning: function(shownOptionsLength, optionsLength) {
-        return optionsLength > 0 && shownOptionsLength === 0;
+        return (optionsLength > 0 && shownOptionsLength === 0) ||
+            (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
       }
     });
   </script>
