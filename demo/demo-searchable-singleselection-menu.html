@@ -4,7 +4,7 @@
 
 <dom-module id="demo-searchable-singleselection-menu">
   <template>
-    <paper-input></paper-input>
+    <paper-input label="some label" placeholder="-"></paper-input>
     <etools-searchable-singleselection-menu
         label="Searchable single select"
         options="[[customObjOptions]]"
@@ -12,10 +12,8 @@
         option-label="option_label"
         required
         auto-validate
-
         error-message="My error message"
-        capitalize-input-shown
-        >
+        capitalize-input-shown show-empty-value>
         </etools-searchable-singleselection-menu>
         <paper-input></paper-input>
 
@@ -29,8 +27,7 @@
         auto-validate
 
         update-selected
-        error-message="My error message"
-        >
+        error-message="My error message">
         </etools-searchable-multiselection-menu>
   </template>
   <script>
