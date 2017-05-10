@@ -144,6 +144,15 @@ TODO: move styles that can be used for multiselection menu in a separate, create
         };
       }
 
+      :host .paper-input-input {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-right: 24px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
       :host([capitalize-input-shown]) .paper-input-input,
       :host([capitalize-options]) paper-listbox paper-item {
         text-transform: capitalize;
@@ -256,8 +265,10 @@ TODO: move styles that can be used for multiselection menu in a separate, create
   <script>
     Polymer({
       is: 'etools-searchable-singleselection-menu',
-      behaviors: [etoolsSearchableDropdown.MissingOptionsBehavior,
-                  etoolsSearchableDropdown.CommonBehavior],
+      behaviors: [
+        etoolsSearchableDropdown.MissingOptionsBehavior,
+        etoolsSearchableDropdown.CommonBehavior
+      ],
       properties: {
         selected: {
           type: String,

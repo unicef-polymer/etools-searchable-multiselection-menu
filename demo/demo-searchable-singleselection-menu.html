@@ -67,7 +67,8 @@
             opt.push({
               id: i,
               option_key:  ''+i,
-              option_label: 'option ' + i,
+              option_label: (i === 1) ? 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ' +
+                'Lorem Ipsum has been thembled it to make a type specimen book. ' : ('option ' + i),
               some_other_property: 'dummy propery for objIdx' + (i -1)
             });
           }
