@@ -201,7 +201,7 @@ Dropdown with search and single selection capabilities
           dynamic-align$="[[dynamicAlign]]"
           on-paper-dropdown-open="_onDropdownOpen"
           on-paper-dropdown-close="_onPaperDropdownClose"
-          disabled$="[[_menuBtnIdDisabled(disabled, readonly)]]"
+          disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
           hidden$="[[readonly]]">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
@@ -222,7 +222,7 @@ Dropdown with search and single selection capabilities
           </div>
           <div class="list-wrapper">
             <paper-listbox attr-for-selected="internal-id"
-                           selected=[[selected]]>
+                           selected={{selected}}>
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item
                     item=[[item]]
@@ -325,7 +325,7 @@ Dropdown with search and single selection capabilities
       _getLabel: function(item) {
         return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
       },
-      _menuBtnIdDisabled: function(disabled, readonly) {
+      _menuBtnIsDisabled: function(disabled, readonly) {
         return disabled || readonly;
       },
       _selectedAndOptionsChanged: function() {
@@ -353,6 +353,7 @@ Dropdown with search and single selection capabilities
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
+          this.set('selectedItem', null);
         } else {
           this.set('selectedItem', selectedItem);
         }
@@ -386,6 +387,7 @@ Dropdown with search and single selection capabilities
         console.warn(warnMsg);
       },
       validate: function(selected) {
+        selected = selected || this.selected;
         if (!this.hasAttribute('required')) {
           return true;
         }
@@ -406,7 +408,6 @@ Dropdown with search and single selection capabilities
         return this.$.dropdownMenu.$.dropdown;
       },
       _itemSelected: function(e) {
-        this.set('selected', e.model.item[this.optionValue]);
         this._closeMenu();
       }
     });
