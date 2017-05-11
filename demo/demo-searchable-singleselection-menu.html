@@ -1,11 +1,11 @@
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../etools-searchable-singleselection-menu.html">
+<link rel="import" href="../etools-single-selection-menu.html">
 <link rel="import" href="../etools-searchable-multiselection-menu.html">
 
 <dom-module id="demo-searchable-singleselection-menu">
   <template>
     <paper-input label="some label" placeholder="-"></paper-input>
-    <etools-searchable-singleselection-menu
+    <etools-single-selection-menu
         label="Searchable single select"
         options="[[customObjOptions]]"
         option-value="option_key"
@@ -15,7 +15,7 @@
         selected ="60"
         error-message="My error message"
         capitalize-input-shown >
-        </etools-searchable-singleselection-menu>
+        </etools-single-selection-menu>
         <paper-input></paper-input>
 
         <etools-searchable-multiselection-menu
