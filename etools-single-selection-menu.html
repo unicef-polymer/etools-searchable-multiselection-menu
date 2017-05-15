@@ -350,6 +350,10 @@ Dropdown with search and single selection capabilities
         if (!selected) {
           return;
         }
+        if (this._noOptions()) {
+          this.set('selectedItem', null);
+          return;
+        }
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
@@ -371,7 +375,7 @@ Dropdown with search and single selection capabilities
         return (!this.options || !this.options.length);
       },
       _getItemFromOptions: function(value) {
-        if (!this.options) {
+        if (this._noOptions()) {
           return null;
         }
         return this.options.find(function(item) {

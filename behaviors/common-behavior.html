@@ -102,9 +102,9 @@ etoolsSearchableDropdown.CommonBehavior = {
 
       if (search) {
         shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-        shownOptions = this._trimByShownOptionsLimit(shownOptions, shownOptions.length);
+        shownOptions = this._trimByShownOptionsLimit(shownOptions);
       } else if (options.length > this.shownItemsLimit) {
-        shownOptions = this._trimByShownOptionsLimit(options, options.length);
+        shownOptions = this._trimByShownOptionsLimit(options);
       }
 
       if (showEmptyValue) {
@@ -115,8 +115,8 @@ etoolsSearchableDropdown.CommonBehavior = {
       }
       return shownOptions;
       },
-      _trimByShownOptionsLimit: function(options, optionsLength) {
-        return options.slice(0, Math.min(this.shownOptionsLimit, optionsLength));
+      _trimByShownOptionsLimit: function(options) {
+        return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
       },
       _itemContainsSearchString: function(item) {
         return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
