@@ -222,13 +222,13 @@ Dropdown with search and single selection capabilities
           </div>
           <div class="list-wrapper">
             <paper-listbox attr-for-selected="internal-id"
-                           selected={{selected}}>
+                           selected=[[selected]]>
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
                     on-tap="_itemSelected"
-                    class$="[[item.cssClass]]"
+                    class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
                     title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -269,7 +269,7 @@ Dropdown with search and single selection capabilities
       ],
       properties: {
         selected: {
-          type: String,
+          type: Number,
           notify: true,
           observer: '_selectedChanged'
         },
@@ -292,6 +292,10 @@ Dropdown with search and single selection capabilities
         '_selectedAndOptionsChanged(selected, options)',
         'notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
+
+      _getSelectedClass: function(item, selected) {
+        return selected === item[this.optionValue] ? 'iron-selected' : '';
+      },
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
@@ -412,6 +416,7 @@ Dropdown with search and single selection capabilities
         return this.$.dropdownMenu.$.dropdown;
       },
       _itemSelected: function(e) {
+        this.set('selected', e.model.item[this.optionValue]);
         this._closeMenu();
       }
     });

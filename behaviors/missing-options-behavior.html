@@ -53,7 +53,7 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
         var optionsLength = this.options.length;
         this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
        this._updateAfterMissingOptionsReceived(response.detail);
-       console.warn('[etools-esmm ' + this.label + '] Valid missing options received');
+       console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
       } else {
         console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
           this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
