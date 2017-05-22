@@ -201,7 +201,7 @@ Dropdown with search and single selection capabilities
           dynamic-align$="[[dynamicAlign]]"
           on-paper-dropdown-open="_onDropdownOpen"
           on-paper-dropdown-close="_onPaperDropdownClose"
-          disabled$="[[_menuBtnIdDisabled(disabled, readonly)]]"
+          disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
           hidden$="[[readonly]]">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
@@ -228,7 +228,7 @@ Dropdown with search and single selection capabilities
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
                     on-tap="_itemSelected"
-                    class$="[[item.cssClass]]"
+                    class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
                     title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -269,7 +269,7 @@ Dropdown with search and single selection capabilities
       ],
       properties: {
         selected: {
-          type: String,
+          type: Number,
           notify: true,
           observer: '_selectedChanged'
         },
@@ -292,6 +292,10 @@ Dropdown with search and single selection capabilities
         '_selectedAndOptionsChanged(selected, options)',
         'notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
+
+      _getSelectedClass: function(item, selected) {
+        return selected === item[this.optionValue] ? 'iron-selected' : '';
+      },
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
@@ -325,7 +329,7 @@ Dropdown with search and single selection capabilities
       _getLabel: function(item) {
         return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
       },
-      _menuBtnIdDisabled: function(disabled, readonly) {
+      _menuBtnIsDisabled: function(disabled, readonly) {
         return disabled || readonly;
       },
       _selectedAndOptionsChanged: function() {
@@ -350,9 +354,14 @@ Dropdown with search and single selection capabilities
         if (!selected) {
           return;
         }
+        if (this._noOptions()) {
+          this.set('selectedItem', null);
+          return;
+        }
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
+          this.set('selectedItem', null);
         } else {
           this.set('selectedItem', selectedItem);
         }
@@ -370,7 +379,7 @@ Dropdown with search and single selection capabilities
         return (!this.options || !this.options.length);
       },
       _getItemFromOptions: function(value) {
-        if (!this.options) {
+        if (this._noOptions()) {
           return null;
         }
         return this.options.find(function(item) {
@@ -386,6 +395,7 @@ Dropdown with search and single selection capabilities
         console.warn(warnMsg);
       },
       validate: function(selected) {
+        selected = selected || this.selected;
         if (!this.hasAttribute('required')) {
           return true;
         }
