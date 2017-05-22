@@ -1,0 +1,81 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../etools-single-selection-menu.html">
+<link rel="import" href="../etools-searchable-multiselection-menu.html">
+
+<dom-module id="demo-searchable-singleselection-menu">
+  <template>
+    <paper-input label="some label" placeholder="-"></paper-input>
+    <etools-single-selection-menu
+        label="Searchable single select"
+        options="[[customObjOptions]]"
+        option-value="option_key"
+        option-label="option_label"
+        required
+        auto-validate
+        selected ="60"
+        error-message="My error message"
+        capitalize-input-shown >
+        </etools-single-selection-menu>
+        <paper-input></paper-input>
+
+        <etools-searchable-multiselection-menu
+        label="Searchable multi select"
+        options="[[customObjOptions]]"
+        custom-object-options
+        option-value="option_key"
+        option-label="option_label"
+        required
+        auto-validate
+
+        update-selected
+        error-message="My error message">
+        </etools-searchable-multiselection-menu>
+  </template>
+  <script>
+    (function() {
+      // jscs:disable
+      'use strict';
+
+      Polymer({
+        is: 'demo-searchable-singleselection-menu',
+
+        properties: {
+          abc:{
+            type:Number,
+            value: 2
+          }
+        },
+
+        ready: function() {
+            this.set('customObjOptions', this.generateOptions());
+        },
+
+        _returnIdsString: function(vals) {
+          return vals instanceof Array ? vals.join(', ') : null;
+        },
+
+        _singleSelectionChanged: function(event) {
+          console.log('_singleSelectionChanged', event.detail);
+        },
+
+        _multiSelectionChanged: function(event) {
+          console.log('_multiSelectionChanged', event.detail);
+        },
+        generateOptions: function() {
+          var opt = [];
+          for(var i = 1; i <= 170; i++) {
+            opt.push({
+              id: i,
+              option_key:  ''+i,
+              option_label: (i === 1) ? 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ' +
+                'Lorem Ipsum has been thembled it to make a type specimen book. ' : ('option ' + i),
+              some_other_property: 'dummy propery for objIdx' + (i -1)
+            });
+          }
+          return opt;
+        }
+      });
+
+    })();
+  </script>
+</dom-module>

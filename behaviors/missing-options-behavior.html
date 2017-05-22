@@ -1,0 +1,80 @@
+<script>
+window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
+/** @polymerBehavior etoolsSearchableDropdown.MissingOptionsBehavior */
+etoolsSearchableDropdown.MissingOptionsBehavior = {
+  properties: {
+     url: String,
+     ajaxParams: Object
+    },
+     /**
+      * If there are no selected options that are not found in dropdown options then request them from server using
+      * url and ajaxParams(values property will contain missing values)
+      * ajaxParams = {
+      *    values: 1 // single value
+      * }
+      *
+      * ajaxParams = {
+      *    values: 1,2,3,4 // multiple values
+      * }
+      */
+    _requestMissingOptions: function(notFoundValues) {
+      if (!(notFoundValues instanceof Array && notFoundValues.length)) {
+        return;
+      }
+      if (!this._shouldRequestMissingOption(this.url)) {
+        return;
+      }
+      var etoolsAjax = this.$$('#missingOptionsAjax');
+      if (!etoolsAjax) {
+        return;
+      }
+      var notFoundV = notFoundValues.join(',');
+      if (this.ajaxParams && typeof this.ajaxParams === 'object') {
+        if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
+          // missing values changed, reset url to force request to fire
+          etoolsAjax.url = null;
+        }
+        this.ajaxParams.values = notFoundV;
+      } else {
+        this.ajaxParams = {
+          values: notFoundV
+        };
+      }
+      etoolsAjax.url = this.url;
+    },
+   _handleMissingOptionsReqResponse: function(response) {
+    if (!(response.detail instanceof Array && response.detail.length)) {
+      return;
+    }
+    try {
+      if (this._isValidOption(response.detail[0])) {
+        // assuming all objects from response array have same properties
+        // we just need to make sure the first one is valid, no need to use a loop here
+        var optionsLength = this.options.length;
+        this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
+       this._updateAfterMissingOptionsReceived(response.detail);
+       console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
+      } else {
+        console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
+          this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
+      }
+    } catch (error) {
+      console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
+    }
+  },
+
+  _handleMissingOptionsReqError: function(errorResponse) {
+    console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
+  },
+  _shouldRequestMissingOption: function(url) {
+        if (typeof url === 'string' && url !== '') {
+          return true;
+        }
+        return false;
+   },
+   _isValidOption: function(optionObj) {
+          return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
+   },
+
+}
+</script>

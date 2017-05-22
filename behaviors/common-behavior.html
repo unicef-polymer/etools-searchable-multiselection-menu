@@ -1,0 +1,132 @@
+<script>
+window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
+/** @polymerBehavior etoolsSearchableDropdown.CommonBehavior */
+etoolsSearchableDropdown.CommonBehavior = {
+  properties: {
+     label: {
+          type: String
+     },
+     required: {
+       type: Boolean
+     },
+     search: {
+       type: String
+     },
+      options: {
+        type: Array
+      },
+      shownOptions: {
+        type: Array,
+        computed: '_computeShownOptions(options, search, showEmptyValue, options.length)'
+      },
+      optionValue: {
+        type: String,
+        value: 'value'
+      },
+      optionLabel: {
+        type: String,
+        value: 'label'
+      },
+      dynamicAlign: {
+        type: Boolean,
+        value: true
+      },
+      showEmptyValue: {
+        type: Boolean,
+        value: false
+      },
+      hideSearch: {
+        type: Boolean,
+        value: false
+      },
+      disabled: {
+        type: Boolean,
+        value: false
+      },
+      readonly: {
+        type: Boolean,
+        value: function() {
+          return false;
+        },
+        reflectToAttribute: true,
+        observer: '_readonlyChanged'
+      },
+      invalid: {
+        type: Boolean,
+        value: function() {
+          return false;
+        },
+        reflectToAttribute: true
+      },
+      errorMessage: {
+        type: String
+      },
+      shownItemsLimit: {
+        type: Number,
+        value: 50
+      },
+      noOptionsAvailable: {
+        type: Boolean,
+        value: true,
+        computed: '_computeNoOptionsAvailable(options, options.length)'
+      },
+      showLimitWarning: {
+         type: Boolean,
+         computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
+      },
+      shownOptionsLimit: {
+        type: Number,
+        value: 50
+       },
+       autoValidate: {
+         type: Boolean
+       },
+       placeholder: {
+         type: String,
+         value: '—'
+       },
+    },
+    resetInvalidState: function() {
+      this.set('invalid', false);
+    },
+    _computeNoOptionsAvailable: function(options, optionsLength) {
+       return !Array.isArray(options) || !optionsLength;
+    },
+    _readonlyChanged: function(readonly, oldReadonly) {
+       if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+         this.updateStyles();
+       }
+    },
+    _computeShownOptions: function(options, search, showEmptyValue) {
+      var shownOptions = JSON.parse(JSON.stringify(options));
+
+      if (search) {
+        shownOptions = options.filter(this._itemContainsSearchString.bind(this));
+        shownOptions = this._trimByShownOptionsLimit(shownOptions);
+      } else if (options.length > this.shownItemsLimit) {
+        shownOptions = this._trimByShownOptionsLimit(options);
+      }
+
+      if (showEmptyValue) {
+        var emptyOption = {cssClass: 'emptyValue'};
+        emptyOption[this.optionValue] = null;
+        emptyOption[this.optionLabel] = '-- None --';
+        shownOptions.unshift(emptyOption);
+      }
+      return shownOptions;
+      },
+      _trimByShownOptionsLimit: function(options) {
+        return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
+      },
+      _itemContainsSearchString: function(item) {
+        return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      },
+      _computeShowLimitWarning: function(limit, shownOptions) {
+        return shownOptions.length >= limit;
+      },
+      _showNoSearchResultsWarning: function(shownOptionsLength, optionsLength) {
+        return (optionsLength > 0 && shownOptionsLength === 0) ||
+            (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
+      }
+}
+</script>
