@@ -260,10 +260,10 @@ Single selection, with search, always display an empty value (-- None --)
               selected="{{selectedId}}"></etools-single-selection-menu
 ```
 
-Change event examples
-on-iron-activate - fires only when the selected value is changed manually by selecting a value from the dropdown
-on-iron-select - fires whenever the selected value is changed from dropdown or from code
-The event parameter of the method (_singleSelectionChanged) holds info about the item that was selected in: event.detail.item.item
+Change event examples:
+`on-iron-activate` - fires only when the selected value is changed manually by selecting a value from the dropdown
+`on-iron-select` - fires whenever the selected value is changed from dropdown or from code
+The event parameter of the method (_singleSelectionChanged) holds info about the item that was selected in: `event.detail.item.item`
 ```html
 <etools-single-selection-menu
     label="Searchable menu"
