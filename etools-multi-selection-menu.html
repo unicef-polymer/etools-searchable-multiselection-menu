@@ -1,14 +1,160 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
+<link rel="import" href="deletable-option-list.html">
 <!--
 `etools-multi-selection-menu`
 Dropdown with search and multi selection capabilities
 
 @demo demo/index.html
 -->
+<dom-module id="etools-multi-selection-menu">
+  <template>
+    <style include="etools-dropdown-shared-styles">
+       :host {
+        display: block;
+        position: relative;
+        width: 100%;
+      }
+       .multi-container {
+        position: relative;
+        height: 100%;
+        --paper-input-container: {
+          height: 45px;
+          position: relative;
+          width: 100%;
+        }
+      }
+      .multi-input-container {
+        outline: none;
+      }
+    </style>
+
+     <etools-ajax id="missingOptionsAjax"
+                 params="[[ajaxParams]]"
+                 on-success="_handleMissingOptionsReqResponse"
+                 on-fail="_handleMissingOptionsReqError"></etools-ajax>
+     <divr id="main" class="external-wrapper">
+
+     <div class="multi-container">
+
+          <paper-input-container
+            class="multi-input-container"
+            id="customPaperInput"
+            tabindex="0"
+            on-tap="_openMenu"
+            on-focus="_openMenu"
+            attr-for-value="option-value"
+            disabled$="[[disabled]]"
+            error-message="[[errorMessage]]"
+            required$="[[_multiRequired(required)]]"
+            invalid$="[[invalid]]"
+            always-float-label>
+
+            <label>[[label]]</label>
+
+            <deletable-option-list on-option-delete="_removeItem"
+              class="paper-input-input"
+              option-value="{{value}}"
+              custom-object-options="[[customObjectOptions]]"
+              option-value-attribute="[[optionValue]]"
+              option-label-attribute="[[optionLabel]]"
+              disabled="[[_disableMenuBtn(disabled, readonly)]]"
+              readonly$="[[readonly]]"
+              placeholder=[[placeholder]]>
+            </deletable-option-list>
+
+            <template is="dom-if" if="[[errorMessage]]">
+              <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
+            </template>
+          </paper-input-container>
+        </div>
 
 
-<!--To be continued-->
+        <paper-menu-button
+          id="dropdownMenu"
+          horizontal-align="right"
+          ignore-select
+          restore-focus-on-close$="[[restoreFocusOnClose]]"
+          allow-outside-scroll="[[allowOutsideScroll]]"
+          dynamic-align$="[[dynamicAlign]]"
+          on-paper-dropdown-open="_onDropdownOpen"
+          on-paper-dropdown-close="_onPaperDropdownClose"
+          disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
+          hidden$="[[readonly]]">
+
+        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
+
+        <div class="dropdown-content">
+          <div class="search-input-wrapper" hidden$="{{hideSearch}}">
+            <paper-input
+                id="searchInput"
+                no-label-float
+                class="search-input"
+                label="Search"
+                type="text"
+                value="{{search}}"
+                auto-focus
+                tabindex="0">
+              <iron-icon icon="search" prefix></iron-icon>
+            </paper-input>
+          </div>
+          <div class="list-wrapper">
+            <paper-listbox attr-for-selected="internal-id"
+                           selected=[[selected]]>
+              <template is="dom-repeat" items="[[shownOptions]]">
+                <paper-item
+                    item=[[item]]
+                    internal-id$="[[_getValue(item)]]"
+                    on-tap="_itemSelected"
+                    class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
+                    title$="[[_getLabel(item)]]">
+
+                  <iron-icon class="tick-icon" icon="check"></iron-icon>
+                  <span>[[_getLabel(item)]]</span>
+                </paper-item>
+              </template>
+
+              <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]"
+                          class="warning" disabled>
+                No results found. Try other keywords.
+              </paper-item>
+
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
+                More than [[shownOptionsLimit]] items, use the search function to reveal more.
+              </paper-item>
+
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
+                No options available.
+              </paper-item>
+            </paper-listbox>
+          </div>
+        </div>
+       </paper-menu-button>
+
+
+     </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'etools-multi-selection-menu',
+      behaviors: [
+        etoolsSearchableDropdown.MissingOptionsBehavior,
+        etoolsSearchableDropdown.CommonBehavior
+      ],
+      properties: {}
+    });
+  </script>
+</dom-module>
