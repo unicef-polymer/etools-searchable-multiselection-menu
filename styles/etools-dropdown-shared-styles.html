@@ -26,7 +26,11 @@
       *[hidden] {
         display: none !important;
       }
-
+      .external-wrapper {
+        width: 100%;
+        position: relative;
+        @apply(--esmm-external-wrapper);
+      }
       #dropdownMenu {
         position: absolute;
         right: 0;
@@ -69,8 +73,10 @@
       .iron-selected .tick-icon {
         display: block;
       }
-
-       .list-wrapper {
+       .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+      .list-wrapper {
         position: relative;
         z-index: 5;
         max-height: 50vh;
@@ -105,6 +111,21 @@
           padding: 0 16px;
           cursor: pointer;
         };
+      }
+      .warning {
+        font-family: Roboto;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0, 0, 0, 0.54);
+        background-color: #EEEEEE;
+      }
+      :host .paper-input-input {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        padding-right: 24px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
      </style>

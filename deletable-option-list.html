@@ -81,7 +81,8 @@
         optionValue: {
           type: Array,
           value: [],
-          notify: true
+          notify: true,
+          observer: 'optionValueChanged'
         },
         disabled: {
           type: Boolean,
@@ -105,8 +106,11 @@
           value: 'label'
         }
       },
-
+      optionValueChanged: function(a,b){
+        console.log('optionValueChanged',a,b);
+      },
       _getItemLabel: function(item) {
+        console.log('getitemlabel',item);
         return item[this.optionLabelAttribute];
       },
 

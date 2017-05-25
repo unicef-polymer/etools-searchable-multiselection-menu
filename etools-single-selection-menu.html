@@ -30,36 +30,7 @@ Dropdown with search and single selection capabilities
         width: 100%;
       }
 
-      .external-wrapper {
-        width: 100%;
-        position: relative;
-        @apply(--esmm-external-wrapper);
-      }
 
-      .iron-selected {
-        background: var(--esmm-list-item-selected-color, #DCDCDC);
-      }
-
-
-
-      .warning {
-        font-family: Roboto;
-        font-size: 12px;
-        line-height: 16px;
-        color: rgba(0, 0, 0, 0.54);
-        background-color: #EEEEEE;
-      }
-
-
-
-      :host .paper-input-input {
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        padding-right: 24px !important;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
 
       :host([capitalize-input-shown]) .paper-input-input,
       :host([capitalize-options]) paper-listbox paper-item {
@@ -290,19 +261,7 @@ Dropdown with search and single selection capabilities
         this.set('invalid', !!!selected);
         return !!selected;
       },
-      _onDropdownOpen: function() {
-        var ironDropdown = this._getIronDropdown();
-        if (ironDropdown) {
-          // set position target to align dropdown content properly
-          ironDropdown.set('positionTarget', this);
-          ironDropdown.style.width = this.offsetWidth + 'px';
-          var style = ironDropdown.querySelector('.dropdown-content').style;
-          style.overflow = 'hidden';
-        }
-      },
-      _getIronDropdown: function() {
-        return this.$.dropdownMenu.$.dropdown;
-      },
+
       _itemSelected: function(e) {
         this.set('selected', e.model.item[this.optionValue]);
         this._closeMenu();

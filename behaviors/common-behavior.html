@@ -93,7 +93,7 @@ etoolsSearchableDropdown.CommonBehavior = {
       return disabled || readonly;
     },
 
-    //*This method covers a corner case
+    //*Use of this method covers a corner case
     _getSelectedClass: function(item, selected) {
       return selected === item[this.optionValue] ? 'iron-selected' : '';
     },
@@ -144,6 +144,19 @@ etoolsSearchableDropdown.CommonBehavior = {
       _showNoSearchResultsWarning: function(shownOptionsLength, optionsLength) {
         return (optionsLength > 0 && shownOptionsLength === 0) ||
             (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
-      }
+      },
+      _onDropdownOpen: function() {
+        var ironDropdown = this._getIronDropdown();
+        if (ironDropdown) {
+          // set position target to align dropdown content properly
+          ironDropdown.set('positionTarget', this);
+          ironDropdown.style.width = this.offsetWidth + 'px';
+          var style = ironDropdown.querySelector('.dropdown-content').style;
+          style.overflow = 'hidden';
+        }
+      },
+      _getIronDropdown: function() {
+        return this.$.dropdownMenu.$.dropdown;
+      },
 }
 </script>

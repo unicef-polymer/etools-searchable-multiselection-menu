@@ -341,6 +341,7 @@ Custom property | Description | Default
 `--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
 `--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 `--esmm-list-wrapper` | Mixin applied to list wrapper, can be used to controll list height | `{}`
+`--esmm-delete-icon-color` | Color applied to the multi select dropdown 'x' button , which deselects a selected option | `#dd2c00`
 
 
 ## Install

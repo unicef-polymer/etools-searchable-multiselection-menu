@@ -14,9 +14,10 @@
         option-label="option_label"
         required
         auto-validate
-        selected ="60"
+        selected-values ="[55,60]"
         error-message="My error message"
-        capitalize-input-shown >
+        on-iron-select="_onIronSelect"
+        on-selected-items-changed="test">
     </etools-multi-selection-menu>
 
     <paper-input></paper-input>
@@ -75,6 +76,12 @@
             });
           }
           return opt;
+        },
+        _onIronSelect: function(event) {
+          console.log(event.detail);
+        },
+        test: function(event) {
+          console.log('itemschange',event);
         }
       });
 
