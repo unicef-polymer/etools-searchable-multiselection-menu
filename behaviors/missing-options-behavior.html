@@ -1,7 +1,7 @@
 <script>
 window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
 /** @polymerBehavior etoolsSearchableDropdown.MissingOptionsBehavior */
-etoolsSearchableDropdown.MissingOptionsBehavior = {
+etoolsSearchableDropdown.MissingOptionsBehavior = { // eslint-disable-line no-undef
   properties: {
      url: String,
      ajaxParams: Object
@@ -53,17 +53,22 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
         var optionsLength = this.options.length;
         this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
        this._updateAfterMissingOptionsReceived(response.detail);
+       // eslint-disable-next-line no-console
        console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
       } else {
-        console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
-          this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
+        // eslint-disable-next-line no-console
+        console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url +
+          ') are not valid(missing \'' + this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
       }
     } catch (error) {
-      console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
+      // eslint-disable-next-line no-console
+      console.error('[etools-esmm ' + this.label +
+        '] Error occurred on missing options request response handling', error);
     }
   },
 
   _handleMissingOptionsReqError: function(errorResponse) {
+    // eslint-disable-next-line no-console
     console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
   },
   _shouldRequestMissingOption: function(url) {
@@ -76,5 +81,5 @@ etoolsSearchableDropdown.MissingOptionsBehavior = {
           return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
    },
 
-}
+};
 </script>
