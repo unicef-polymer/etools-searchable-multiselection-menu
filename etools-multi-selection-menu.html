@@ -111,7 +111,6 @@ Dropdown with search and multi selection capabilities
           <div class="list-wrapper">
             <paper-listbox multi attr-for-selected="internal-id"
                            selected-values={{selectedValues}}
-                           on-iron-select="_onIronSelect"
                            on-selected-values-changed="_onSelectedValuesChanged">
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
@@ -167,19 +166,21 @@ Dropdown with search and multi selection capabilities
 
       },
       observers: [
-        '_selectedValuesOrOptionsChanged(options)'
+        '_selectedValuesOrOptionsChanged(selectedValues, options)'
       ],
-      _onIronSelect: function(event) {
+      _selectedValuesSplices: function(e) {
+        console.log('_selectedValuesSplices',e);
         this._preserveOptionValueType();
-        console.log('_onIronSelect',this.selectedValues, event.detail.item.item);
-
+        console.log('SELVALUES', this.selectedValues);
+        //this._setSelectedItems();
       },
-      //selectedValues Change doesn't fire when you select and deselect items from the dropdown,
-      //but it fires when you enter the page and have preselected values
-      _selectedValuesOrOptionsChanged: function(selectedValues) {
-        console.log('_selectedValuesChanged', selectedValues);
-        this._preserveOptionValueType(selectedValues);
 
+      // selectedValues Change doesn't fire when you select and deselect items from the dropdown, on account of unobservable array mutations
+      // but it fires when you enter the page and have preselected values
+      _selectedValuesOrOptionsChanged: function(selectedValues, options, b) {
+
+        console.log('_selectedValuesOrOptionsChanged', selectedValues);
+        this._preserveOptionValueType(selectedValues);
         this._setSelectedItems(selectedValues);
       },
 
@@ -188,7 +189,7 @@ Dropdown with search and multi selection capabilities
           return;
         }
         selectedValues = selectedValues || this.selectedValues;
-        console.log('_preserveOptionValueType', selectedValues);
+      //  console.log('_preserveOptionValueType', selectedValues);
         if (!selectedValues || !selectedValues.length) {
           return;
         }
@@ -200,6 +201,8 @@ Dropdown with search and multi selection capabilities
           }
         });
       },
+      // Can't use paper-listbox's on-selected-items-changed event ,
+      // because paper-lisbox doesn't cover the case when selectedItems are not in the shownOptions values
       _setSelectedItems: function(selectedValues) {
         selectedValues = selectedValues || this.selectedValues;
         if (!selectedValues || !selectedValues.length || this._noOptions()) {
@@ -210,47 +213,69 @@ Dropdown with search and multi selection capabilities
           return;
         }
         var selectedItems = this.options.filter(function(item) {
-          return selectedValues.includes(item[this.optionValues]);
+          return selectedValues.includes(item[this.optionValue]);
         }.bind(this));
-
+        this.selectedItems = selectedItems;
       },
+      // The alternative of an observer on selectedValues.splices doesn't work as it sees a deselect as a select
+      // The alternative of using on-selected-items-changed doesn't work when the selectedValues is not in the 50 shownOptions
       _onSelectedValuesChanged: function(event) {
-      //  if ()
-        console.log('** _onSelectedValuesChanged',event);
+        console.log('SELVALUES2', this.selectedValues);
+        var possiblePaths = ['selectedValues.splices','selectedValues.length'];
+
+        if (possiblePaths.includes(event.detail.path)) {
+          if (event.detail.path === possiblePaths[0]) {
+            var selValuesInfo = event.detail.value.indexSplices[0];
+            if (selValuesInfo.addedCount) {
+
+            } else {
+              if (selValuesInfo.removed) {
+
+              }
+            }
+          }
+        } else {
+
+        }
+
+        if (event.detail.path == "selectedValues.splices") {
+          console.log("selectedValues.splices",event.detail.value.indexSplices[0]);
+        }
+        else {
+          console.log('_onSelectedValuesChanged',event.detail);
+        }
       },
-      // _onSelectedItemsChanged: function(event) {
 
-      //   var selectedPaperItems = event.detail.value;
-      //    console.log('_onSelectedItemsChanged',selectedPaperItems);
-      //   if (!selectedPaperItems || selectedPaperItems.length === 0) {
-      //     this.selectedItems = [];
-      //     return;
-      //   }
-      //   var selectedItems = [];
-      //   selectedPaperItems.forEach(function (paperItem) {
-      //     selectedItems.push(paperItem.item);
-      //   }.bind(this));
-
-      //   this.selectedItems = selectedItems;
-      // },
       _removeSelectedItem: function(e) {
         if (this.disabled) {
           return;
         }
-        var details = e.model.item;
-        var selectedItems = this.selectedItems.filter(function(item) {
-            return item[this.optionValue] !== details[this.optionValue];
+        // Compute selectedItems without the removed item
+        var selItems = this.selectedItems.filter(function(item) {
+            return item[this.optionValue] !== e.model.item[this.optionValue];
         }.bind(this));
-        selectedItems = selectedItems.length > 0 ? selectedItems : null;
-        selectedValues = this._getValuesFromItems(selectedItems);
 
-        this.set('selectedItems', selectedItems);
-        this.set('selectedValues', selectedValues);
+        if (!selItems || !selItems.length) {
+          this._emptySelected_WithoutObservableChanges();
+          return;
+        }
+
+        selValues = this._getValuesFromItems(selItems);
+        this._updateSelected_WithoutObservableChanges(selValues, selItems);
       },
       _getValuesFromItems: function(selectedItems) {
        return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function(item){
          return item[this.optionValue];
        }.bind(this)) : null;
+      },
+      _emptySelected_WithoutObservableChanges: function() {
+         this.selectedItems.splice(0, this.selectedItems.length);
+         this.selectedValues.splice(0, this.selectedValues.length);
+      },
+      _updateSelected_WithoutObservableChanges: function(selectedValues, selectedItems) {
+       // Array.prototype.splice.apply(this.selectedValues)
+        this.selectedValues.splice(0, selectedValues);
+        this.selectedItems.splice(0, this.selectedItems.length, selectedItems);
       }
 
     });

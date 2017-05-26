@@ -14,14 +14,26 @@
         option-label="option_label"
         required
         auto-validate
-        selected-values ="[55,60]"
+
         error-message="My error message"
         on-iron-select="_onIronSelect"
-        on-selected-items-changed="test">
+        on-selected-items-changed="onSelectedItemChanged">
     </etools-multi-selection-menu>
 
     <paper-input></paper-input>
 
+    <etools-single-selection-menu
+        label="Searchable single select"
+        options="[[customObjOptions]]"
+        option-value="id"
+        option-label="option_label"
+        required
+        auto-validate
+        selected ="56"
+        error-message="My error message"
+        on-iron-select="_onIronSelect"
+       >
+    </etools-single-selection-menu>
     <etools-searchable-multiselection-menu
         label="Searchable multi select"
         options="[[customObjOptions]]"
@@ -66,7 +78,7 @@
         },
         generateOptions: function() {
           var opt = [];
-          for(var i = 1; i <= 170; i++) {
+          for(var i = 1; i <= 370; i++) {
             opt.push({
               id: i,
               option_key:  ''+i,
@@ -78,10 +90,13 @@
           return opt;
         },
         _onIronSelect: function(event) {
-          console.log(event.detail);
+          console.log("demo-onironselect",event.detail);
         },
-        test: function(event) {
-          console.log('itemschange',event);
+        onSelectedItemChanged: function(event) {
+          this.debounce('ceve', function(){
+            console.log('demo-onSelectedItemChanged',event.detail);
+          },5);
+
         }
       });
 
