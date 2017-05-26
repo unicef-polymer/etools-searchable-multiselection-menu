@@ -210,13 +210,11 @@ Dropdown with search and single selection capabilities
           return;
         }
         selected = selected || this.selected;
-        if (!selected) {
-          return;
-        }
-        if (this._noOptions()) {
+        if (!selected || this._noOptions()) {
           this.set('selectedItem', null);
           return;
         }
+
         var selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
@@ -233,9 +231,6 @@ Dropdown with search and single selection capabilities
           selectedItem = detail;
         }
         this._setSelectedItem(this.selected, selectedItem);
-      },
-      _noOptions: function() {
-        return (!this.options || !this.options.length);
       },
       _getItemFromOptions: function(value) {
         if (this._noOptions()) {

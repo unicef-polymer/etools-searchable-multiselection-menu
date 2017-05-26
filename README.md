@@ -190,6 +190,7 @@ In this case change event is automatically disabled. Example:
 # \<etools-single-selection-menu\>
 
 Dropdown menu with search and single selection option
+When the optionValue is Number (in the options array), the type is preserved, it's not converted to string
 
 ### Element properties
 * selected - Number/Array - notifies - the id/optionValue of the selected item

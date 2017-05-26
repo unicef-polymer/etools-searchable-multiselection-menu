@@ -12,7 +12,7 @@
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
-<link rel="import" href="deletable-option-list.html">
+<link rel="import" href="scripts/es6-polyfills.html">
 <!--
 `etools-multi-selection-menu`
 Dropdown with search and multi selection capabilities
@@ -111,7 +111,7 @@ Dropdown with search and multi selection capabilities
           <div class="list-wrapper">
             <paper-listbox multi attr-for-selected="internal-id"
                            selected-values={{selectedValues}}
-                           on-selected-items-changed="_onSelectedItemsChanged"
+                           on-iron-select="_onIronSelect"
                            on-selected-values-changed="_onSelectedValuesChanged">
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
@@ -151,36 +151,88 @@ Dropdown with search and multi selection capabilities
       properties: {
         selectedValues: {
           type: Array,
-          observer: '_selectedValuesChanged',
           notify: true
         },
         selectedItems: {
           type: Array,
           notify: true
+        },
+        notFoundOptions: {
+          type: Array,
+        },
+        optionValueType: {
+          type: String,
+          value: 'string'
         }
+
       },
-      _selectedValuesChanged: function (newV) {
-       // console.log('_selectedValuesChanged', newV);
+      observers: [
+        '_selectedValuesOrOptionsChanged(options)'
+      ],
+      _onIronSelect: function(event) {
+        this._preserveOptionValueType();
+        console.log('_onIronSelect',this.selectedValues, event.detail.item.item);
+
+      },
+      //selectedValues Change doesn't fire when you select and deselect items from the dropdown,
+      //but it fires when you enter the page and have preselected values
+      _selectedValuesOrOptionsChanged: function(selectedValues) {
+        console.log('_selectedValuesChanged', selectedValues);
+        this._preserveOptionValueType(selectedValues);
+
+        this._setSelectedItems(selectedValues);
+      },
+
+      _preserveOptionValueType: function(selectedValues) {
+        if (this._noOptions()) {
+          return;
+        }
+        selectedValues = selectedValues || this.selectedValues;
+        console.log('_preserveOptionValueType', selectedValues);
+        if (!selectedValues || !selectedValues.length) {
+          return;
+        }
+        var type = typeof this.options[0][this.optionValue];
+
+        selectedValues.forEach(function(value, index){
+          if (typeof value !== type) {
+            selectedValues[index] = parseInt(value, 10);
+          }
+        });
+      },
+      _setSelectedItems: function(selectedValues) {
+        selectedValues = selectedValues || this.selectedValues;
+        if (!selectedValues || !selectedValues.length || this._noOptions()) {
+          this.selectedItems = null;
+          return;
+        }
+        if (this.selectedItems && this.selectedItems.length === this.selectedValues.length) {
+          return;
+        }
+        var selectedItems = this.options.filter(function(item) {
+          return selectedValues.includes(item[this.optionValues]);
+        }.bind(this));
+
       },
       _onSelectedValuesChanged: function(event) {
       //  if ()
         console.log('** _onSelectedValuesChanged',event);
       },
-      _onSelectedItemsChanged: function(event) {
-        console.log('_onSelectedItemsChanged');
-        var selectedPaperItems = event.detail.value;
+      // _onSelectedItemsChanged: function(event) {
 
-        if (!selectedPaperItems || selectedPaperItems.length === 0) {
-          this.selectedItems = [];
-          return;
-        }
-        var selectedItems = [];
-        selectedPaperItems.forEach(function (paperItem) {
-          selectedItems.push(paperItem.item);
-        }.bind(this));
+      //   var selectedPaperItems = event.detail.value;
+      //    console.log('_onSelectedItemsChanged',selectedPaperItems);
+      //   if (!selectedPaperItems || selectedPaperItems.length === 0) {
+      //     this.selectedItems = [];
+      //     return;
+      //   }
+      //   var selectedItems = [];
+      //   selectedPaperItems.forEach(function (paperItem) {
+      //     selectedItems.push(paperItem.item);
+      //   }.bind(this));
 
-        this.selectedItems = selectedItems;
-      },
+      //   this.selectedItems = selectedItems;
+      // },
       _removeSelectedItem: function(e) {
         if (this.disabled) {
           return;

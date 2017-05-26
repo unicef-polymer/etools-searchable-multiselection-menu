@@ -89,6 +89,9 @@ etoolsSearchableDropdown.CommonBehavior = {
          value: '—'
        },
     },
+    _noOptions: function() {
+        return (!this.options || !this.options.length);
+    },
     _menuBtnIsDisabled: function(disabled, readonly) {
       return disabled || readonly;
     },
