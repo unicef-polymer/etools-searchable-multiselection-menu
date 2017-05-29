@@ -638,8 +638,7 @@ Custom property | Description | Default
           }
           // this could be fired twice almost in the same time (on item tap and on dropdown close)
           this.debounce('etoolsEsmmValueSelected', function() {
-            var self = this;
-              this.set('menuOpened', false);
+            this.set('menuOpened', false);
             if(this.selectedValues === null) {
               // reset selected
               this.set('value', null);
@@ -808,10 +807,10 @@ Custom property | Description | Default
               if (notFoundValues.length === 1) {
                 warnMsg += 'value ';
               } else {
-                warnMsg += 'values '
+                warnMsg += 'values ';
               }
               warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!';
-              console.warn(warnMsg);
+              console.warn(warnMsg); // eslint-disable-line no-console
             }
           }.bind(this), 50);
         },
@@ -829,10 +828,13 @@ Custom property | Description | Default
                 return;
               }
             } else {
-              if (selectedValues === null && Array.isArray(this._prevSelectedValues) && this._prevSelectedValues.length === 0) {
+              if (selectedValues === null &&
+                Array.isArray(this._prevSelectedValues) &&
+                this._prevSelectedValues.length === 0) {
                 return;
               }
-              if (!this._prevSelectedValues && (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
+              if (!this._prevSelectedValues &&
+                (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
                 return;
               }
             }
@@ -910,7 +912,7 @@ Custom property | Description | Default
           if (this.readonly || this.menuOpened) {
             return;
           }
-          this.debounce('openDropdown', function () {
+          this.debounce('openDropdown', function() {
             if (this.value && this.value instanceof Array && this.value.length > 0) {
               return;
             }
@@ -923,7 +925,6 @@ Custom property | Description | Default
                 Polymer.dom(searchInput.root).querySelector('#input').focus();
               }, 100);
             }
-
           }.bind(this), 100);
         },
 
@@ -963,7 +964,7 @@ Custom property | Description | Default
           if (this.noChangeEvent || this.readonly) {
             return;
           }
-          this.debounce('fireValueChanged', function () {
+          this.debounce('fireValueChanged', function() {
             var selectedValues = null;
             if ((typeof this.value === 'object' && this.value !== null) ||
               (this.value instanceof Array && this.value.length > 0)) {
@@ -980,9 +981,10 @@ Custom property | Description | Default
         },
 
         validate: function() {
+          var valid;
           if (!this.multi) {
             // single selection validation
-            var valid = this.$$('#singleSelectionDropdown').validate();
+            valid = this.$$('#singleSelectionDropdown').validate();
             if (valid) {
               this.set('invalid', false);
               return true;
@@ -992,7 +994,7 @@ Custom property | Description | Default
             }
           } else {
             // multiple selection validation
-            var valid = false;
+            valid = false;
             if (this._multiRequired(this.required)) {
               if (Array.isArray(this.selectedValues) && this.selectedValues.length > 0) {
                 valid = true;
@@ -1077,15 +1079,20 @@ Custom property | Description | Default
               this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
               this._selectionChanged(this.selected, this.options);
             } else {
-              console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
-                this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
+              // eslint-disable-next-line no-console
+              console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' +
+                this.url + ') are not valid(missing \'' + this.optionValue + '\' and \'' +
+                this.optionLabel + '\' properties)');
             }
           } catch (error) {
-            console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
+            // eslint-disable-next-line no-console
+            console.error('[etools-esmm ' + this.label +
+              '] Error occurred on missing options request response handling', error);
           }
         },
 
         _handleMissingOptionsReqError: function(errorResponse) {
+          // eslint-disable-next-line no-console
           console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
         }
 

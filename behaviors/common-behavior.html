@@ -1,7 +1,7 @@
 <script>
 window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
 /** @polymerBehavior etoolsSearchableDropdown.CommonBehavior */
-etoolsSearchableDropdown.CommonBehavior = {
+etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
   properties: {
      label: {
           type: String
@@ -128,5 +128,5 @@ etoolsSearchableDropdown.CommonBehavior = {
         return (optionsLength > 0 && shownOptionsLength === 0) ||
             (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
       }
-}
+};
 </script>
