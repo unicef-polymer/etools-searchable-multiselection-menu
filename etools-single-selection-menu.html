@@ -149,24 +149,18 @@ Dropdown with search and single selection capabilities
           value: null,
           notify: true
         },
-        restoreFocusOnClose: {
-          type: Boolean,
-          value: function() {
-            return false;
-          }
-        },
         notFoundOption: {
           type: String
         }
       },
       observers: [
         '_selectedAndOptionsChanged(selected, options)',
-        'notFoundOptionAndUrlChanged(notFoundOption, url)'
+        '_notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
-      notFoundOptionAndUrlChanged: function() {
+      _notFoundOptionAndUrlChanged: function() {
         if (this.notFoundOption) {
           this._handleSelectedNotFoundInOptions(this.notFoundOption)
         }
@@ -253,7 +247,7 @@ Dropdown with search and single selection capabilities
         if (!this.hasAttribute('required')) {
           return true;
         }
-        this.set('invalid', !!!selected);
+        this.set('invalid', !selected);
         return !!selected;
       },
 

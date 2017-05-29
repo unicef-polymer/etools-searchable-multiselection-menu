@@ -88,6 +88,12 @@ etoolsSearchableDropdown.CommonBehavior = {
          type: String,
          value: '—'
        },
+       restoreFocusOnClose: {
+          type: Boolean,
+          value: function() {
+            return false;
+          }
+        },
     },
     _noOptions: function() {
         return (!this.options || !this.options.length);

@@ -68,24 +68,18 @@ Dropdown with search and multi selection capabilities
 
     <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse" on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
-    <paper-input-container id="main"
-    class="external-wrapper"
-     always-float-label
-      disabled$="[[disabled]]"
-      invalid$="[[invalid]]"
-      auto-validate="[[autoValidate]]"
-      required$="[[required]]"
-      attr-for-value="selected-values">
+    <paper-input-container id="main" tabindex="0" class="external-wrapper" always-float-label disabled$="[[disabled]]" invalid$="[[invalid]]"
+      auto-validate$="[[autoValidate]]" required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu" on-tap="_handleClickOrTap">
 
       <label aria-hidden="true" for="main-input">[[label]]</label>
-      <input type="text"  class="paper-input-input"  hidden>
+      <input type="text" class="paper-input-input" hidden>
 
       <div class="content-wrapper">
         <template is="dom-repeat" items="[[selectedItems]]">
           <span class="option-string">
           {{_getLabel(item)}}
           <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
-          <paper-icon-button hidden$="[[disabled]]" icon="close" on-click="_removeSelectedItem"></paper-icon-button>
+          <paper-icon-button hidden$="[[disabled]]" icon="close" id="iconRemoveSelected" on-click="_removeSelectedItem"></paper-icon-button>
           </span>
         </template>
       </div>
@@ -94,10 +88,9 @@ Dropdown with search and multi selection capabilities
       </template>
 
 
-      <paper-menu-button id="dropdownMenu" horizontal-align="right" ignore-select
-        restore-focus-on-close$="[[restoreFocusOnClose]]"
+      <paper-menu-button id="dropdownMenu" horizontal-align="right" ignore-select restore-focus-on-close$="[[restoreFocusOnClose]]"
         allow-outside-scroll="[[allowOutsideScroll]]" dynamic-align$="[[dynamicAlign]]" on-paper-dropdown-open="_onDropdownOpen"
-        disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]" hidden$="[[readonly]]">
+        on-paper-dropdown-close="_onPaperDropdownClose" disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]" hidden$="[[readonly]]">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
 
@@ -109,9 +102,7 @@ Dropdown with search and multi selection capabilities
             </paper-input>
           </div>
           <div class="list-wrapper">
-            <paper-listbox multi attr-for-selected="internal-id"
-                           selected-values={{selectedValues}}
-                           on-selected-values-changed="_onSelectedValuesChanged">
+            <paper-listbox multi attr-for-selected="internal-id" selected-values={{selectedValues}}>
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
                   title$="[[_getLabel(item)]]">
@@ -159,125 +150,185 @@ Dropdown with search and multi selection capabilities
         notFoundOptions: {
           type: Array,
         },
-        optionValueType: {
-          type: String,
-          value: 'string'
-        }
 
       },
       observers: [
-        '_selectedValuesOrOptionsChanged(selectedValues, options)'
+        '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
+        '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
+        '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
-      _selectedValuesSplices: function(e) {
-        console.log('_selectedValuesSplices',e);
-        this._preserveOptionValueType();
-        console.log('SELVALUES', this.selectedValues);
-        //this._setSelectedItems();
-      },
 
-      // selectedValues Change doesn't fire when you select and deselect items from the dropdown, on account of unobservable array mutations
-      // but it fires when you enter the page and have preselected values
-      _selectedValuesOrOptionsChanged: function(selectedValues, options, b) {
 
+
+      _selectedValuesOrOptionsChanged: function (selectedValues, options, selectedValuesLength) {
         console.log('_selectedValuesOrOptionsChanged', selectedValues);
-        this._preserveOptionValueType(selectedValues);
+        console.log(this.invalid);
+        this._selectedValuesToString();
         this._setSelectedItems(selectedValues);
+
+        if (this.autoValidate) {
+          this.validate(selectedValues);
+        }
       },
 
-      _preserveOptionValueType: function(selectedValues) {
-        if (this._noOptions()) {
-          return;
-        }
-        selectedValues = selectedValues || this.selectedValues;
-      //  console.log('_preserveOptionValueType', selectedValues);
-        if (!selectedValues || !selectedValues.length) {
-          return;
-        }
-        var type = typeof this.options[0][this.optionValue];
-
-        selectedValues.forEach(function(value, index){
-          if (typeof value !== type) {
-            selectedValues[index] = parseInt(value, 10);
-          }
-        });
-      },
       // Can't use paper-listbox's on-selected-items-changed event ,
       // because paper-lisbox doesn't cover the case when selectedItems are not in the shownOptions values
-      _setSelectedItems: function(selectedValues) {
-        selectedValues = selectedValues || this.selectedValues;
-        if (!selectedValues || !selectedValues.length || this._noOptions()) {
+      _setSelectedItems: function (selectedValues) {
+        console.log('setselitems', this.selectedItems);
+        this.notFoundOptions = null;
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        if (this._noSelectedValues(selectedValues) || this._noOptions()) {
           this.selectedItems = null;
+          console.log('here');
           return;
         }
-        if (this.selectedItems && this.selectedItems.length === this.selectedValues.length) {
-          return;
-        }
-        var selectedItems = this.options.filter(function(item) {
-          return selectedValues.includes(item[this.optionValue]);
+        var selectedItems = this.options.filter(function (item) {
+          return selectedValues.includes(item[this.optionValue].toString());
         }.bind(this));
+
+        this._setAnyNotFoundOptions(selectedItems, selectedValues);
         this.selectedItems = selectedItems;
+        console.log('set selected Items');
       },
-      // The alternative of an observer on selectedValues.splices doesn't work as it sees a deselect as a select
-      // The alternative of using on-selected-items-changed doesn't work when the selectedValues is not in the 50 shownOptions
-      _onSelectedValuesChanged: function(event) {
-        console.log('SELVALUES2', this.selectedValues);
-        var possiblePaths = ['selectedValues.splices','selectedValues.length'];
-
-        if (possiblePaths.includes(event.detail.path)) {
-          if (event.detail.path === possiblePaths[0]) {
-            var selValuesInfo = event.detail.value.indexSplices[0];
-            if (selValuesInfo.addedCount) {
-
-            } else {
-              if (selValuesInfo.removed) {
-
-              }
-            }
-          }
-        } else {
-
-        }
-
-        if (event.detail.path == "selectedValues.splices") {
-          console.log("selectedValues.splices",event.detail.value.indexSplices[0]);
-        }
-        else {
-          console.log('_onSelectedValuesChanged',event.detail);
+      _selectedItemsChanged: function (newv, oldv) {
+        console.log(oldv);
+        console.log('selecteditemschanged', newv, oldv);
+        this.fire('etools-selected-items-changed', { selectedItems: this.selectedItems });
+      },
+      _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
+        if (this._noSelectedItems(selectedItems)) {
+          this.notFoundOptions = selectedValues;
+        } else if (selectedItems.length < selectedValues.length) {
+          var selectedItemsValues = this._getValuesFromItems(selectedItems);
+          this.notFoundOptions = selectedValues.filter(function (value) {
+            return !selectedItemsValues.includes(value);
+          });
         }
       },
-
-      _removeSelectedItem: function(e) {
-        if (this.disabled) {
-          return;
-        }
+      _removeSelectedItem: function (e) {
         // Compute selectedItems without the removed item
-        var selItems = this.selectedItems.filter(function(item) {
-            return item[this.optionValue] !== e.model.item[this.optionValue];
+        var selItems = this.selectedItems.filter(function (item) {
+          return item[this.optionValue] !== e.model.item[this.optionValue];
         }.bind(this));
 
         if (!selItems || !selItems.length) {
-          this._emptySelected_WithoutObservableChanges();
-          return;
+          this.selectedValues = null;
+          this.selectedItems = null;
+        } else {
+          selValues = this._getValuesFromItems(selItems);
+          this.selectedValues = selValues;
+          this.selectedItems = selItems;
         }
 
-        selValues = this._getValuesFromItems(selItems);
-        this._updateSelected_WithoutObservableChanges(selValues, selItems);
+        if (this.autoValidate) {
+          this.validate(this.selectedValues);
+        }
       },
-      _getValuesFromItems: function(selectedItems) {
-       return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function(item){
-         return item[this.optionValue];
-       }.bind(this)) : null;
-      },
-      _emptySelected_WithoutObservableChanges: function() {
-         this.selectedItems.splice(0, this.selectedItems.length);
-         this.selectedValues.splice(0, this.selectedValues.length);
-      },
-      _updateSelected_WithoutObservableChanges: function(selectedValues, selectedItems) {
-       // Array.prototype.splice.apply(this.selectedValues)
-        this.selectedValues.splice(0, selectedValues);
-        this.selectedItems.splice(0, this.selectedItems.length, selectedItems);
-      }
 
+      // This observer makes sure request for missing option is triggered only after the url is set also.
+      // notFoundOption is actually this.selected
+      _notFoundOptionsAndUrlChanged: function () {
+        if (this.notFoundOption) {
+          this._handleSelectedNotFoundInOptions(this.notFoundOptions)
+        }
+      },
+      _handleSelectedNotFoundInOptions: function (notFoundSelectedValues) {
+        this._requestMissingOptions(notFoundSelectedValues);
+        // show console warning
+        var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
+
+        warnMsg += notFoundSelectedValues + ' not found in dropdown\'s options!';
+        console.warn(warnMsg);
+      },
+      _updateAfterMissingOptionsReceived: function (detail) {
+        var selectedItems;
+        if (Array.isArray(detail) && detail.length) {
+          selectedItems = detail;
+        } else {
+          selectedItems = [detail];
+        }
+        if (this.selectedItems) {
+          Array.prototype.push.apply(this.selectedItems, selectedItems);
+        } else {
+          this.selectedItems = selectedItems;
+        }
+      },
+      _onPaperDropdownClose: function () {
+        if (this.autoValidate) {
+          this.validate(this.selectedValues);
+        }
+      },
+      validate: function (selectedValues) {
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        if (!this.hasAttribute('required')) {
+          return true;
+        }
+        var invalid = (!selectedValues || !selectedValues.length);
+        this.set('invalid', invalid);
+        return invalid;
+      },
+      _handleClickOrTap: function (e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        this._openMenu(e);
+      },
+      _openMenu: function (event) {
+        if (event) {
+          if (this._clickedOnX(event)) {
+            return; // Do not open menu
+          }
+        }
+        var dropdown = this.$.dropdownMenu;
+        if (!dropdown.opened) {
+          dropdown.open();
+        }
+      },
+      // Clicked on x to remove selected item
+      _clickedOnX: function (event) {
+        return event.path && event.path[0] && event.path[0].id === 'icon';
+      },
+      _getValuesFromItems: function (selectedItems) {
+        return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function (item) {
+          return item[this.optionValue].toString();
+        }.bind(this)) : null;
+      },
+      _noSelectedValues: function (selectedValues) {
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        return !selectedValues || !selectedValues.length;
+      },
+      _noSelectedItems: function (selectedItems) {
+        if (typeof selectedItems === 'undefined') {
+          selectedItems = this.selectedItems;
+        }
+        return !selectedItems || !selectedItems.length;
+      },
+      _selectedValuesToString: function () {
+        if (this._noSelectedValues(this.selectedValues)) {
+          return;
+        }
+        this.selectedValues.forEach(function (value, index) {
+          if (typeof value !== 'string') {
+            this.selectedValues[index] = value.toString();
+          }
+        });
+      },
+
+
+      //TODO -this might have to be observable
+      // _emptySelected_WithoutObservableChanges: function() {
+      //    this.selectedItems.splice(0, this.selectedItems.length);
+      //    this.selectedValues.splice(0, this.selectedValues.length);
+      // },
+      // _updateSelected_WithoutObservableChanges: function(selectedValues, selectedItems) {
+      //   Array.prototype.splice.apply(this.selectedValues, [0, this.selectedValues.length].concat(selectedValues));
+      //   Array.prototype.splice.apply(this.selectedItems, [0, this.selectedItems.length].concat(selectedItems);
+      // }
     });
   </script>
 </dom-module>
