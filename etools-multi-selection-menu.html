@@ -68,8 +68,9 @@ Dropdown with search and multi selection capabilities
 
     <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse" on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
-    <paper-input-container id="main" tabindex="0" class="external-wrapper" always-float-label disabled$="[[disabled]]" invalid$="[[invalid]]"
-      auto-validate$="[[autoValidate]]" required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu" on-tap="_handleClickOrTap">
+    <paper-input-container id="main" tabindex="0" class="external-wrapper" always-float-label
+      disabled$="[[disabled]]" invalid$="[[invalid]]"
+      required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu" on-tap="_handleClickOrTap">
 
       <label aria-hidden="true" for="main-input">[[label]]</label>
       <input type="text" class="paper-input-input" hidden>
@@ -157,12 +158,7 @@ Dropdown with search and multi selection capabilities
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
         '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
-
-
-
       _selectedValuesOrOptionsChanged: function (selectedValues, options, selectedValuesLength) {
-        console.log('_selectedValuesOrOptionsChanged', selectedValues);
-        console.log(this.invalid);
         this._selectedValuesToString();
         this._setSelectedItems(selectedValues);
 
@@ -174,14 +170,12 @@ Dropdown with search and multi selection capabilities
       // Can't use paper-listbox's on-selected-items-changed event ,
       // because paper-lisbox doesn't cover the case when selectedItems are not in the shownOptions values
       _setSelectedItems: function (selectedValues) {
-        console.log('setselitems', this.selectedItems);
         this.notFoundOptions = null;
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
         }
         if (this._noSelectedValues(selectedValues) || this._noOptions()) {
           this.selectedItems = null;
-          console.log('here');
           return;
         }
         var selectedItems = this.options.filter(function (item) {
@@ -190,11 +184,8 @@ Dropdown with search and multi selection capabilities
 
         this._setAnyNotFoundOptions(selectedItems, selectedValues);
         this.selectedItems = selectedItems;
-        console.log('set selected Items');
       },
       _selectedItemsChanged: function (newv, oldv) {
-        console.log(oldv);
-        console.log('selecteditemschanged', newv, oldv);
         this.fire('etools-selected-items-changed', { selectedItems: this.selectedItems });
       },
       _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
@@ -269,7 +260,7 @@ Dropdown with search and multi selection capabilities
         }
         var invalid = (!selectedValues || !selectedValues.length);
         this.set('invalid', invalid);
-        return invalid;
+        return !invalid;
       },
       _handleClickOrTap: function (e) {
         e.preventDefault();
@@ -279,7 +270,7 @@ Dropdown with search and multi selection capabilities
       _openMenu: function (event) {
         if (event) {
           if (this._clickedOnX(event)) {
-            return; // Do not open menu
+            return; // Do not open
           }
         }
         var dropdown = this.$.dropdownMenu;
@@ -316,19 +307,9 @@ Dropdown with search and multi selection capabilities
           if (typeof value !== 'string') {
             this.selectedValues[index] = value.toString();
           }
-        });
+        }.bind(this));
       },
 
-
-      //TODO -this might have to be observable
-      // _emptySelected_WithoutObservableChanges: function() {
-      //    this.selectedItems.splice(0, this.selectedItems.length);
-      //    this.selectedValues.splice(0, this.selectedValues.length);
-      // },
-      // _updateSelected_WithoutObservableChanges: function(selectedValues, selectedItems) {
-      //   Array.prototype.splice.apply(this.selectedValues, [0, this.selectedValues.length].concat(selectedValues));
-      //   Array.prototype.splice.apply(this.selectedItems, [0, this.selectedItems.length].concat(selectedItems);
-      // }
     });
   </script>
 </dom-module>
