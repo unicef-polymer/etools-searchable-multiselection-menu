@@ -200,17 +200,17 @@ Dropdown with search and multi selection capabilities
       },
       _removeSelectedItem: function (e) {
         // Compute selectedItems without the removed item
-        var selItems = this.selectedItems.filter(function (item) {
+        var selectedItems = this.selectedItems.filter(function (item) {
           return item[this.optionValue] !== e.model.item[this.optionValue];
         }.bind(this));
 
-        if (!selItems || !selItems.length) {
+        if (this._noSelectedItems(selectedItems)) {
           this.selectedValues = null;
           this.selectedItems = null;
         } else {
-          selValues = this._getValuesFromItems(selItems);
-          this.selectedValues = selValues;
-          this.selectedItems = selItems;
+          selectedValues = this._getValuesFromItems(selectedItems);
+          this.selectedValues = selectedValues;
+          this.selectedItems = selectedItems;
         }
 
         if (this.autoValidate) {
