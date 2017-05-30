@@ -46,17 +46,29 @@
         <!--</template>-->
       <!--</demo-snippet>-->
 
-      <!--<h2>Single selection, with search, always display an empty value</h2>-->
-      <!--<demo-snippet>-->
-        <!--<template is="dom-bind">-->
-          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
-          <!--<etools-searchable-multiselection-menu-->
-              <!--label="Searchable menu"-->
-              <!--options="[[realOptions]]"-->
-              <!--empty-value-->
-              <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
-        <!--</template>-->
-      <!--</demo-snippet>-->
+      <h2>Single selection, two-lines</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+                  label="Searchable menu"
+                  options="[[twoLineOptions]]"
+                  two-lines
+                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
+      <h2>Single selection, with search, always display an empty value</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+              label="Searchable menu"
+              options="[[realOptions]]"
+              empty-value
+              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
 
 
       <!--<h2>Single selection, with search, limit of 3 elements</h2>-->
@@ -156,13 +168,13 @@
         <!--</template>-->
       <!--</demo-snippet>-->
 
-      <h2>New version of single selectable with search</h2>
+      <!--<h2>New version of single selectable with search</h2>-->
 
-      <demo-snippet>
-        <template>
-          <demo-searchable-singleselection-menu></demo-searchable-singleselection-menu>
-        </template>
-      </demo-snippet>
+      <!--<demo-snippet>-->
+        <!--<template>-->
+          <!--<demo-searchable-singleselection-menu></demo-searchable-singleselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
     </div>
 

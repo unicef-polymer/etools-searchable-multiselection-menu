@@ -195,6 +195,13 @@ Custom property | Description | Default
       .multi-input-container {
         outline: none;
       }
+      .secondary-label {
+        font-size: 14px;
+      }
+      .list-wrapper paper-item.two-lines{
+        padding: 20px 16px;
+        line-height:normal;
+      }
 
       :host([readonly]) {
         --paper-input-container: {
@@ -330,7 +337,11 @@ Custom property | Description | Default
                   title$="[[item.label]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <span>[[item.label]]</span>
+                  <template is="dom-if" if="twoLines">
+                    <div>[[item.display.primary]]</div>
+                    <div class="secondary-label">[[item.display.secondary]]</div>
+                  </template>
+                  <span hidden$="[[twoLines]]">[[item.label]]</span>
 
                 </paper-item>
               </template>
@@ -494,6 +505,10 @@ Custom property | Description | Default
             notify: true,
             value: []
           },
+          twoLines: {
+            type: Boolean,
+            value: 'false'
+          },
           url: String,
           ajaxParams: Object
 
@@ -529,6 +544,7 @@ Custom property | Description | Default
         },
 
         _computeShowItems: function(options, searchKey, emptyValue) {
+          console.log('options', options)
           var filtered = JSON.parse(JSON.stringify(options));
           if (searchKey && searchKey.length > 0) {
             filtered = options.filter(function(item) {
@@ -550,6 +566,22 @@ Custom property | Description | Default
 
           if (emptyValue) {
             filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+          }
+          if (this.twoLines) {
+            var newOptions = filtered.map(function(item) {
+              var split = item.label.split('|');
+              return {
+                value: item.value,
+                label: split[0],
+                display: {
+                  primary: split[0],
+                  secondary: split[1]
+                },
+                style: 'two-lines'
+              }
+            });
+            this.set('twoLinesOptions', newOptions);
+            return newOptions;
           }
           return filtered;
         },
@@ -659,7 +691,8 @@ Custom property | Description | Default
         },
 
         _singleValueSelected: function() {
-          this.options.forEach(function(item) {
+          var options = this.twoLines ? this.twoLinesOptions: this.options;
+          options.forEach(function(item) {
             if (this.customObjectOptions) {
               var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
               if (itemValue === this.selectedValues) {
