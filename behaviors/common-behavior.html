@@ -119,7 +119,7 @@ etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
         return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
       },
       _itemContainsSearchString: function(item) {
-        return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+        return item[this.optionLabel] && item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
