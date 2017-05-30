@@ -6,6 +6,7 @@
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 
 <link rel="import" href="scripts/es6-polyfills.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
@@ -135,8 +136,8 @@ Dropdown with search and single selection capabilities
     Polymer({
       is: 'etools-single-selection-menu',
       behaviors: [
-        etoolsSearchableDropdown.MissingOptionsBehavior,
-        etoolsSearchableDropdown.CommonBehavior
+        etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior // eslint-disable-line no-undef
       ],
       properties: {
         selected: {
@@ -151,7 +152,8 @@ Dropdown with search and single selection capabilities
         },
         notFoundOption: {
           type: String
-        }
+        },
+        allowOutsideScroll: Boolean
       },
       observers: [
         '_selectedAndOptionsChanged(selected, options)',
@@ -162,7 +164,7 @@ Dropdown with search and single selection capabilities
       // notFoundOption is actually this.selected
       _notFoundOptionAndUrlChanged: function() {
         if (this.notFoundOption) {
-          this._handleSelectedNotFoundInOptions(this.notFoundOption)
+          this._handleSelectedNotFoundInOptions(this.notFoundOption);
         }
       },
       _onPaperDropdownClose: function() {
@@ -208,8 +210,7 @@ Dropdown with search and single selection capabilities
           this.set('selectedItem', null);
           return;
         }
-
-        var selectedItem = this._getItemFromOptions(selected);
+        selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
           this.set('selectedItem', null);
@@ -240,6 +241,7 @@ Dropdown with search and single selection capabilities
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
 
         warnMsg += selected + ' not found in dropdown\'s options!';
+        // eslint-disable-next-line no-console
         console.warn(warnMsg);
       },
       validate: function(selected) {

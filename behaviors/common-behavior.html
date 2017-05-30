@@ -1,7 +1,7 @@
 <script>
 window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
 /** @polymerBehavior etoolsSearchableDropdown.CommonBehavior */
-etoolsSearchableDropdown.CommonBehavior = {
+etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
   properties: {
      label: {
           type: String
@@ -153,6 +153,7 @@ etoolsSearchableDropdown.CommonBehavior = {
       _showNoSearchResultsWarning: function(shownOptionsLength, optionsLength) {
         return (optionsLength > 0 && shownOptionsLength === 0) ||
             (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
+
       },
       _onDropdownOpen: function() {
         var ironDropdown = this._getIronDropdown();
@@ -166,6 +167,6 @@ etoolsSearchableDropdown.CommonBehavior = {
       },
       _getIronDropdown: function() {
         return this.$.dropdownMenu.$.dropdown;
-      },
-}
+      }
+};
 </script>
