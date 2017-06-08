@@ -544,7 +544,6 @@ Custom property | Description | Default
         },
 
         _computeShowItems: function(options, searchKey, emptyValue) {
-          console.log('options', options)
           var filtered = JSON.parse(JSON.stringify(options));
           if (searchKey && searchKey.length > 0) {
             filtered = options.filter(function(item) {
