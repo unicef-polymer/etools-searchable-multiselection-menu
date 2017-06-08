@@ -337,11 +337,11 @@ Custom property | Description | Default
                   title$="[[item.label]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <template is="dom-if" if="twoLines">
+                  <template is="dom-if" if="twoLinesLabel">
                     <div>[[item.display.primary]]</div>
                     <div class="secondary-label">[[item.display.secondary]]</div>
                   </template>
-                  <span hidden$="[[twoLines]]">[[item.label]]</span>
+                  <span hidden$="[[twoLinesLabel]]">[[item.label]]</span>
 
                 </paper-item>
               </template>
@@ -505,7 +505,7 @@ Custom property | Description | Default
             notify: true,
             value: []
           },
-          twoLines: {
+          twoLinesLabel: {
             type: Boolean,
             value: 'false'
           },
@@ -566,7 +566,7 @@ Custom property | Description | Default
           if (emptyValue) {
             filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
           }
-          if (this.twoLines) {
+          if (this.twoLinesLabel) {
             var newOptions = filtered.map(function(item) {
               var split = item.label.split('|');
               return {
@@ -690,7 +690,7 @@ Custom property | Description | Default
         },
 
         _singleValueSelected: function() {
-          var options = this.twoLines ? this.twoLinesOptions: this.options;
+          var options = this.twoLinesLabel ? this.twoLinesOptions: this.options;
           options.forEach(function(item) {
             if (this.customObjectOptions) {
               var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
