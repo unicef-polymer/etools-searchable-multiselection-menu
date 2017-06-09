@@ -53,22 +53,46 @@
           <etools-searchable-multiselection-menu
                   label="Searchable menu"
                   options="[[twoLineOptions]]"
-                  two-lines
-                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+                  two-lines-label
+                  ></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
-      <h2>Single selection, with search, always display an empty value</h2>
+      <h2>Multi selection, two-lines</h2>
       <demo-snippet>
         <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu
-              label="Searchable menu"
-              options="[[realOptions]]"
-              empty-value
-              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+                  label="Searchable menu"
+                  options="[[twoLineOptions]]"
+                  two-lines-label
+                  multi
+                  ></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
+
+      <h2>Single Select Menu</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
+          <etools-single-selection-menu
+                  label="Searchable menu"
+                  options="[[twoLineOptions]]"
+                  two-lines-label></etools-single-selection-menu>
+        </template>
+      </demo-snippet>
+
+      <!--<h2>Single selection, with search, always display an empty value</h2>-->
+      <!--<demo-snippet>-->
+        <!--<template is="dom-bind">-->
+          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
+          <!--<etools-searchable-multiselection-menu-->
+              <!--label="Searchable menu"-->
+              <!--options="[[realOptions]]"-->
+              <!--empty-value-->
+              <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
+        <!--</template>-->
+      <!--</demo-snippet>-->
 
 
       <!--<h2>Single selection, with search, limit of 3 elements</h2>-->
