@@ -105,13 +105,13 @@ Dropdown with search and single selection capabilities
                 </paper-item>
               </template>
 
-              <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]"
+              <paper-item hidden$="[[!showNoSearchResultsWarning]]"
                           class="warning" disabled>
                 No results found. Try other keywords.
               </paper-item>
 
               <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
-                More than [[shownOptionsLimit]] items, use the search function to reveal more.
+                More than [[shownItemsLimit]] items, use the search function to reveal more.
               </paper-item>
 
               <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>

@@ -75,12 +75,14 @@ etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
       },
       showLimitWarning: {
          type: Boolean,
-         computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
+         value: false,
+         computed: '_computeShowLimitWarning(shownItemsLimit, shownOptions)'
       },
-      shownOptionsLimit: {
-        type: Number,
-        value: 50
-       },
+      showNoSearchResultsWarning: {
+        type: Boolean,
+        value: false,
+        computed: '_showNoSearchResultsWarning(noOptionsAvailable, shownOptions.length, options.length)'
+      },
        autoValidate: {
          type: Boolean
        },
@@ -128,9 +130,9 @@ etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
 
       if (search) {
         shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-        shownOptions = this._trimByShownOptionsLimit(shownOptions);
+        shownOptions = this._trimByShownItemsLimit(shownOptions);
       } else if (options.length > this.shownItemsLimit) {
-        shownOptions = this._trimByShownOptionsLimit(options);
+        shownOptions = this._trimByShownItemsLimit(options);
       }
 
       if (showEmptyValue) {
@@ -141,16 +143,19 @@ etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
       }
       return shownOptions;
       },
-      _trimByShownOptionsLimit: function(options) {
-        return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
+      _trimByShownItemsLimit: function(options) {
+        return options.slice(0, Math.min(this.shownItemsLimit, options.length));
       },
       _itemContainsSearchString: function(item) {
         return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
-        return shownOptions.length >= limit;
+        return  shownOptions.length >= limit;
       },
-      _showNoSearchResultsWarning: function(shownOptionsLength, optionsLength) {
+      _showNoSearchResultsWarning: function(noOptionsAvailable, shownOptionsLength, optionsLength) {
+       if (noOptionsAvailable) {
+         return false;
+       }
         return (optionsLength > 0 && shownOptionsLength === 0) ||
             (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
 

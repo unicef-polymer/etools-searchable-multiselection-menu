@@ -64,6 +64,9 @@ Dropdown with search and multi selection capabilities
         height: 18px;
         width: 18px;
       }
+      paper-input-container {
+        --paper-input-container-focus-color:red;
+      }
     </style>
 
     <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse" on-fail="_handleMissingOptionsReqError"></etools-ajax>
@@ -105,7 +108,7 @@ Dropdown with search and multi selection capabilities
           <div class="list-wrapper">
             <paper-listbox multi attr-for-selected="internal-id" selected-values={{selectedValues}}>
               <template is="dom-repeat" items="[[shownOptions]]">
-                <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
+                <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[_getSelectedClass(item, selected, shownOptions)]] [[item.cssClass]]"
                   title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -113,12 +116,12 @@ Dropdown with search and multi selection capabilities
                 </paper-item>
               </template>
 
-              <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]" class="warning" disabled>
+              <paper-item hidden$="[[!showNoSearchResultsWarning]]" class="warning" disabled>
                 No results found. Try other keywords.
               </paper-item>
 
               <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
-                More than [[shownOptionsLimit]] items, use the search function to reveal more.
+                More than [[shownItemsLimit]] items, use the search function to reveal more.
               </paper-item>
 
               <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
