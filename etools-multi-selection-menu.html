@@ -22,15 +22,20 @@ Dropdown with search and multi selection capabilities
 <dom-module id="etools-multi-selection-menu">
   <template>
     <style include="etools-dropdown-shared-styles">
-       :host {
+      :host {
         display: block;
         position: relative;
         width: 100%;
       }
 
+      :host * {
+        outline: none;
+      }
+
       .content-wrapper {
         max-width: calc(100% - 24px);
       }
+
       /*.readonly-separator,*/
 
       .option-string {
@@ -43,12 +48,12 @@ Dropdown with search and multi selection capabilities
         color: var(--esmm-option-list-color, #212121);
       }
 
-       :host([readonly]) .option-string {
+      :host([readonly]) .option-string {
         margin-right: 0;
       }
 
-       :host([readonly]) .option-string paper-icon-button,
-       :host([readonly]) .option-string:last-of-type .readonly-separator {
+      :host([readonly]) .option-string paper-icon-button,
+      :host([readonly]) .option-string:last-of-type .readonly-separator {
         display: none;
       }
 
@@ -67,11 +72,13 @@ Dropdown with search and multi selection capabilities
 
     </style>
 
-    <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse" on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse"
+                 on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
     <paper-input-container id="main" tabindex="0" class="external-wrapper" always-float-label
-      disabled$="[[disabled]]" invalid$="[[invalid]]"
-      required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu" on-tap="_handleClickOrTap">
+                           disabled$="[[disabled]]" invalid$="[[invalid]]"
+                           required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu"
+                           on-tap="_handleClickOrTap">
 
       <label aria-hidden="true" for="main-input">[[label]]</label>
       <input type="text" class="paper-input-input" hidden>
@@ -81,7 +88,8 @@ Dropdown with search and multi selection capabilities
           <span class="option-string">
           {{_getLabel(item)}}
           <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
-          <paper-icon-button hidden$="[[disabled]]" icon="close" id="iconRemoveSelected" on-click="_removeSelectedItem"></paper-icon-button>
+          <paper-icon-button hidden$="[[disabled]]" icon="close" id="iconRemoveSelected"
+                             on-click="_removeSelectedItem"></paper-icon-button>
           </span>
         </template>
       </div>
@@ -90,24 +98,29 @@ Dropdown with search and multi selection capabilities
       </template>
 
 
-      <paper-menu-button id="dropdownMenu" horizontal-align="right" ignore-select restore-focus-on-close$="[[restoreFocusOnClose]]"
-        allow-outside-scroll="[[allowOutsideScroll]]" dynamic-align$="[[dynamicAlign]]" on-paper-dropdown-open="_onDropdownOpen"
-        on-paper-dropdown-close="_onPaperDropdownClose" disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]" hidden$="[[readonly]]">
+      <paper-menu-button id="dropdownMenu" horizontal-align="right" ignore-select
+                         restore-focus-on-close$="[[restoreFocusOnClose]]"
+                         allow-outside-scroll="[[allowOutsideScroll]]" dynamic-align$="[[dynamicAlign]]"
+                         on-paper-dropdown-open="_onDropdownOpen"
+                         on-paper-dropdown-close="_onPaperDropdownClose"
+                         disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]" hidden$="[[readonly]]">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
 
         <div class="dropdown-content">
           <div class="search-input-wrapper" hidden$="{{hideSearch}}">
-            <paper-input id="searchInput" no-label-float class="search-input" label="Search" type="text" value="{{search}}" auto-focus
-              tabindex="0">
+            <paper-input id="searchInput" no-label-float class="search-input" label="Search" type="text"
+                         value="{{search}}" auto-focus
+                         tabindex="0">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
           <div class="list-wrapper">
             <paper-listbox multi attr-for-selected="internal-id" selected-values={{selectedValues}}>
               <template is="dom-repeat" items="[[shownOptions]]">
-                <paper-item item=[[item]] internal-id$="[[_getValue(item)]]" class$="[[_getSelectedClass(item, selected, shownOptions)]] [[item.cssClass]]"
-                  title$="[[_getLabel(item)]]">
+                <paper-item item=[[item]] internal-id$="[[_getValue(item)]]"
+                            class$="[[_getSelectedClass(item, selected, shownOptions)]] [[item.cssClass]]"
+                            title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   <span>[[_getLabel(item)]]</span>
@@ -187,7 +200,7 @@ Dropdown with search and multi selection capabilities
         this.selectedItems = selectedItems;
       },
       _selectedItemsChanged: function (newv, oldv) {
-        this.fire('etools-selected-items-changed', { selectedItems: this.selectedItems });
+        this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
       },
       _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
         if (this._noSelectedItems(selectedItems)) {
