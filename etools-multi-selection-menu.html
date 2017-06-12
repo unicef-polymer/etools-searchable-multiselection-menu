@@ -72,23 +72,34 @@ Dropdown with search and multi selection capabilities
 
     </style>
 
-    <etools-ajax id="missingOptionsAjax" params="[[ajaxParams]]" on-success="_handleMissingOptionsReqResponse"
+    <etools-ajax id="missingOptionsAjax"
+                 params="[[ajaxParams]]"
+                 on-success="_handleMissingOptionsReqResponse"
                  on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
-    <paper-input-container id="main" tabindex="0" class="external-wrapper" always-float-label
-                           disabled$="[[disabled]]" invalid$="[[invalid]]"
-                           required$="[[required]]" attr-for-value="selected-values" on-focus="_openMenu"
-                           on-tap="_handleClickOrTap">
+    <paper-input-container id="main"
+                           tabindex="0"
+                           class="external-wrapper"
+                           always-float-label
+                           disabled$="[[disabled]]"
+                           invalid$="[[invalid]]"
+                           required$="[[required]]"
+                           attr-for-value="selected-values"
+                           on-focus="_openMenu"
+                           on-tap="_handleClickOrTap"
+                           on-click="_handleClickOrTap">
 
-      <label aria-hidden="true" for="main-input">[[label]]</label>
-      <input type="text" class="paper-input-input" hidden>
+      <label hidden$=[[!label]] aria-hidden="true">[[label]]</label>
 
-      <div class="content-wrapper">
+      <div class="content-wrapper paper-input-input">
+        <span class="placeholder" hidden$="[[selectedItems.length]]">[[placeholder]]</span>
         <template is="dom-repeat" items="[[selectedItems]]">
           <span class="option-string">
           {{_getLabel(item)}}
           <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
-          <paper-icon-button hidden$="[[disabled]]" icon="close" id="iconRemoveSelected"
+          <paper-icon-button id="iconRemoveSelected"
+                             hidden$="[[disabled]]"
+                             icon="close"
                              on-click="_removeSelectedItem"></paper-icon-button>
           </span>
         </template>
@@ -97,28 +108,38 @@ Dropdown with search and multi selection capabilities
         <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
       </template>
 
-
-      <paper-menu-button id="dropdownMenu" horizontal-align="right" ignore-select
+      <paper-menu-button id="dropdownMenu"
+                         horizontal-align="right"
+                         ignore-select
                          restore-focus-on-close$="[[restoreFocusOnClose]]"
-                         allow-outside-scroll="[[allowOutsideScroll]]" dynamic-align$="[[dynamicAlign]]"
+                         allow-outside-scroll="[[allowOutsideScroll]]"
+                         dynamic-align$="[[dynamicAlign]]"
                          on-paper-dropdown-open="_onDropdownOpen"
                          on-paper-dropdown-close="_onPaperDropdownClose"
-                         disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]" hidden$="[[readonly]]">
+                         disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
+                         hidden$="[[readonly]]">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
 
         <div class="dropdown-content">
           <div class="search-input-wrapper" hidden$="{{hideSearch}}">
-            <paper-input id="searchInput" no-label-float class="search-input" label="Search" type="text"
-                         value="{{search}}" auto-focus
+            <paper-input id="searchInput"
+                         no-label-float
+                         class="search-input"
+                         label="Search" type="text"
+                         value="{{search}}"
+                         auto-focus
                          tabindex="0">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
           <div class="list-wrapper">
-            <paper-listbox multi attr-for-selected="internal-id" selected-values={{selectedValues}}>
+            <paper-listbox multi
+                           attr-for-selected="internal-id"
+                           selected-values={{selectedValues}}>
               <template is="dom-repeat" items="[[shownOptions]]">
-                <paper-item item=[[item]] internal-id$="[[_getValue(item)]]"
+                <paper-item item=[[item]]
+                            internal-id$="[[_getValue(item)]]"
                             class$="[[_getSelectedClass(item, selected, shownOptions)]] [[item.cssClass]]"
                             title$="[[_getLabel(item)]]">
 
@@ -164,13 +185,13 @@ Dropdown with search and multi selection capabilities
         },
         notFoundOptions: {
           type: Array,
-        },
-
+        }
       },
       observers: [
         '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
-        '_selectedItemsChanged(selectedItems, selectedItems.length)'
+        '_selectedItemsChanged(selectedItems, selectedItems.length)',
+        '_searchValueChanged(search)'
       ],
       _selectedValuesOrOptionsChanged: function (selectedValues, options, selectedValuesLength) {
         this._selectedValuesToString();
@@ -200,7 +221,10 @@ Dropdown with search and multi selection capabilities
         this.selectedItems = selectedItems;
       },
       _selectedItemsChanged: function (newv, oldv) {
-        this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
+        this.debounce('selected-items-changed', function() {
+          this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
+        }.bind(this), 10);
+
       },
       _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
         if (this._noSelectedItems(selectedItems)) {
@@ -322,7 +346,7 @@ Dropdown with search and multi selection capabilities
             this.selectedValues[index] = value.toString();
           }
         }.bind(this));
-      },
+      }
 
     });
   </script>

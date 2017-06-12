@@ -26,11 +26,13 @@
       *[hidden] {
         display: none !important;
       }
+
       .external-wrapper {
         width: 100%;
         position: relative;
         @apply(--esmm-external-wrapper);
       }
+
       #dropdownMenu {
         position: absolute;
         right: 0;
@@ -41,7 +43,8 @@
       #dropdownMenu .dropdown-trigger {
         opacity: 0.54;
       }
-       .search-input-wrapper {
+
+      .search-input-wrapper {
         @apply(--layout);
         position: relative;
         z-index: 10;
@@ -73,9 +76,11 @@
       .iron-selected .tick-icon {
         display: block;
       }
-       .iron-selected {
+
+      .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
+
       .list-wrapper {
         position: relative;
         z-index: 5;
@@ -87,6 +92,7 @@
         font-size: 0;
         @apply(--esmm-list-wrapper);
       }
+
       .list-wrapper paper-item:not(.warning) {
         padding: 0 16px;
         cursor: pointer;
@@ -98,6 +104,7 @@
         line-height: 48px;
         width: 100%;
       }
+
       .list-wrapper paper-listbox {
         --paper-listbox-background-color: #fff;
         --paper-listbox: {
@@ -105,6 +112,7 @@
           padding: 0;
         };
       }
+
       .emptyValue {
         --paper-item: {
           color: rgba(0, 0, 0, 0.38);
@@ -112,6 +120,7 @@
           cursor: pointer;
         };
       }
+
       .warning {
         font-family: Roboto;
         font-size: 12px;
@@ -119,6 +128,7 @@
         color: rgba(0, 0, 0, 0.54);
         background-color: #EEEEEE;
       }
+
       :host .paper-input-input {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
@@ -128,6 +138,10 @@
         text-overflow: ellipsis;
       }
 
-     </style>
+      .placeholder {
+        color: var(--esmm-multi-placeholder-color, rgba(0, 0, 0, 0.54));
+      }
+
+    </style>
   </template>
 </dom-module>
