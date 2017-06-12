@@ -6,6 +6,7 @@
       label: {
         type: String
       },
+      noLabelFloat: Boolean,
       required: {
         type: Boolean
       },
@@ -84,13 +85,17 @@
         value: false,
         computed: '_showNoSearchResultsWarning(noOptionsAvailable, shownOptions.length, options.length)'
       },
-      autoValidate: {
-        type: Boolean
-      },
-      placeholder: {
-        type: String,
-        value: '—'
-      },
+      shownItemsLimit: {
+        type: Number,
+        value: 50
+       },
+       autoValidate: {
+         type: Boolean
+       },
+       placeholder: {
+         type: String,
+         value: '—'
+       },
       restoreFocusOnClose: {
         type: Boolean,
         value: function () {
@@ -148,7 +153,7 @@
       return options.slice(0, Math.min(this.shownItemsLimit, options.length));
     },
     _itemContainsSearchString: function (item) {
-      return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      return item[this.optionLabel] && item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
     },
     _computeShowLimitWarning: function (limit, shownOptions) {
       return shownOptions.length >= limit;
