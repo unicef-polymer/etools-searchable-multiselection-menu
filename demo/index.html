@@ -46,19 +46,7 @@
         <!--</template>-->
       <!--</demo-snippet>-->
 
-      <h2>Single selection, two-lines</h2>
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
-          <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  options="[[twoLineOptions]]"
-                  two-lines-label
-                  ></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>Multi selection, two-lines</h2>
+      <h2>Multi selection, two lines label</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
@@ -71,7 +59,7 @@
         </template>
       </demo-snippet>
 
-      <h2>Single Select Menu</h2>
+      <h2>Single Select Menu, two lines label</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
@@ -132,18 +120,18 @@
       <!--</demo-snippet>-->
 
 
-      <!--<h2>Multi selection, with search</h2>-->
+      <h2>Multi selection, with search</h2>
 
-      <!--<demo-snippet>-->
-        <!--<template is="dom-bind">-->
-          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"-->
-                       <!--massive-selected-values="{{massiveSelectedValues}}"></demo-helper>-->
-          <!--<etools-searchable-multiselection-menu label="Multiselection Searchable menu"-->
-                                                 <!--options="[[realOptions]]"-->
-                                                 <!--value="{{massiveSelectedValues}}"-->
-                                                 <!--multi></etools-searchable-multiselection-menu>-->
-        <!--</template>-->
-      <!--</demo-snippet>-->
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"
+                       massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
+          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
+                                                 options="[[realOptions]]"
+                                                 value="{{massiveSelectedValues}}"
+                                                 multi></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
 
 
       <!--<h2>Multi selection, disabled</h2>-->

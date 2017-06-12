@@ -519,11 +519,6 @@ Custom property | Description | Default
               type: Boolean,
               value: false
             },
-            twoLinesOptions: {
-              type: Array,
-              value: [],
-              notify: true
-            },
             url: String,
             ajaxParams: Object
 
@@ -580,22 +575,6 @@ Custom property | Description | Default
 
             if (emptyValue) {
               filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
-            }
-            if (this.twoLinesLabel) {
-              var newOptions = filtered.map(function (item) {
-                var split = item.label.split('|');
-                return {
-                  value: item.value,
-                  label: split[0],
-                  display: {
-                    primary: split[0],
-                    secondary: split[1]
-                  },
-                  style: 'two-lines'
-                }
-              });
-              this.set('twoLinesOptions', newOptions);
-              return newOptions;
             }
             return filtered;
           },
@@ -705,8 +684,7 @@ Custom property | Description | Default
           },
 
           _singleValueSelected: function () {
-            var options = this.twoLinesLabel ? this.twoLinesOptions : this.options;
-            options.forEach(function (item) {
+            this.options.forEach(function (item) {
               if (this.customObjectOptions) {
                 var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
                 if (itemValue === this.selectedValues) {
@@ -727,9 +705,8 @@ Custom property | Description | Default
             var newValue = [];
             var optionValue;
             var selectedValue;
-            var options = this.twoLinesLabel ? this.twoLinesOptions : this.options;
             this.selectedValues.forEach(function (selected) {
-              options.forEach(function (option) {
+              this.options.forEach(function (option) {
                 if (this.customObjectOptions) {
                   optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
                   selectedValue = selected;
@@ -782,6 +759,24 @@ Custom property | Description | Default
 
             if (options instanceof Array) {
               this._selectionChanged(this.selected, options);
+            }
+            if (options[0].hasOwnProperty('display')){
+              return;
+            }
+            if (this.twoLinesLabel) {
+              var newOptions = options.map(function (item) {
+                var split = item.label.split('|');
+                return {
+                  value: item.value,
+                  label: split[0],
+                  display: {
+                    primary: split[0],
+                    secondary: split[1]
+                  },
+                  style: 'two-lines'
+                }
+              });
+              this.set('options', newOptions);
             }
           },
 
