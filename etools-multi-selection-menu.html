@@ -20,7 +20,7 @@ Dropdown with search and multi selection capabilities
 @demo demo/index.html
 -->
 <dom-module id="etools-multi-selection-menu">
-  <template>
+  <template strip-whitespace>
     <style include="etools-dropdown-shared-styles">
       :host {
         display: block;
@@ -34,9 +34,10 @@ Dropdown with search and multi selection capabilities
 
       .content-wrapper {
         max-width: calc(100% - 24px);
+        display: inline-block;
+        width: 100%;
+        min-height: 24px;
       }
-
-      /*.readonly-separator,*/
 
       .option-string {
         display: inline-block;
@@ -70,6 +71,11 @@ Dropdown with search and multi selection capabilities
         width: 18px;
       }
 
+      #selected-items-wrapper {
+        display: inline-block;
+        width: 100%;
+      }
+
     </style>
 
     <etools-ajax id="missingOptionsAjax"
@@ -92,17 +98,23 @@ Dropdown with search and multi selection capabilities
       <label hidden$=[[!label]] aria-hidden="true">[[label]]</label>
 
       <div class="content-wrapper paper-input-input">
-        <span class="placeholder" hidden$="[[selectedItems.length]]">[[placeholder]]</span>
-        <template is="dom-repeat" items="[[selectedItems]]">
-          <span class="option-string">
-          {{_getLabel(item)}}
-          <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
-          <paper-icon-button id="iconRemoveSelected"
-                             hidden$="[[disabled]]"
-                             icon="close"
-                             on-click="_removeSelectedItem"></paper-icon-button>
-          </span>
-        </template>
+        <span class="placeholder"
+              hidden$="[[_hidePlaceholder(selectedItems.length)]]">
+          [[placeholder]]
+        </span>
+        <div id="selected-items-wrapper"
+             hidden$="[[!_hidePlaceholder(selectedItems.length)]]">
+          <template is="dom-repeat" items="[[selectedItems]]">
+            <span class="option-string">
+            {{_getLabel(item)}}
+            <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
+            <paper-icon-button id="iconRemoveSelected"
+                               hidden$="[[disabled]]"
+                               icon="close"
+                               on-click="_removeSelectedItem"></paper-icon-button>
+            </span>
+          </template>
+        </div>
       </div>
       <template is="dom-if" if="[[invalid]]">
         <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
@@ -181,17 +193,22 @@ Dropdown with search and multi selection capabilities
         },
         selectedItems: {
           type: Array,
+          value: [],
           notify: true
         },
         notFoundOptions: {
           type: Array,
+          value: []
+        },
+        triggerValueChangeEvent: {
+          type: Boolean,
+          value: false
         }
       },
       observers: [
         '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
-        '_selectedItemsChanged(selectedItems, selectedItems.length)',
-        '_searchValueChanged(search)'
+        '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
       _selectedValuesOrOptionsChanged: function (selectedValues, options, selectedValuesLength) {
         this._selectedValuesToString();
@@ -221,7 +238,10 @@ Dropdown with search and multi selection capabilities
         this.selectedItems = selectedItems;
       },
       _selectedItemsChanged: function (newv, oldv) {
-        this.debounce('selected-items-changed', function() {
+        if (!this.triggerValueChangeEvent) {
+          return;
+        }
+        this.debounce('selected-items-changed', function () {
           this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
         }.bind(this), 10);
 
@@ -259,8 +279,8 @@ Dropdown with search and multi selection capabilities
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
       _notFoundOptionsAndUrlChanged: function () {
-        if (this.notFoundOption) {
-          this._handleSelectedNotFoundInOptions(this.notFoundOptions)
+        if (this.notFoundOptions) {
+          this._handleSelectedNotFoundInOptions(this.notFoundOptions);
         }
       },
       _handleSelectedNotFoundInOptions: function (notFoundSelectedValues) {
@@ -346,6 +366,9 @@ Dropdown with search and multi selection capabilities
             this.selectedValues[index] = value.toString();
           }
         }.bind(this));
+      },
+      _hidePlaceholder: function (selectedItemsLength) {
+        return !!selectedItemsLength;
       }
 
     });

@@ -5,7 +5,7 @@
 
 <dom-module id="demo-multi-selection-menu">
   <template>
-    <paper-input label="some label" placeholder="-"></paper-input>
+    <paper-input label="Testing input 1" placeholder="Some text input for testing..."></paper-input>
 
     <etools-multi-selection-menu
         label="Searchable multi select"
@@ -13,13 +13,13 @@
         option-value="id"
         option-label="option_label"
         required
-        selected-values="[55]"
+        selected-values="[55, 55333]"
         auto-validate
         error-message="My error message"
         on-etools-selected-items-changed="onEtoolsSelectedItemsChanged">
     </etools-multi-selection-menu>
 
-    <paper-input></paper-input>
+    <paper-input label="Testing input 2" placeholder="Some text input for testing..."></paper-input>
 
     <etools-single-selection-menu
         label="Searchable single select"
