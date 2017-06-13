@@ -37,168 +37,164 @@ Custom property | Description | Default
 -->
 
 <dom-module id="etools-searchable-multiselection-menu">
-    <template>
-        <style>
-            :host {
-                display: block;
-                width: 100%;
-            }
+  <template>
+    <style>
+      :host {
+        display: block;
+        width: 100%;
+      }
 
-            *[hidden] {
-                display: none !important;
-            }
+      *[hidden] {
+        display: none !important;
+      }
 
-            .external-wrapper {
-                width: calc(100% - 24px);
-                margin-right: 12px;
-                margin-left: 12px;
-                position: relative;
-                @apply(--esmm-external-wrapper);
-            }
+      .external-wrapper {
+        width: calc(100% - 24px);
+        margin-right: 12px;
+        margin-left: 12px;
+        position: relative;
+        @apply(--esmm-external-wrapper);
+      }
 
-            .search-input {
-                background-color: #fff;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: calc(100% - 32px);
-                margin: 16px;
-            }
+      .search-input {
+        background-color: #fff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% - 32px);
+        margin: 16px;
+      }
 
-            .search-input iron-icon {
-                width: 24px;
-                height: 24px;
-                font-size: 24px;
-            }
+      .search-input iron-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 24px;
+      }
 
-            .value-container {
-                position: relative;
-            }
+      .value-container {
+        position: relative;
+      }
 
-            paper-input.value-container {
-                --paper-input-container-input: {
-                    padding-right: 24px;
-                    box-sizing: border-box;
-                };
-                --paper-input-container-label: {
-                    padding-right: 24px;
-                    box-sizing: border-box;
-                };
-            }
+      paper-input.value-container {
+        --paper-input-container-input: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
+        --paper-input-container-label: {
+          padding-right: 24px;
+          box-sizing: border-box;
+        };
+      }
 
-            paper-input.value-container.capitalize {
-                --paper-input-container-input: {
-                    text-transform: capitalize !important;
-                    padding-right: 24px;
-                    box-sizing: border-box;
-                }
-            }
+      paper-input.value-container.capitalize {
+        --paper-input-container-input: {
+          text-transform: capitalize !important;
+          padding-right: 24px;
+          box-sizing: border-box;
+        }
+      }
 
-            #dropdownMenu {
-                position: absolute;
-                right: 0;
-                bottom: 0;
-                padding: 0;
+      #dropdownMenu {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 0;
 
-                @apply(--layout-horizontal);
-                @apply(--layout-end-justified);
-            }
+        @apply(--layout-horizontal);
+        @apply(--layout-end-justified);
+      }
 
-            .dropdown-trigger {
-                margin-right: -8px;
-                opacity: 0.54;
-            }
+      .dropdown-trigger {
+        margin-right: -8px;
+        opacity: 0.54;
+      }
 
-            .input-wrapper {
-                position: relative;
-                z-index: 10;
-                background: #fff;
-                width: 100%;
-                height: 45px;
-                margin-right: 16px;
-            }
+      .input-wrapper {
+        position: relative;
+        z-index: 10;
+        background: #fff;
+        width: 100%;
+        height: 45px;
+        margin-right: 16px;
+      }
 
-            .multi-container {
-                position: relative;
-                height: 100%;
-                --paper-input-container: {
-                    height: 45px;
-                    position: relative;
-                    width: 100%;
-                }
-            }
+      .multi-container {
+        position: relative;
+        height: 100%;
+        --paper-input-container: {
+          height: 45px;
+          position: relative;
+          width: 100%;
+        }
+      }
 
-            .list-wrapper {
-                position: relative;
-                z-index: 5;
-                max-height: 50vh;
-                min-width: 150px;
-                width: 100%;
-                overflow-y: auto;
-                margin-top: 12px;
-                background: #fff;
-                font-size: 0;
-                @apply(--esmm-list-wrapper);
-            }
+      .list-wrapper {
+        position: relative;
+        z-index: 5;
+        max-height: 50vh;
+        min-width: 150px;
+        width: 100%;
+        overflow-y: auto;
+        margin-top: 12px;
+        background: #fff;
+        font-size: 0;
+        @apply(--esmm-list-wrapper);
+      }
 
-            .list-wrapper.no-search {
-                margin-top: 0;
-            }
+      .list-wrapper.no-search {
+        margin-top: 0;
+      }
 
-            .list-wrapper paper-listbox {
-                --paper-listbox-background-color: #fff;
-                --paper-listbox: {
-                    margin: 0;
-                    padding: 8px 0 0 0;
-                };
-            }
+      .list-wrapper paper-listbox {
+        --paper-listbox-background-color: #fff;
+        --paper-listbox: {
+          margin: 0;
+          padding: 8px 0 0 0;
+        };
+      }
 
-            .list-wrapper paper-item:not(.warning) {
-                padding: 0 16px;
-                cursor: pointer;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                box-sizing: border-box;
-                display: inline-block;
-                line-height: 48px;
-                width: 100%;
-            }
+      .list-wrapper paper-item:not(.warning) {
+        padding: 0 16px;
+        cursor: pointer;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        box-sizing: border-box;
+        display: inline-block;
+        line-height: 48px;
+        width: 100%;
+      }
+      .tick-icon {
+        display: none;
+        padding-right: 8px;
+        float: left;
+        margin-top: 12px;
+      }
 
-            .tick-icon {
-                display: none;
-                padding-right: 8px;
-                float: left;
-                margin-top: 12px;
-            }
+      .iron-selected .tick-icon {
+        display: block;
+      }
 
-            .iron-selected .tick-icon {
-                display: block;
-            }
-
-            .iron-selected {
-                background: var(--esmm-list-item-selected-color, #DCDCDC);
-            }
-
-            .warning {
-                font-family: Roboto;
-                font-size: 12px;
-                line-height: 16px;
-                color: rgba(0, 0, 0, 0.54);
-                background-color: #EEEEEE;
-            }
-
-            .emptyValue {
-                --paper-item: {
-                    color: rgba(0, 0, 0, 0.38);
-                    padding: 0 16px;
-                    cursor: pointer;
-                };
-            }
-
-            .multi-input-container {
-                outline: none;
-            }
+      .iron-selected {
+        background: var(--esmm-list-item-selected-color, #DCDCDC);
+      }
+      .warning {
+        font-family: Roboto;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(0,0,0,0.54);
+        background-color: #EEEEEE;
+      }
+      .emptyValue {
+        --paper-item: {
+          color: rgba(0,0,0,0.38);
+          padding: 0 16px;
+          cursor: pointer;
+        };
+      }
+      .multi-input-container {
+        outline: none;
+      }
 
             .secondary-label {
                 font-size: 14px;
@@ -230,117 +226,117 @@ Custom property | Description | Default
                 };
             }
 
-        </style>
+    </style>
 
-        <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
-            <etools-ajax id="missingOptionsAjax"
-                         params="[[ajaxParams]]"
-                         on-success="_handleMissingOptionsReqResponse"
-                         on-fail="_handleMissingOptionsReqError"></etools-ajax>
-        </template>
+    <template is="dom-if" if="[[_shouldRequestMissingOption(url)]]">
+      <etools-ajax id="missingOptionsAjax"
+                   params="[[ajaxParams]]"
+                   on-success="_handleMissingOptionsReqResponse"
+                   on-fail="_handleMissingOptionsReqError"></etools-ajax>
+    </template>
 
-        <div id="main" class$="external-wrapper [[openedClass]]">
+    <div id="main" class$="external-wrapper [[openedClass]]">
 
-            <template is="dom-if" if="{{!multi}}">
-                <paper-input
-                        id="singleSelectionDropdown"
-                        class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
-                        on-tap="_openMenu"
-                        on-focus="_openMenu"
-                        label="[[label]]"
-                        value="[[_getSingleSelectedOptionLabel(value)]]"
-                        title="[[_getSingleSelectedOptionLabel(value)]]"
-                        disabled="[[disabled]]"
-                        error-message="[[errorMessage]]"
-                        required$="[[_simpleRequired(required)]]"
-                        placeholder="[[placeholder]]"
-                        auto-validate$="[[autoValidate]]"
-                        invalid$="[[invalid]]"
-                        readonly$="[[readonly]]">
-                </paper-input>
+      <template is="dom-if" if="{{!multi}}">
+        <paper-input
+          id="singleSelectionDropdown"
+          class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
+          on-tap="_openMenu"
+          on-focus="_openMenu"
+          label="[[label]]"
+          value="[[_getSingleSelectedOptionLabel(value)]]"
+          title="[[_getSingleSelectedOptionLabel(value)]]"
+          disabled="[[disabled]]"
+          error-message="[[errorMessage]]"
+          required$="[[_simpleRequired(required)]]"
+          placeholder="[[placeholder]]"
+          auto-validate$="[[autoValidate]]"
+          invalid$="[[invalid]]"
+          readonly$="[[readonly]]">
+        </paper-input>
+      </template>
+
+      <template is="dom-if" if="{{multi}}">
+
+        <div class="multi-container">
+
+          <paper-input-container
+            class="multi-input-container"
+            id="customPaperInput"
+            tabindex="0"
+            on-tap="_openMenu"
+            on-focus="_openMenu"
+            attr-for-value="option-value"
+            disabled$="[[disabled]]"
+            error-message="[[errorMessage]]"
+            required$="[[_multiRequired(required)]]"
+            invalid$="[[invalid]]"
+            always-float-label>
+
+            <label>[[label]]</label>
+
+            <deletable-option-list on-option-delete="_removeItem"
+              class="paper-input-input"
+              option-value="{{value}}"
+              custom-object-options="[[customObjectOptions]]"
+              option-value-attribute="[[optionValue]]"
+              option-label-attribute="[[optionLabel]]"
+              disabled="[[_disableMenuBtn(disabled, readonly)]]"
+              readonly$="[[readonly]]"
+              placeholder=[[placeholder]]>
+            </deletable-option-list>
+
+            <template is="dom-if" if="[[errorMessage]]">
+              <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
             </template>
+          </paper-input-container>
+        </div>
+      </template>
 
-            <template is="dom-if" if="{{multi}}">
+      <paper-menu-button
+        horizontal-align="right"
+        id="dropdownMenu"
+        ignore-select
+        opened="[[menuOpened]]"
+        restore-focus-on-close$="{{falseValue}}"
+        on-paper-dropdown-close="_valueSelected"
+        on-paper-dropdown-open="_onDropdownOpen"
+        allow-outside-scroll="[[allowOutsideScroll]]"
+        dynamic-align$="[[dynamicAlign]]"
+        disabled="[[_disableMenuBtn(disabled, readonly)]]"
+        hidden$=[[readonly]]>
 
-                <div class="multi-container">
+        <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
 
-                    <paper-input-container
-                            class="multi-input-container"
-                            id="customPaperInput"
-                            tabindex="0"
-                            on-tap="_openMenu"
-                            on-focus="_openMenu"
-                            attr-for-value="option-value"
-                            disabled$="[[disabled]]"
-                            error-message="[[errorMessage]]"
-                            required$="[[_multiRequired(required)]]"
-                            invalid$="[[invalid]]"
-                            always-float-label>
+        <div class="dropdown-content">
 
-                        <label>[[label]]</label>
+          <div class="input-wrapper" hidden$="{{hideSearch}}">
+            <paper-input
+              id="searchInput"
+              no-label-float
+              class="search-input"
+              label="Search"
+              type="text"
+              value="{{search}}">
+              <iron-icon icon="search" prefix></iron-icon>
+            </paper-input>
+          </div>
 
-                        <deletable-option-list on-option-delete="_removeItem"
-                                               class="paper-input-input"
-                                               option-value="{{value}}"
-                                               custom-object-options="[[customObjectOptions]]"
-                                               option-value-attribute="[[optionValue]]"
-                                               option-label-attribute="[[optionLabel]]"
-                                               disabled="[[_disableMenuBtn(disabled, readonly)]]"
-                                               readonly$="[[readonly]]"
-                                               placeholder=[[placeholder]]>
-                        </deletable-option-list>
+          <div class$="list-wrapper [[_withoutSearchClass(hideSearch)]]">
 
-                        <template is="dom-if" if="[[errorMessage]]">
-                            <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
-                        </template>
-                    </paper-input-container>
-                </div>
-            </template>
+            <paper-listbox
+              multi="[[multi]]"
+              attr-for-selected="internal-id"
+              selected="{{selectedValues}}"
+              selected-values="{{selectedValues}}">
 
-            <paper-menu-button
-                    horizontal-align="right"
-                    id="dropdownMenu"
-                    ignore-select
-                    opened="[[menuOpened]]"
-                    restore-focus-on-close$="{{falseValue}}"
-                    on-paper-dropdown-close="_valueSelected"
-                    on-paper-dropdown-open="_onDropdownOpen"
-                    allow-outside-scroll="[[allowOutsideScroll]]"
-                    dynamic-align$="[[dynamicAlign]]"
-                    disabled="[[_disableMenuBtn(disabled, readonly)]]"
-                    hidden$=[[readonly]]>
+              <template is="dom-repeat" items="[[shownItems]]">
 
-                <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
-
-                <div class="dropdown-content">
-
-                    <div class="input-wrapper" hidden$="{{hideSearch}}">
-                        <paper-input
-                                id="searchInput"
-                                no-label-float
-                                class="search-input"
-                                label="Search"
-                                type="text"
-                                value="{{search}}">
-                            <iron-icon icon="search" prefix></iron-icon>
-                        </paper-input>
-                    </div>
-
-                    <div class$="list-wrapper [[_withoutSearchClass(hideSearch)]]">
-
-                        <paper-listbox
-                                multi="[[multi]]"
-                                attr-for-selected="internal-id"
-                                selected="{{selectedValues}}"
-                                selected-values="{{selectedValues}}">
-
-                            <template is="dom-repeat" items="[[shownItems]]">
-
-                                <paper-item
-                                        internal-id$="[[item.value]]"
-                                        on-tap="_elementSelected"
-                                        class$="[[item.style]]"
-                                        title$="[[item.label]]">
+                <paper-item
+                  internal-id$="[[item.value]]"
+                  on-tap="_elementSelected"
+                  class$="[[item.style]]"
+                  title$="[[item.label]]">
 
                                     <iron-icon class="tick-icon" icon="check"></iron-icon>
                                     <template is="dom-if" if="twoLinesLabel">
@@ -349,32 +345,32 @@ Custom property | Description | Default
                                     </template>
                                     <span hidden$="[[twoLinesLabel]]">[[item.label]]</span>
 
-                                </paper-item>
-                            </template>
+                </paper-item>
+              </template>
 
-                            <paper-item hidden$="[[!showLimitWarning]]" class="warning">
-                                More than [[shownItemsLimit]] items, use the search function to reveal more
-                            </paper-item>
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning">
+                More than [[shownItemsLimit]] items, use the search function to reveal more
+              </paper-item>
 
-                            <paper-item hidden$="[[!noOptionsAvailable]]" class="warning">
-                                No options available
-                            </paper-item>
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning">
+                No options available
+              </paper-item>
 
-                        </paper-listbox>
-                    </div>
-                </div>
-            </paper-menu-button>
+            </paper-listbox>
+          </div>
         </div>
-    </template>
+      </paper-menu-button>
+    </div>
+  </template>
 
-    <script>
-      (function () {
-        'use strict';
-        Polymer({
+  <script>
+    (function() {
+      'use strict';
+      Polymer({
 
-          is: 'etools-searchable-multiselection-menu',
+        is: 'etools-searchable-multiselection-menu',
 
-          properties: {
+        properties: {
 
             errorMessage: {
               type: String
@@ -522,617 +518,606 @@ Custom property | Description | Default
             url: String,
             ajaxParams: Object
 
-          },
+        },
 
-          observers: [
-            '_optionsLengthChanged(options.length)'
-          ],
+        observers: [
+          '_optionsLengthChanged(options.length)'
+        ],
 
-          ready: function () {
-            if (this.autoValidate === true && this.multi === true) {
-              // autoValidate for multi selection will not work, we will use a new flag in this case
-              this.set('autoValidate', false);
-              this.set('_autoValidateMultiSelection', true);
-            }
-          },
+        ready: function() {
+          if (this.autoValidate === true && this.multi === true) {
+            // autoValidate for multi selection will not work, we will use a new flag in this case
+            this.set('autoValidate', false);
+            this.set('_autoValidateMultiSelection', true);
+          }
+        },
 
-          _disableMenuBtn: function (disabled, readonly) {
-            return disabled || readonly;
-          },
+        _disableMenuBtn: function(disabled, readonly) {
+          return disabled || readonly;
+        },
 
-          _readonlyStateChanged: function (readonly, oldReadonly) {
-            if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
-              this.updateStyles();
-            }
-          },
+        _readonlyStateChanged: function(readonly, oldReadonly) {
+          if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+            this.updateStyles();
+          }
+        },
 
-          _withoutSearchClass: function (hideSearch) {
-            if (hideSearch) {
-              return 'no-search';
-            }
-            return '';
-          },
+        _withoutSearchClass: function(hideSearch) {
+          if (hideSearch) {
+            return 'no-search';
+          }
+          return '';
+        },
 
-          _computeShowItems: function (options, searchKey, emptyValue) {
-            var filtered = JSON.parse(JSON.stringify(options));
-            if (searchKey && searchKey.length > 0) {
-              filtered = options.filter(function (item) {
-                return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
-              }.bind(this));
-              filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
-            } else if (options.length > this.shownItemsLimit) {
-              filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
-            }
+        _computeShowItems: function(options, searchKey, emptyValue) {
+          var filtered = JSON.parse(JSON.stringify(options));
+          if (searchKey && searchKey.length > 0) {
+            filtered = options.filter(function(item) {
+              return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(searchKey.toLowerCase()) > -1;
+            }.bind(this));
+            filtered = filtered.slice(0, Math.min(this.shownItemsLimit, filtered.length));
+          } else if (options.length > this.shownItemsLimit) {
+            filtered = options.slice(0, Math.min(this.shownItemsLimit, options.length));
+          }
 
-            if (this.customObjectOptions) {
-              filtered = filtered.map(function (filteredOption) {
-                return {
-                  value: filteredOption[this.optionValue],
-                  label: filteredOption[this.optionLabel]
-                };
-              }.bind(this));
-            }
+          if (this.customObjectOptions) {
+            filtered = filtered.map(function(filteredOption) {
+              return {
+                value: filteredOption[this.optionValue],
+                label: filteredOption[this.optionLabel]
+              };
+            }.bind(this));
+          }
 
-            if (emptyValue) {
-              filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
-            }
-            return filtered;
-          },
-          _computeShowLimitWarning: function (limit, shownItems) {
-            return shownItems.length >= limit;
-          },
+          if (emptyValue) {
+            filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
+          }
+          return filtered;
+        },
+        _computeShowLimitWarning: function(limit, shownItems) {
+          return shownItems.length >= limit;
+        },
 
-          _computeNoOptionsAvailable: function (options, optionsLength) {
-            if (!Array.isArray(options) || (Array.isArray(options) && optionsLength === 0)) {
-              return true;
-            }
-            return false;
-          },
+        _computeNoOptionsAvailable: function(options, optionsLength) {
+          if (!Array.isArray(options) || (Array.isArray(options) && optionsLength === 0)) {
+            return true;
+          }
+          return false;
+        },
 
-          _simpleRequired: function (required) {
-            return !this.multi && required;
-          },
+        _simpleRequired: function(required) {
+          return !this.multi && required;
+        },
 
-          _multiRequired: function (required) {
-            return this.multi && required;
-          },
+        _multiRequired: function(required) {
+          return this.multi && required;
+        },
 
-          _elementSelected: function (e, detail) {
-            if (this.readonly) {
-              return;
-            }
-            if (!this.multi) {
-              this.selectedValues = e.model.item.value;
+        _elementSelected: function(e, detail) {
+          if (this.readonly) {
+            return;
+          }
+          if (!this.multi) {
+            this.selectedValues = e.model.item.value;
 
-              if (this.selectedValues === null) {
-                if (this.value === null && this.updateSelected &&
-                    this.notFoundValues instanceof Array && this.notFoundValues.length) {
-                  this.set('selected', null);
-                }
+            if (this.selectedValues === null) {
+              if (this.value === null && this.updateSelected &&
+                this.notFoundValues instanceof Array && this.notFoundValues.length) {
+                this.set('selected', null);
               }
+            }
 
-              this._valueSelected();
-              this.$.dropdownMenu.close();
-            }
-          },
-          _valueChanged: function (value) {
-            if (!value || (value instanceof Array && value.length === 0)) {
-              // empty value/reset selection
-              this.set('selectedValues', null);
-              return;
-            }
-            if (this.multi && Array.isArray(value) && value.length > 0) {
-              // multiple selection on
-              var selectedValues = [];
-              var selVal;
-              value.forEach(function (item) {
-                selVal = '' + item[this.optionValue];
-                if (selectedValues.indexOf(selVal) === -1) {
-                  selectedValues.push(selVal);
-                }
-              }.bind(this));
-              this.set('selectedValues', selectedValues);
-            } else if (!this.multi && Array.isArray(value) && value.length > 0) {
-              /**
-               * In case the single selection dropdown is initialized with an array of one object
-               * value and selectedValues must be updated with that object data
-               */
-              this.set('value', value[0]);
-              this.set('selectedValues', value[0][this.optionValue]);
-            } else if (!this.multi && !Array.isArray(value) &&
-                typeof value === 'object' && value[this.optionValue]) {
-              // single selection, value is just an object from options
-              this.set('selectedValues', value[this.optionValue]);
-            }
-          },
-          // get esmm single selection selected label to be displayed
-          _getSingleSelectedOptionLabel: function (value) {
-            if (value && typeof value === 'object' && value[this.optionLabel]) {
-              return value[this.optionLabel];
-            }
-            return null;
-          },
-
-          _capitalizeInputValueClass: function () {
-            return this.capitalizeInputShown ? 'capitalize' : '';
-          },
-
-          _valueSelected: function () {
-            if (this.readonly) {
-              return;
-            }
-            // this could be fired twice almost in the same time (on item tap and on dropdown close)
-            this.debounce('etoolsEsmmValueSelected', function () {
-              var self = this;
-              this.set('menuOpened', false);
-              if (this.selectedValues === null) {
-                // reset selected
-                this.set('value', null);
-                this._fireValueChangeEvent();
-                this.openedClass = '';
-                return;
+            this._valueSelected();
+            this.$.dropdownMenu.close();
+          }
+        },
+        _valueChanged: function(value) {
+          if (!value || (value instanceof Array && value.length === 0)) {
+            // empty value/reset selection
+            this.set('selectedValues', null);
+            return;
+          }
+          if (this.multi && Array.isArray(value) && value.length > 0 ) {
+            // multiple selection on
+            var selectedValues = [];
+            var selVal;
+            value.forEach(function(item) {
+              selVal = '' + item[this.optionValue];
+              if (selectedValues.indexOf(selVal) === -1) {
+                selectedValues.push(selVal);
               }
-              if (this.selectedValues instanceof Array) {
-                // multiple selection
-                this._multipleValuesSelected();
-              } else {
-                // single selection
-                this._singleValueSelected();
-              }
+            }.bind(this));
+            this.set('selectedValues', selectedValues);
+          } else if (!this.multi && Array.isArray(value) && value.length > 0) {
+            /**
+             * In case the single selection dropdown is initialized with an array of one object
+             * value and selectedValues must be updated with that object data
+             */
+            this.set('value', value[0]);
+            this.set('selectedValues', value[0][this.optionValue]);
+          } else if (!this.multi && !Array.isArray(value) &&
+            typeof value === 'object' && value[this.optionValue]) {
+            // single selection, value is just an object from options
+            this.set('selectedValues', value[this.optionValue]);
+          }
+        },
+        // get esmm single selection selected label to be displayed
+        _getSingleSelectedOptionLabel: function(value) {
+          if (value && typeof value === 'object' && value[this.optionLabel]) {
+            return value[this.optionLabel];
+          }
+          return null;
+        },
+
+        _capitalizeInputValueClass: function() {
+          return this.capitalizeInputShown ? 'capitalize' : '';
+        },
+
+        _valueSelected: function() {
+          if (this.readonly) {
+            return;
+          }
+          // this could be fired twice almost in the same time (on item tap and on dropdown close)
+          this.debounce('etoolsEsmmValueSelected', function() {
+            this.set('menuOpened', false);
+            if(this.selectedValues === null) {
+              // reset selected
+              this.set('value', null);
+              this._fireValueChangeEvent();
               this.openedClass = '';
-            }.bind(this), 150);
-          },
-
-          _singleValueSelected: function () {
-            this.options.forEach(function (item) {
-              if (this.customObjectOptions) {
-                var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
-                if (itemValue === this.selectedValues) {
-                  this.set('value', item);
-                  this._fireValueChangeEvent();
-                }
-              } else {
-                // option values as integer value (old way)
-                if (item[this.optionValue] === parseInt(this.selectedValues, 10)) {
-                  this.set('value', item);
-                  this._fireValueChangeEvent();
-                }
-              }
-            }.bind(this));
-          },
-
-          _multipleValuesSelected: function () {
-            var newValue = [];
-            var optionValue;
-            var selectedValue;
-            this.selectedValues.forEach(function (selected) {
-              this.options.forEach(function (option) {
-                if (this.customObjectOptions) {
-                  optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
-                  selectedValue = selected;
-                } else {
-                  optionValue = parseInt(option[this.optionValue], 10);
-                  selectedValue = parseInt(selected, 10);
-                }
-                if (optionValue === selectedValue && newValue.indexOf(selectedValue) === -1) {
-                  newValue.push(option);
-                }
-              }.bind(this));
-            }.bind(this));
-            this._autoValidateMulti();
-            this.set('value', newValue);
-            this._fireValueChangeEvent();
-          },
-
-          _prepareCustomOptionObjValue: function (item, optionValue) {
-            // option values as any value (new way)
-            var itemValue = item[optionValue];
-            // some tweaks to ensure item value type
-            if (!itemValue) {
-              itemValue = '';
+              return;
+            }
+            if (this.selectedValues instanceof Array) {
+              // multiple selection
+              this._multipleValuesSelected();
             } else {
-              // convert to string because selectedValues it's gonna be a string for single selection
-              itemValue = itemValue + '';
+              // single selection
+              this._singleValueSelected();
             }
-            return itemValue;
-          },
+            this.openedClass = '';
+          }.bind(this), 150);
+        },
 
-          _updateSelectedFlagChanged: function (updateSelected) {
-            if (updateSelected) {
-              // disable change events if this flag is `true`
-              this.set('noChangeEvent', true);
-            }
-          },
-
-          _resetMissingOptionsUrl: function () {
-            if (this.updateSelected) {
-              var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
-              if (missingOptionsEtoolsAjax) {
-                // reset ajax el url to force request to fire when options are changed
-                missingOptionsEtoolsAjax.url = null;
+        _singleValueSelected: function() {
+          this.options.forEach(function(item) {
+            if (this.customObjectOptions) {
+              var itemValue = this._prepareCustomOptionObjValue(item, this.optionValue);
+              if (itemValue === this.selectedValues) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
+              }
+            } else {
+              // option values as integer value (old way)
+              if (item[this.optionValue] === parseInt(this.selectedValues, 10)) {
+                this.set('value', item);
+                this._fireValueChangeEvent();
               }
             }
-          },
+          }.bind(this));
+        },
 
-          _optionsChanged: function (options) {
-            this._resetMissingOptionsUrl();
-
-            if (options instanceof Array) {
-              this._selectionChanged(this.selected, options);
-            }
-            if (options[0].hasOwnProperty('display')){
-              return;
-            }
-            if (this.twoLinesLabel) {
-              var newOptions = options.map(function (item) {
-                var split = item.label.split('|');
-                return {
-                  value: item.value,
-                  label: split[0],
-                  display: {
-                    primary: split[0],
-                    secondary: split[1]
-                  },
-                  style: 'two-lines'
-                }
-              });
-              this.set('options', newOptions);
-            }
-          },
-
-          _selectedOptionsChanged: function (selected, oldSelected) {
-            if (this.multi && JSON.stringify(selected) === JSON.stringify(oldSelected)) {
-              return;
-            }
-            this._resetMissingOptionsUrl();
-            this._selectionChanged(selected, this.options);
-          },
-
-          _selectionChanged: function (selected, options) {
-            this.debounce('selectionChanged', function () {
-              if (!this.updateSelected) {
-                return;
-              }
-
-              if (this.selectedRequiresValidOptions &&
-                  (options instanceof Array === false ||
-                  (options instanceof Array && options.length === 0))) {
-                return;
-              }
-
-              var currentValue = null;
-              var notFoundValues = [];
-              var i;
-              if (this.multi) {
-                // multiple selection
-                currentValue = [];
-                if (selected instanceof Array && selected.length > 0) {
-                  notFoundValues = JSON.parse(JSON.stringify(selected));
-                  if (options instanceof Array && options.length > 0) {
-                    selected.forEach(function (selectedVal) {
-                      var s = this._prepareValue(selectedVal);
-                      for (i = 0; i < options.length; i++) {
-                        if (this._prepareValue(options[i][this.optionValue]) === s) {
-                          currentValue.push(options[i]);
-                          notFoundValues.splice(notFoundValues.indexOf(selectedVal), 1);
-                          break;
-                        }
-                      }
-                    }.bind(this));
-                  }
-                }
+        _multipleValuesSelected: function() {
+          var newValue = [];
+          var optionValue;
+          var selectedValue;
+          this.selectedValues.forEach(function(selected) {
+            this.options.forEach(function(option) {
+              if (this.customObjectOptions) {
+                optionValue = this._prepareCustomOptionObjValue(option, this.optionValue);
+                selectedValue = selected;
               } else {
-                // single selection
-                if (selected && (typeof selected === 'string' || typeof selected === 'number')) {
-                  var selectedVal = this._prepareValue(selected);
-                  notFoundValues.push(selectedVal);
-                  if (options instanceof Array && options.length > 0) {
+                optionValue = parseInt(option[this.optionValue], 10);
+                selectedValue = parseInt(selected, 10);
+              }
+              if (optionValue === selectedValue && newValue.indexOf(selectedValue) === -1) {
+                newValue.push(option);
+              }
+            }.bind(this));
+          }.bind(this));
+          this._autoValidateMulti();
+          this.set('value', newValue);
+          this._fireValueChangeEvent();
+        },
+
+        _prepareCustomOptionObjValue: function(item, optionValue) {
+          // option values as any value (new way)
+          var itemValue = item[optionValue];
+          // some tweaks to ensure item value type
+          if (!itemValue) {
+            itemValue = '';
+          } else {
+            // convert to string because selectedValues it's gonna be a string for single selection
+            itemValue = itemValue + '';
+          }
+          return itemValue;
+        },
+
+        _updateSelectedFlagChanged: function(updateSelected) {
+          if (updateSelected) {
+            // disable change events if this flag is `true`
+            this.set('noChangeEvent', true);
+          }
+        },
+
+        _resetMissingOptionsUrl: function() {
+          if (this.updateSelected) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              // reset ajax el url to force request to fire when options are changed
+              missingOptionsEtoolsAjax.url = null;
+            }
+          }
+        },
+
+        _optionsChanged: function(options) {
+          this._resetMissingOptionsUrl();
+
+          if (options instanceof Array) {
+            this._selectionChanged(this.selected, options);
+          }
+        },
+
+        _selectedOptionsChanged: function(selected, oldSelected) {
+          if (this.multi && JSON.stringify(selected) === JSON.stringify(oldSelected)) {
+            return;
+          }
+          this._resetMissingOptionsUrl();
+          this._selectionChanged(selected, this.options);
+        },
+
+        _selectionChanged: function(selected, options) {
+          this.debounce('selectionChanged', function() {
+            if (!this.updateSelected) {
+              return;
+            }
+
+            if (this.selectedRequiresValidOptions &&
+              (options instanceof Array === false ||
+              (options instanceof Array && options.length === 0))) {
+              return;
+            }
+
+            var currentValue = null;
+            var notFoundValues = [];
+            var i;
+            if (this.multi) {
+              // multiple selection
+              currentValue = [];
+              if (selected instanceof Array && selected.length > 0) {
+                notFoundValues = JSON.parse(JSON.stringify(selected));
+                if (options instanceof Array && options.length > 0) {
+                  selected.forEach(function(selectedVal) {
+                    var s = this._prepareValue(selectedVal);
                     for (i = 0; i < options.length; i++) {
-                      if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
-                        currentValue = options[i];
+                      if (this._prepareValue(options[i][this.optionValue]) === s) {
+                        currentValue.push(options[i]);
                         notFoundValues.splice(notFoundValues.indexOf(selectedVal), 1);
                         break;
                       }
                     }
-                  }
-                }
-              }
-
-              this.set('notFoundValues', notFoundValues);
-              if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
-                this.set('value', currentValue);
-              }
-
-              // not found selected values in options
-              if (notFoundValues.length > 0) {
-                this._requestMissingOptions(notFoundValues);
-                // show console warning
-                var warnMsg = '[etools-esmm ' + this.label + '] Selected ';
-                if (notFoundValues.length === 1) {
-                  warnMsg += 'value ';
-                } else {
-                  warnMsg += 'values '
-                }
-                warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!';
-                console.warn(warnMsg);
-              }
-            }.bind(this), 50);
-          },
-
-          _updateSelected: function (selectedValues, oldSelectedValues) {
-            if (JSON.stringify(selectedValues) === JSON.stringify(this._prevSelectedValues)) {
-              return;
-            }
-            this.debounce('updateSelectedValue', function () {
-              if (!this.updateSelected) {
-                return;
-              }
-              if (!this.multi) {
-                if (!selectedValues && !oldSelectedValues) {
-                  return;
-                }
-              } else {
-                if (selectedValues === null && Array.isArray(this._prevSelectedValues) && this._prevSelectedValues.length === 0) {
-                  return;
-                }
-                if (!this._prevSelectedValues && (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
-                  return;
-                }
-              }
-
-              var selectedVals = null;
-              if (this.multi) {
-                // multiselection
-                // selected will be empty array if selectedValues.length === 0
-                selectedVals = [];
-                if (Array.isArray(selectedValues) && selectedValues.length > 0) {
-                  selectedVals = selectedValues.map(function (s) {
-                    return this._prepareValue(s);
                   }.bind(this));
                 }
-                if (this.notFoundValues.length) {
-                  this.notFoundValues.forEach(function (notFoundVal) {
-                    selectedVals.push(this._prepareValue(notFoundVal));
-                  }.bind(this));
-                }
-              }
-
-              if (!this.multi) {
-                // single selection
-                if (selectedValues && !(typeof selectedValues === 'string' && selectedValues === '')) {
-                  selectedVals = this._prepareValue(selectedValues);
-                }
-                if (!selectedVals && this.notFoundValues.length) {
-                  this.set('_prevSelectedValues', this.notFoundValues[0]);
-                  return;
-                }
-              }
-
-              this.set('_prevSelectedValues', selectedVals);
-              this.set('selected', selectedVals);
-            }.bind(this), 50);
-          },
-
-          _prepareValue: function (value) {
-            if (typeof value === 'number') {
-              return value;
-            }
-            if (typeof value === 'string') {
-              var val = parseInt(value, 10);
-              if (isNaN(val)) {
-                return value;
-              } else {
-                return val;
-              }
-            }
-            return value;
-          },
-
-          _removeItem: function (event, details) {
-            if (this.readonly) {
-              return;
-            }
-            var newSelected = [];
-            if (this.selectedValues) {
-              var detailsValue = details[this.optionValue] ? (details[this.optionValue] + '') : '';
-              newSelected = this.selectedValues.filter(function (item) {
-                if (this.customObjectOptions) {
-                  var itemValue = item ? (item + '') : '';
-                  return itemValue !== detailsValue;
-                } else {
-                  return parseInt(item, 10) !== parseInt(details.value, 10);
-                }
-              }.bind(this));
-            }
-            this._autoValidateMulti();
-            this.set('selectedValues', newSelected);
-            this._fireValueChangeEvent();
-          },
-
-          _openMenu: function (e) {
-            if (this.readonly || this.menuOpened) {
-              return;
-            }
-            this.debounce('openDropdown', function () {
-              if (this.value && this.value instanceof Array && this.value.length > 0) {
-                return;
-              }
-
-              this.set('menuOpened', true);
-
-              var searchInput = this.$$('#searchInput');
-              if (searchInput) {
-                this.debounce('focusOnDropdown', function () {
-                  Polymer.dom(searchInput.root).querySelector('#input').focus();
-                }, 100);
-              }
-
-            }.bind(this), 100);
-          },
-
-          _onDropdownOpen: function () {
-            if (this.readonly) {
-              return;
-            }
-            this.openedClass = 'dropdown-opened';
-            var ironDropdown = this._getIronDropdown();
-            if (ironDropdown) {
-              // set position target to align dropdown content properly
-              ironDropdown.set('positionTarget', this.$.main);
-              ironDropdown.style.width = this.$.main.offsetWidth + 'px';
-              var style = ironDropdown.querySelector('.dropdown-content').style;
-              style.overflow = 'hidden';
-            }
-          },
-
-          _getIronDropdown: function () {
-            var dropDown = this.$.dropdownMenu;
-            var ironDropdown = dropDown.$.dropdown;
-            return ironDropdown;
-          },
-
-          _resizeDropdown: function () {
-            var ironDropdown = this._getIronDropdown();
-            if (ironDropdown) {
-              ironDropdown.notifyResize();
-            }
-          },
-
-          _optionsLengthChanged: function (optionsLength) {
-            this._resizeDropdown();
-          },
-
-          _fireValueChangeEvent: function () {
-            if (this.noChangeEvent || this.readonly) {
-              return;
-            }
-            this.debounce('fireValueChanged', function () {
-              var selectedValues = null;
-              if ((typeof this.value === 'object' && this.value !== null) ||
-                  (this.value instanceof Array && this.value.length > 0)) {
-                selectedValues = this.value;
-              }
-              this.fire('value-change', {selectedValues: selectedValues});
-            }.bind(this), 100);
-          },
-
-          _autoValidateMulti: function () {
-            if (this._autoValidateMultiSelection) {
-              this.validate();
-            }
-          },
-
-          validate: function () {
-            if (!this.multi) {
-              // single selection validation
-              var valid = this.$$('#singleSelectionDropdown').validate();
-              if (valid) {
-                this.set('invalid', false);
-                return true;
-              } else {
-                this.set('invalid', true);
-                return false;
               }
             } else {
-              // multiple selection validation
-              var valid = false;
-              if (this._multiRequired(this.required)) {
-                if (Array.isArray(this.selectedValues) && this.selectedValues.length > 0) {
-                  valid = true;
+              // single selection
+              if (selected && (typeof selected === 'string' || typeof selected === 'number')) {
+                var selectedVal = this._prepareValue(selected);
+                notFoundValues.push(selectedVal);
+                if (options instanceof Array && options.length > 0) {
+                  for (i = 0; i < options.length; i++) {
+                    if (this._prepareValue(options[i][this.optionValue]) === selectedVal) {
+                      currentValue = options[i];
+                      notFoundValues.splice(notFoundValues.indexOf(selectedVal), 1);
+                      break;
+                    }
+                  }
                 }
-              } else {
-                valid = true; // is not required
               }
-
-              this.set('invalid', !valid);
-              return valid;
             }
-          },
 
-          resetInvalidState: function () {
-            this.set('invalid', false);
-            var selector = '#singleSelectionDropdown';
+            this.set('notFoundValues', notFoundValues);
+            if (JSON.stringify(this.value) !== JSON.stringify(currentValue)) {
+              this.set('value', currentValue);
+            }
+
+            // not found selected values in options
+            if (notFoundValues.length > 0) {
+              this._requestMissingOptions(notFoundValues);
+              // show console warning
+              var warnMsg = '[etools-esmm ' + this.label + '] Selected ';
+              if (notFoundValues.length === 1) {
+                warnMsg += 'value ';
+              } else {
+                warnMsg += 'values ';
+              }
+              warnMsg += notFoundValues.join(', ') + ' not found in dropdown\'s options!';
+              console.warn(warnMsg); // eslint-disable-line no-console
+            }
+          }.bind(this), 50);
+        },
+
+        _updateSelected: function(selectedValues, oldSelectedValues) {
+          if (JSON.stringify(selectedValues) === JSON.stringify(this._prevSelectedValues)) {
+            return;
+          }
+          this.debounce('updateSelectedValue', function() {
+            if (!this.updateSelected) {
+              return;
+            }
+            if (!this.multi) {
+              if (!selectedValues && !oldSelectedValues) {
+                return;
+              }
+            } else {
+              if (selectedValues === null &&
+                Array.isArray(this._prevSelectedValues) &&
+                this._prevSelectedValues.length === 0) {
+                return;
+              }
+              if (!this._prevSelectedValues &&
+                (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
+                return;
+              }
+            }
+
+            var selectedVals = null;
             if (this.multi) {
-              selector = '#customPaperInput';
+              // multiselection
+              // selected will be empty array if selectedValues.length === 0
+              selectedVals = [];
+              if (Array.isArray(selectedValues) && selectedValues.length > 0) {
+                selectedVals = selectedValues.map(function(s) {
+                  return this._prepareValue(s);
+                }.bind(this));
+              }
+              if (this.notFoundValues.length) {
+                this.notFoundValues.forEach(function(notFoundVal) {
+                  selectedVals.push(this._prepareValue(notFoundVal));
+                }.bind(this));
+              }
             }
-            var el = this.$$(selector);
-            if (el) {
-              el.invalid = false;
-            }
-          },
 
-          _shouldRequestMissingOption: function (url) {
-            if (typeof url === 'string' && url !== '') {
+            if (!this.multi) {
+              // single selection
+              if (selectedValues && !(typeof selectedValues === 'string' && selectedValues === '')) {
+                selectedVals = this._prepareValue(selectedValues);
+              }
+              if (!selectedVals && this.notFoundValues.length) {
+                this.set('_prevSelectedValues', this.notFoundValues[0]);
+                return;
+              }
+            }
+
+            this.set('_prevSelectedValues', selectedVals);
+            this.set('selected', selectedVals);
+          }.bind(this), 50);
+        },
+
+        _prepareValue: function(value) {
+          if (typeof value === 'number') {
+            return value;
+          }
+          if (typeof value === 'string') {
+            var val = parseInt(value, 10);
+            if (isNaN(val)) {
+              return value;
+            } else {
+              return val;
+            }
+          }
+          return value;
+        },
+
+        _removeItem: function(event, details) {
+          if (this.readonly) {
+            return;
+          }
+          var newSelected = [];
+          if (this.selectedValues) {
+            var detailsValue = details[this.optionValue] ? (details[this.optionValue] + '') : '';
+            newSelected = this.selectedValues.filter(function(item) {
+              if (this.customObjectOptions) {
+                var itemValue = item ? (item + '') : '';
+                return itemValue !== detailsValue;
+              } else {
+                return parseInt(item, 10) !== parseInt(details.value, 10);
+              }
+            }.bind(this));
+          }
+          this._autoValidateMulti();
+          this.set('selectedValues', newSelected);
+          this._fireValueChangeEvent();
+        },
+
+        _openMenu: function(e) {
+          if (this.readonly || this.menuOpened) {
+            return;
+          }
+          this.debounce('openDropdown', function() {
+            if (this.value && this.value instanceof Array && this.value.length > 0) {
+              return;
+            }
+
+            this.set('menuOpened', true);
+
+            var searchInput = this.$$('#searchInput');
+            if (searchInput) {
+              this.debounce('focusOnDropdown', function() {
+                Polymer.dom(searchInput.root).querySelector('#input').focus();
+              }, 100);
+            }
+          }.bind(this), 100);
+        },
+
+        _onDropdownOpen: function() {
+          if (this.readonly) {
+            return;
+          }
+          this.openedClass = 'dropdown-opened';
+          var ironDropdown = this._getIronDropdown();
+          if (ironDropdown) {
+            // set position target to align dropdown content properly
+            ironDropdown.set('positionTarget', this.$.main);
+            ironDropdown.style.width = this.$.main.offsetWidth + 'px';
+            var style = ironDropdown.querySelector('.dropdown-content').style;
+            style.overflow = 'hidden';
+          }
+        },
+
+        _getIronDropdown: function() {
+          var dropDown = this.$.dropdownMenu;
+          var ironDropdown = dropDown.$.dropdown;
+          return ironDropdown;
+        },
+
+        _resizeDropdown: function() {
+          var ironDropdown = this._getIronDropdown();
+          if (ironDropdown) {
+            ironDropdown.notifyResize();
+          }
+        },
+
+        _optionsLengthChanged: function(optionsLength) {
+          this._resizeDropdown();
+        },
+
+        _fireValueChangeEvent: function() {
+          if (this.noChangeEvent || this.readonly) {
+            return;
+          }
+          this.debounce('fireValueChanged', function() {
+            var selectedValues = null;
+            if ((typeof this.value === 'object' && this.value !== null) ||
+              (this.value instanceof Array && this.value.length > 0)) {
+              selectedValues = this.value;
+            }
+            this.fire('value-change', {selectedValues: selectedValues});
+          }.bind(this), 100);
+        },
+
+        _autoValidateMulti: function() {
+          if (this._autoValidateMultiSelection) {
+            this.validate();
+          }
+        },
+
+        validate: function() {
+          var valid;
+          if (!this.multi) {
+            // single selection validation
+            valid = this.$$('#singleSelectionDropdown').validate();
+            if (valid) {
+              this.set('invalid', false);
               return true;
+            } else {
+              this.set('invalid', true);
+              return false;
             }
-            return false;
-          },
+          } else {
+            // multiple selection validation
+            valid = false;
+            if (this._multiRequired(this.required)) {
+              if (Array.isArray(this.selectedValues) && this.selectedValues.length > 0) {
+                valid = true;
+              }
+            } else {
+              valid = true; // is not required
+            }
 
-          /**
-           * If there are no selected options that are not found in dropdown options then request them from server using
-           * url and ajaxParams(values property will contain missing values)
-           * ajaxParams = {
+            this.set('invalid', !valid);
+            return valid;
+          }
+        },
+
+        resetInvalidState: function() {
+          this.set('invalid', false);
+          var selector = '#singleSelectionDropdown';
+          if (this.multi) {
+            selector = '#customPaperInput';
+          }
+          var el = this.$$(selector);
+          if (el) {
+            el.invalid = false;
+          }
+        },
+
+        _shouldRequestMissingOption: function(url) {
+          if (typeof url === 'string' && url !== '') {
+            return true;
+          }
+          return false;
+        },
+
+        /**
+         * If there are no selected options that are not found in dropdown options then request them from server using
+         * url and ajaxParams(values property will contain missing values)
+         * ajaxParams = {
          *    values: 1 // single value
          * }
-           *
-           * ajaxParams = {
+         *
+         * ajaxParams = {
          *    values: 1,2,3,4 // multiple values
          * }
-           */
-          _requestMissingOptions: function (notFoundValues) {
-            if (!(notFoundValues instanceof Array && notFoundValues.length)) {
-              return;
-            }
-            if (this._shouldRequestMissingOption(this.url)) {
-              var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
-              if (missingOptionsEtoolsAjax) {
-                var notFoundV = notFoundValues.join(',');
-                if (this.ajaxParams && typeof this.ajaxParams === 'object') {
-                  if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
-                    // missing values changed, reset url to force request to fire
-                    missingOptionsEtoolsAjax.url = null;
-                  }
-                  this.ajaxParams.values = notFoundV;
-                } else {
-                  this.ajaxParams = {
-                    values: notFoundV
-                  };
-                }
-                missingOptionsEtoolsAjax.url = this.url;
-              }
-            }
-          },
-
-          _isValidOption: function (optionObj) {
-            return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
-          },
-
-          _handleMissingOptionsReqResponse: function (response) {
-            if (!(response.detail instanceof Array && response.detail.length)) {
-              // reponse details must a not empty array to continue
-              return;
-            }
-            try {
-              if (this._isValidOption(response.detail[0])) {
-                // assuming all objects from response array have same properties
-                // we just need to make sure the first one is valid, no need to use a loop here
-                var optionsLength = this.options.length;
-                this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
-                this._selectionChanged(this.selected, this.options);
-              } else {
-                console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' + this.url + ') are not valid(missing \'' +
-                    this.optionValue + '\' and \'' + this.optionLabel + '\' properties)');
-              }
-            } catch (error) {
-              console.error('[etools-esmm ' + this.label + '] Error occurred on missing options request response handling', error);
-            }
-          },
-
-          _handleMissingOptionsReqError: function (errorResponse) {
-            console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
+         */
+        _requestMissingOptions: function(notFoundValues) {
+          if (!(notFoundValues instanceof Array && notFoundValues.length)) {
+            return;
           }
+          if (this._shouldRequestMissingOption(this.url)) {
+            var missingOptionsEtoolsAjax = this.$$('#missingOptionsAjax');
+            if (missingOptionsEtoolsAjax) {
+              var notFoundV = notFoundValues.join(',');
+              if (this.ajaxParams && typeof this.ajaxParams === 'object') {
+                if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
+                  // missing values changed, reset url to force request to fire
+                  missingOptionsEtoolsAjax.url = null;
+                }
+                this.ajaxParams.values = notFoundV;
+              } else {
+                this.ajaxParams = {
+                  values: notFoundV
+                };
+              }
+              missingOptionsEtoolsAjax.url = this.url;
+            }
+          }
+        },
 
-        });
-      })();
-    </script>
+        _isValidOption: function(optionObj) {
+          return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
+        },
+
+        _handleMissingOptionsReqResponse: function(response) {
+          if (!(response.detail instanceof Array && response.detail.length)) {
+            // reponse details must a not empty array to continue
+            return;
+          }
+          try {
+            if (this._isValidOption(response.detail[0])) {
+              // assuming all objects from response array have same properties
+              // we just need to make sure the first one is valid, no need to use a loop here
+              var optionsLength = this.options.length;
+              this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
+              this._selectionChanged(this.selected, this.options);
+            } else {
+              // eslint-disable-next-line no-console
+              console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' +
+                this.url + ') are not valid(missing \'' + this.optionValue + '\' and \'' +
+                this.optionLabel + '\' properties)');
+            }
+          } catch (error) {
+            // eslint-disable-next-line no-console
+            console.error('[etools-esmm ' + this.label +
+              '] Error occurred on missing options request response handling', error);
+          }
+        },
+
+        _handleMissingOptionsReqError: function(errorResponse) {
+          // eslint-disable-next-line no-console
+          console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
+        }
+
+      });
+    })();
+  </script>
 </dom-module>
