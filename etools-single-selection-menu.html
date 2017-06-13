@@ -254,6 +254,10 @@ Dropdown with search and single selection capabilities
       _itemSelected: function(e) {
         this.set('selected', e.model.item[this.optionValue]);
         this._closeMenu();
+      },
+      // Use of this method covers a corner case
+      _getSelectedClass: function(item, selected) {
+        return selected === item[this.optionValue] ? 'iron-selected' : '';
       }
     });
   </script>

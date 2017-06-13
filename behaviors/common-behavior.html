@@ -109,11 +109,6 @@
     _menuBtnIsDisabled: function (disabled, readonly) {
       return disabled || readonly;
     },
-
-    //*Use of this method covers a corner case
-    _getSelectedClass: function (item, selected) {
-      return selected === item[this.optionValue] ? 'iron-selected' : '';
-    },
     _getValue: function (item) {
       return item ? item[this.optionValue] : null;
     },

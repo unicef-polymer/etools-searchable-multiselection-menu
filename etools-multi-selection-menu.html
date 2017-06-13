@@ -99,12 +99,16 @@ Dropdown with search and multi selection capabilities
 
       <div class="content-wrapper paper-input-input">
         <span class="placeholder"
-              hidden$="[[_hidePlaceholder(selectedItems.length)]]">
+              hidden$="[[_hidePlaceholder]]">
           [[placeholder]]
         </span>
         <div id="selected-items-wrapper"
-             hidden$="[[!_hidePlaceholder(selectedItems.length)]]">
-          <template is="dom-repeat" items="[[selectedItems]]">
+             hidden$="[[!_hidePlaceholder]]">
+          <template id="itemsListDisplay"
+                    is="dom-repeat"
+                    notify-dom-change
+                    on-dom-change="_selectedItemsDisplayHasChanged"
+                    items="[[selectedItems]]">
             <span class="option-string">
             {{_getLabel(item)}}
             <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
@@ -152,7 +156,7 @@ Dropdown with search and multi selection capabilities
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item item=[[item]]
                             internal-id$="[[_getValue(item)]]"
-                            class$="[[_getSelectedClass(item, selected, shownOptions)]] [[item.cssClass]]"
+                            class$="[[_getSelectedClass(item, selectedValues, shownOptions)]] [[item.cssClass]]"
                             title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -203,7 +207,8 @@ Dropdown with search and multi selection capabilities
         triggerValueChangeEvent: {
           type: Boolean,
           value: false
-        }
+        },
+        _hidePlaceholder: Boolean
       },
       observers: [
         '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
@@ -227,7 +232,7 @@ Dropdown with search and multi selection capabilities
           selectedValues = this.selectedValues;
         }
         if (this._noSelectedValues(selectedValues) || this._noOptions()) {
-          this.selectedItems = null;
+          this.set('selectedItems', []);
           return;
         }
         var selectedItems = this.options.filter(function (item) {
@@ -235,16 +240,18 @@ Dropdown with search and multi selection capabilities
         }.bind(this));
 
         this._setAnyNotFoundOptions(selectedItems, selectedValues);
-        this.selectedItems = selectedItems;
+        this.set('selectedItems', selectedItems);
       },
-      _selectedItemsChanged: function (newv, oldv) {
-        if (!this.triggerValueChangeEvent) {
-          return;
-        }
+      _selectedItemsChanged: function (selectedItems) {
+        // force selected list to re-render
+        this.$.itemsListDisplay.render();
         this.debounce('selected-items-changed', function () {
+          // check and trigger change event
+          if (!this.triggerValueChangeEvent) {
+            return;
+          }
           this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
         }.bind(this), 10);
-
       },
       _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
         if (this._noSelectedItems(selectedItems)) {
@@ -264,11 +271,11 @@ Dropdown with search and multi selection capabilities
 
         if (this._noSelectedItems(selectedItems)) {
           this.selectedValues = null;
-          this.selectedItems = null;
+          this.set('selectedItems', []);
         } else {
-          selectedValues = this._getValuesFromItems(selectedItems);
+          var selectedValues = this._getValuesFromItems(selectedItems);
           this.selectedValues = selectedValues;
-          this.selectedItems = selectedItems;
+          this.set('selectedItems', selectedItems);
         }
 
         if (this.autoValidate) {
@@ -301,7 +308,7 @@ Dropdown with search and multi selection capabilities
         if (this.selectedItems) {
           Array.prototype.push.apply(this.selectedItems, selectedItems);
         } else {
-          this.selectedItems = selectedItems;
+          this.set('selectedItems', selectedItems);
         }
       },
       _onPaperDropdownClose: function () {
@@ -367,10 +374,23 @@ Dropdown with search and multi selection capabilities
           }
         }.bind(this));
       },
-      _hidePlaceholder: function (selectedItemsLength) {
-        return !!selectedItemsLength;
+      _selectedItemsDisplayHasChanged: function(e) {
+        e.stopImmediatePropagation();
+        // hide/show placeholder
+        if (this.selectedItems instanceof Array && this.selectedItems.length > 0) {
+          this.set('_hidePlaceholder', true);
+        } else {
+          this.set('_hidePlaceholder', false);
+        }
+      },
+      // Use of this method covers a corner case
+      _getSelectedClass: function(item, selectedValues) {
+        console.log(item[this.optionValue].toString(), selectedValues);
+        if (selectedValues instanceof Array && selectedValues.length > 0) {
+          return selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
+        }
+        return '';
       }
-
     });
   </script>
 </dom-module>
