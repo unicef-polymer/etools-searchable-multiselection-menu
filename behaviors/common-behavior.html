@@ -66,7 +66,7 @@
       errorMessage: {
         type: String
       },
-      shownItemsLimit: {
+      shownOptionsLimit: {
         type: Number,
         value: 50
       },
@@ -78,17 +78,13 @@
       showLimitWarning: {
         type: Boolean,
         value: false,
-        computed: '_computeShowLimitWarning(shownItemsLimit, shownOptions)'
+        computed: '_computeShowLimitWarning(shownOptionsLimit, shownOptions)'
       },
       showNoSearchResultsWarning: {
         type: Boolean,
         value: false,
         computed: '_showNoSearchResultsWarning(noOptionsAvailable, shownOptions.length, options.length)'
       },
-      shownItemsLimit: {
-        type: Number,
-        value: 50
-       },
        autoValidate: {
          type: Boolean
        },
@@ -131,9 +127,9 @@
 
       if (search) {
         shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-        shownOptions = this._trimByShownItemsLimit(shownOptions);
-      } else if (options.length > this.shownItemsLimit) {
-        shownOptions = this._trimByShownItemsLimit(options);
+        shownOptions = this._trimByShownOptionsLimit(shownOptions);
+      } else if (options.length > this.shownOptionsLimit) {
+        shownOptions = this._trimByShownOptionsLimit(options);
       }
 
       if (showEmptyValue) {
@@ -144,8 +140,8 @@
       }
       return shownOptions;
     },
-    _trimByShownItemsLimit: function (options) {
-      return options.slice(0, Math.min(this.shownItemsLimit, options.length));
+    _trimByShownOptionsLimit: function (options) {
+      return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
     },
     _itemContainsSearchString: function (item) {
       return item[this.optionLabel] && item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
