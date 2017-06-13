@@ -1,11 +1,12 @@
 <script>
 window.etoolsSearchableDropdown = window.etoolsSearchableDropdown || {};
 /** @polymerBehavior etoolsSearchableDropdown.CommonBehavior */
-etoolsSearchableDropdown.CommonBehavior = {
+etoolsSearchableDropdown.CommonBehavior = { // eslint-disable-line no-undef
   properties: {
      label: {
           type: String
      },
+     noLabelFloat: Boolean,
      required: {
        type: Boolean
      },
@@ -119,7 +120,7 @@ etoolsSearchableDropdown.CommonBehavior = {
         return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
       },
       _itemContainsSearchString: function(item) {
-        return item[this.optionLabel] && item[this.optionLabel].toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+        return item[this.optionLabel] && item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
       },
       _computeShowLimitWarning: function(limit, shownOptions) {
         return shownOptions.length >= limit;
@@ -128,5 +129,5 @@ etoolsSearchableDropdown.CommonBehavior = {
         return (optionsLength > 0 && shownOptionsLength === 0) ||
             (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
       }
-}
+};
 </script>
