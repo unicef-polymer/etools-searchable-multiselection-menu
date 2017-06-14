@@ -35,16 +35,16 @@
     <div class="vertical-section-container centered">
       <h1>etools-searchable-multiselection-menu demo</h1>
 
-      <!--<h2>Single selection, with search</h2>-->
-      <!--<demo-snippet>-->
-        <!--<template is="dom-bind">-->
-          <!--<demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>-->
-          <!--<etools-searchable-multiselection-menu-->
-                  <!--label="Searchable menu"-->
-                  <!--options="[[realOptions]]"-->
-                  <!--value="{{selectedValues}}"></etools-searchable-multiselection-menu>-->
-        <!--</template>-->
-      <!--</demo-snippet>-->
+      <h2>Single selection, with search</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+                  label="Searchable menu"
+                  options="[[realOptions]]"
+                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
 
       <h2>Multi selection, two lines label</h2>
       <demo-snippet>
@@ -69,6 +69,7 @@
                   two-lines-label></etools-single-selection-menu>
         </template>
       </demo-snippet>
+
 
       <!--<h2>Single selection, with search, always display an empty value</h2>-->
       <!--<demo-snippet>-->

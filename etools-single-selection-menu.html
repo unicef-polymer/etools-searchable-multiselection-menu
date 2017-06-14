@@ -6,10 +6,12 @@
 <link rel="import" href="../iron-icons/iron-icons.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 
 <link rel="import" href="scripts/es6-polyfills.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
 
 
@@ -45,16 +47,12 @@ Dropdown with search and single selection capabilities
         height: 64px;
       }
 
-            .secondary-label {
-                font-size: 14px;
-            }
-
-            .search-input {
-                background-color: #fff;
-                box-sizing: border-box;
-                width: 100%;
-                margin: 16px;
-            }
+      .search-input {
+        background-color: #fff;
+        box-sizing: border-box;
+        width: 100%;
+        margin: 16px;
+      }
 
       .search-input iron-icon {
         width: 24px;
@@ -101,17 +99,13 @@ Dropdown with search and single selection capabilities
         width: 100%;
       }
 
-            .list-wrapper paper-listbox {
-                --paper-listbox-background-color: #fff;
-                --paper-listbox: {
-                    margin: 0;
-                    padding: 0;
-                };
-            }
-            .list-wrapper paper-item.two-lines {
-                padding: 20px 16px;
-                line-height: normal;
-            }
+      .list-wrapper paper-listbox {
+        --paper-listbox-background-color: #fff;
+        --paper-listbox: {
+          margin: 0;
+          padding: 0;
+        };
+      }
 
       .warning {
         font-family: Roboto;
@@ -215,39 +209,39 @@ Dropdown with search and single selection capabilities
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
 
-                <div class="dropdown-content">
-                    <div class="search-input-wrapper" hidden$="{{hideSearch}}">
-                        <paper-input
-                                id="searchInput"
-                                no-label-float
-                                class="search-input"
-                                label="Search"
-                                type="text"
-                                value="{{search}}"
-                                auto-focus
-                                tabindex="0">
-                            <iron-icon icon="search" prefix></iron-icon>
-                        </paper-input>
-                    </div>
-                    <div class="list-wrapper">
-                        <paper-listbox attr-for-selected="internal-id"
-                                       selected=[[selected]]>
-                            <template is="dom-repeat" items="[[shownOptions]]">
-                                <paper-item
-                                        item=[[item]]
-                                        internal-id$="[[_getValue(item)]]"
-                                        on-tap="_itemSelected"
-                                        class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
-                                        title$="[[_getLabel(item)]]">
+        <div class="dropdown-content">
+          <div class="search-input-wrapper" hidden$="{{hideSearch}}">
+            <paper-input
+                id="searchInput"
+                no-label-float
+                class="search-input"
+                label="Search"
+                type="text"
+                value="{{search}}"
+                auto-focus
+                tabindex="0">
+              <iron-icon icon="search" prefix></iron-icon>
+            </paper-input>
+          </div>
+          <div class="list-wrapper">
+            <paper-listbox attr-for-selected="internal-id"
+                           selected=[[selected]]>
+              <template is="dom-repeat" items="[[shownOptions]]">
+                <paper-item
+                    item=[[item]]
+                    internal-id$="[[_getValue(item)]]"
+                    on-tap="_itemSelected"
+                    class$="[[item.cssClass]][[_getSelectedClass(item)]]"
+                    title$="[[_getLabel(item)]]">
 
-                                    <iron-icon class="tick-icon" icon="check"></iron-icon>
-                                    <template is="dom-if" if="twoLinesLabel">
-                                        <div>[[item.display.primary]]</div>
-                                        <div class="secondary-label">[[item.display.secondary]]</div>
-                                    </template>
-                                    <span hidden$="[[twoLinesLabel]]">[[_getLabel(item)]]</span>
-                                </paper-item>
-                            </template>
+                  <iron-icon class="tick-icon" icon="check"></iron-icon>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div>[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <span hidden$="[[twoLinesLabel]]">[[_getLabel(item)]]</span>
+                </paper-item>
+              </template>
 
               <paper-item hidden$="[[!_showNoSearchResultsWarning(shownOptions.length, options.length)]]"
                           class="warning" disabled>
@@ -273,52 +267,13 @@ Dropdown with search and single selection capabilities
     </paper-input-container>
   </template>
 
-    <script>
-      Polymer({
-        is: 'etools-single-selection-menu',
-        behaviors: [
-          etoolsSearchableDropdown.MissingOptionsBehavior,
-          etoolsSearchableDropdown.CommonBehavior
-        ],
-        properties: {
-          selected: {
-            type: Number,
-            notify: true,
-            observer: '_selectedChanged'
-          },
-          selectedItem: {
-            type: Object,
-            value: null,
-            notify: true
-          },
-          restoreFocusOnClose: {
-            type: Boolean,
-            value: function () {
-              return false;
-            }
-          },
-          notFoundOption: {
-            type: String
-          },
-          shownOptions: {
-            type: Array,
-            computed: '_computeShownOptions(options, search, showEmptyValue, options.length)'
-          },
-          twoLinesLabel: {
-            type: Boolean,
-            value: false
-          }
-        },
-        observers: [
-          '_selectedAndOptionsChanged(selected, options)',
-          'notFoundOptionAndUrlChanged(notFoundOption, url)'
-        ],
   <script>
     Polymer({
       is: 'etools-single-selection-menu',
       behaviors: [
         etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
-        etoolsSearchableDropdown.CommonBehavior // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.SplitLabelBehavior// eslint-disable-line no-undef
       ],
       properties: {
         selected: {
@@ -340,6 +295,10 @@ Dropdown with search and single selection capabilities
         notFoundOption: {
           type: String
         },
+        twoLinesLabel: {
+          type: Boolean,
+          value: false
+        },
         allowOutsideScroll: Boolean
       },
       observers: [
@@ -347,8 +306,12 @@ Dropdown with search and single selection capabilities
         'notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
 
-      _getSelectedClass: function(item, selected) {
-        return selected === item[this.optionValue] ? 'iron-selected' : '';
+      _getSelectedClass: function(item) {
+        var itemClass = this.selected === item[this.optionValue] ? 'iron-selected' : '';
+        if (this.twoLinesLabel) {
+          itemClass += ' two-lines';
+        }
+        return itemClass;
       },
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
@@ -381,7 +344,8 @@ Dropdown with search and single selection capabilities
         return item ? item[this.optionValue] : null;
       },
       _getLabel: function(item) {
-        return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
+        return this.twoLinesLabel? this.getPrimaryLabel(item.label)
+            : (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
       },
       _menuBtnIsDisabled: function(disabled, readonly) {
         return disabled || readonly;
@@ -445,71 +409,6 @@ Dropdown with search and single selection capabilities
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
 
-          warnMsg += selected + ' not found in dropdown\'s options!';
-          console.warn(warnMsg);
-        },
-        validate: function (selected) {
-          selected = selected || this.selected;
-          if (!this.hasAttribute('required')) {
-            return true;
-          }
-          this.set('invalid', !!!selected);
-          return !!selected;
-        },
-        _onDropdownOpen: function () {
-          var ironDropdown = this._getIronDropdown();
-          if (ironDropdown) {
-            // set position target to align dropdown content properly
-            ironDropdown.set('positionTarget', this);
-            ironDropdown.style.width = this.offsetWidth + 'px';
-            var style = ironDropdown.querySelector('.dropdown-content').style;
-            style.overflow = 'hidden';
-          }
-        },
-        _getIronDropdown: function () {
-          return this.$.dropdownMenu.$.dropdown;
-        },
-        _itemSelected: function (e) {
-          this.set('selected', e.model.item[this.optionValue]);
-          this._closeMenu();
-        },
-
-        _computeShownOptions: function (options, search, showEmptyValue) {
-          var shownOptions = JSON.parse(JSON.stringify(options));
-
-          if (search) {
-            shownOptions = options.filter(this._itemContainsSearchString.bind(this));
-            shownOptions = this._trimByShownOptionsLimit(shownOptions);
-          } else if (options.length > this.shownItemsLimit) {
-            shownOptions = this._trimByShownOptionsLimit(options);
-          }
-
-          if (showEmptyValue) {
-            var emptyOption = {cssClass: 'emptyValue'};
-            emptyOption[this.optionValue] = null;
-            emptyOption[this.optionLabel] = '-- None --';
-            shownOptions.unshift(emptyOption);
-          }
-          if (this.twoLinesLabel) {
-            return shownOptions.map(function (item) {
-              var split = item.label.split('|');
-              return {
-                value: item.value,
-                label: split[0],
-                display: {
-                  primary: split[0],
-                  secondary: split[1]
-                },
-                cssClass: 'two-lines'
-              }
-            });
-
-          }
-          return shownOptions;
-        },
-      })
-      ;
-    </script>
         warnMsg += selected + ' not found in dropdown\'s options!';
         // eslint-disable-next-line no-console
         console.warn(warnMsg);
