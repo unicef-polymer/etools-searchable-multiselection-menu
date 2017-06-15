@@ -32,6 +32,7 @@ Custom property | Description | Default
 `--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
 `--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 `--esmm-list-wrapper` | Mixin applied to list wrapper, can be used to controll list height | `{}`
+`--esmm-search-input-label` | Mixin aplied to the search input label | `{}`
 
 @demo demo/index.html
 -->
@@ -63,6 +64,9 @@ Custom property | Description | Default
         left: 0;
         width: calc(100% - 32px);
         margin: 16px;
+        --paper-input-container-label: {
+          @apply(--esmm-search-input-label)
+        }
       }
 
       .search-input iron-icon {
@@ -77,10 +81,6 @@ Custom property | Description | Default
 
       paper-input.value-container {
         --paper-input-container-input: {
-          padding-right: 24px;
-          box-sizing: border-box;
-        };
-        --paper-input-container-label: {
           padding-right: 24px;
           box-sizing: border-box;
         };
