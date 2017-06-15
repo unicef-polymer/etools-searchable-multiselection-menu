@@ -64,15 +64,15 @@ Custom property | Description | Default
         left: 0;
         width: calc(100% - 32px);
         margin: 16px;
+        --paper-input-container-label: {
+          @apply(--esmm-search-input-label)
+        }
       }
 
       .search-input iron-icon {
         width: 24px;
         height: 24px;
         font-size: 24px;
-         --paper-input-container-label: {
-          @apply(--esmm-search-input-label)
-        }
       }
 
       .value-container {
