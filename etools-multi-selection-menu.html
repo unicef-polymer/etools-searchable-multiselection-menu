@@ -385,7 +385,6 @@ Dropdown with search and multi selection capabilities
       },
       // Use of this method covers a corner case
       _getSelectedClass: function(item, selectedValues) {
-        console.log(item[this.optionValue].toString(), selectedValues);
         if (selectedValues instanceof Array && selectedValues.length > 0) {
           return selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
