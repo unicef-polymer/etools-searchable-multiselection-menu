@@ -201,7 +201,6 @@ Custom property | Description | Default
         outline: none;
       }
 
-
       :host([readonly]) {
         --paper-input-container: {
           @apply(--esmm-readonly-input-container);
@@ -338,10 +337,12 @@ Custom property | Description | Default
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
                   <template is="dom-if" if="[[twoLinesLabel]]">
-                    <div>[[getPrimaryLabel(item.label)]]</div>
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
                     <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
                   </template>
-                  <span hidden$="[[twoLinesLabel]]">[[item.label]]</span>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[item.label]]</span>
+                  </template>
 
                 </paper-item>
               </template>
@@ -1113,7 +1114,7 @@ Custom property | Description | Default
         _getPaperItemClass: function(item) {
           if (this.twoLinesLabel) {
             return 'two-lines';
-          }else {
+          } else {
             return item.style;
           }
         },

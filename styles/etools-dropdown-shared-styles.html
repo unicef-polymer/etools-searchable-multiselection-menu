@@ -2,18 +2,28 @@
 <dom-module id="etools-dropdown-shared-styles">
   <template>
     <style>
-       *[hidden] {
+      *[hidden] {
         display: none !important;
       }
-       .secondary-label {
-         font-size: 14px;
-       }
 
-       .list-wrapper paper-item.two-lines:not(.warning) {
-         line-height: normal;
-         padding: 8px 16px;
-       }
+      .secondary-label {
+        font-size: 14px;
+        margin-top: 8px;
+      }
 
-     </style>
+      .primary-label,
+      .secondary-label {
+        width: auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .list-wrapper paper-item.two-lines:not(.warning) {
+        line-height: normal;
+        padding: 8px 16px;
+      }
+
+    </style>
   </template>
 </dom-module>
