@@ -11,6 +11,7 @@
 <link rel="import" href="../etools-ajax/etools-ajax.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
 <link rel="import" href="scripts/es6-polyfills.html">
 <!--
@@ -135,7 +136,10 @@ Dropdown with search and multi selection capabilities
                          disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
                          hidden$="[[readonly]]">
 
-        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
+        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"
+                   on-tap="_handleClickOrTap"
+                   on-click="_handleClickOrTap">
+        </iron-icon>
 
         <div class="dropdown-content">
           <div class="search-input-wrapper" hidden$="{{hideSearch}}">
@@ -160,7 +164,13 @@ Dropdown with search and multi selection capabilities
                             title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <span>[[_getLabel(item)]]</span>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[_getLabel(item)]]</span>
+                  </template>
                 </paper-item>
               </template>
 
@@ -187,8 +197,9 @@ Dropdown with search and multi selection capabilities
     Polymer({
       is: 'etools-multi-selection-menu',
       behaviors: [
-        etoolsSearchableDropdown.MissingOptionsBehavior,
-        etoolsSearchableDropdown.CommonBehavior
+        etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.SplitLabelBehavior // eslint-disable-line no-undef
       ],
       properties: {
         selectedValues: {
@@ -335,7 +346,6 @@ Dropdown with search and multi selection capabilities
       _openMenu: function (event) {
         if (event) {
           if (this._clickedOnX(event)) {
-            console.log('ahaa');
             return; // Do not open
           }
         }
@@ -386,11 +396,13 @@ Dropdown with search and multi selection capabilities
       },
       // Use of this method covers a corner case
       _getSelectedClass: function(item, selectedValues) {
+        var itemClass = '';
         if (selectedValues instanceof Array && selectedValues.length > 0) {
-          return selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
+          itemClass = selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
-        return '';
+        this.appendTwoLinesOptionItemClass(itemClass);
       }
+
     });
   </script>
 </dom-module>

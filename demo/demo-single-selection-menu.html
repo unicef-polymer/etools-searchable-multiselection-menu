@@ -16,6 +16,14 @@
         capitalize-input-shown>
     </etools-single-selection-menu>
 
+    <etools-single-selection-menu
+        label="Searchable single select, two lines options"
+        options="[[twoLineOptions]]"
+        selected="60"
+        capitalize-input-shown
+        two-lines-options>
+    </etools-single-selection-menu>
+
   </template>
   <script>
     (function() {
@@ -26,10 +34,17 @@
         is: 'demo-single-selection-menu',
 
         properties: {
-          abc: {
-            type: Number,
-            value: 2
-          }
+          twoLineOptions: {
+            type: Array,
+            value: function () {
+              var opt = []
+              for (var i=1 ; i<=10 ; i++)  {
+                opt.push({value: i, label: 'Option ' + i + '|' + 'Second line for option' + i})
+              }
+              return opt;
+            },
+            notify: true
+          },
         },
 
         ready: function() {

@@ -98,6 +98,10 @@
           return false;
         }
       },
+      twoLinesLabel: {
+        type: Boolean,
+        value: false
+      }
     },
     _noOptions: function() {
       return (!this.options || !this.options.length);
@@ -175,10 +179,21 @@
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
      */
     _searchValueChanged: function(search) {
+      this.notifyDropdownResize();
+    },
+
+    notifyDropdownResize: function() {
       var ironDropdown = this._getIronDropdown();
       if (ironDropdown) {
         ironDropdown.notifyResize();
       }
+    },
+
+    appendTwoLinesOptionItemClass: function(currentClass) {
+      if (this.twoLinesLabel) {
+        currentClass += ' two-lines';
+      }
+      return currentClass;
     }
   };
 </script>

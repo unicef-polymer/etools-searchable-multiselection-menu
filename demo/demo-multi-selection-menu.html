@@ -1,5 +1,4 @@
 <link rel="import" href="../../polymer/polymer.html">
-<link rel="import" href="../etools-single-selection-menu.html">
 <link rel="import" href="../etools-multi-selection-menu.html">
 
 <dom-module id="demo-multi-selection-menu">
@@ -14,24 +13,17 @@
         required
         selected-values="[55, 55333]"
         auto-validate
-        error-message="My error message"
-        on-etools-selected-items-changed="onEtoolsSelectedItemsChanged">
+        error-message="My error message">
     </etools-multi-selection-menu>
 
-    <paper-input label="Testing input 2" placeholder="Some text input for testing..."></paper-input>
+    <etools-multi-selection-menu
+        label="Searchable multi select, options on two lines"
+        options="[[twoLineOptions]]"
+        selected-values="[55]"
+        two-lines-options>
+    </etools-multi-selection-menu>
 
-    <etools-single-selection-menu
-        label="Searchable single select"
-        options="[[customObjOptions]]"
-        option-value="id"
-        option-label="option_label"
-        required
-        auto-validate
-        selected ="56"
-        error-message="My error message"
-        on-iron-select="_onIronSelect"
-       >
-    </etools-single-selection-menu>
+
   </template>
   <script>
     (function() {
@@ -42,10 +34,17 @@
         is: 'demo-multi-selection-menu',
 
         properties: {
-          abc:{
-            type:Number,
-            value: 2
-          }
+          twoLineOptions: {
+            type: Array,
+            value: function () {
+              var opt = []
+              for (var i=1 ; i<=10 ; i++)  {
+                opt.push({value: i, label: 'Option ' + i + '|' + 'Second line for option' + i})
+              }
+              return opt;
+            },
+            notify: true
+          },
         },
 
         ready: function() {

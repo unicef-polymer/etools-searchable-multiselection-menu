@@ -158,12 +158,7 @@ Dropdown with search and single selection capabilities
         },
         notFoundOption: {
           type: String
-        },
-        twoLinesLabel: {
-          type: Boolean,
-          value: false
-        },
-        allowOutsideScroll: Boolean
+        }
       },
       observers: [
         '_selectedAndOptionsChanged(selected, options)',
@@ -270,10 +265,7 @@ Dropdown with search and single selection capabilities
       // Use of this method covers a corner case
       _getSelectedClass: function(item) {
         var itemClass = (this.selected === item[this.optionValue]) ? 'iron-selected' : '';
-        if (this.twoLinesLabel) {
-          itemClass += ' two-lines';
-        }
-        return itemClass;
+        return this.appendTwoLinesOptionItemClass(itemClass);
       }
     });
   </script>

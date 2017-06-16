@@ -43,40 +43,32 @@
         </template>
       </demo-snippet>
 
-      <h2>Multi selection, two lines label</h2>
+      <h2>Multi selection, with search</h2>
+      <demo-snippet>
+        <template is="dom-bind">
+          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
+          <etools-searchable-multiselection-menu
+              label="Searchable menu"
+              placeholder="Multi select"
+              options="[[realOptions]]" multi></etools-searchable-multiselection-menu>
+        </template>
+      </demo-snippet>
+
+      <h2>2 lines options</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  placeholder="Please select 2 lines options"
-                  options="[[twoLineOptions]]"
-                  two-lines-label
-                  multi></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
+              label="Searchable menu"
+              placeholder="Please select 2 lines options (multi)"
+              options="[[twoLineOptions]]"
+              two-lines-label multi></etools-searchable-multiselection-menu>
 
-      <h2>Single Select Menu, two lines label</h2>
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" two-line-options="{{twoLineOptions}}"></demo-helper>
-          <etools-single-selection-menu
-                  label="Searchable menu"
-                  options="[[twoLineOptions]]"
-                  two-lines-label></etools-single-selection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>Multi selection, with search</h2>
-
-      <demo-snippet>
-        <template is="dom-bind">
-          <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"
-                       massive-selected-values="{{massiveSelectedValues}}"></demo-helper>
-          <etools-searchable-multiselection-menu label="Multiselection Searchable menu"
-                                                 options="[[realOptions]]"
-                                                 value="{{massiveSelectedValues}}"
-                                                 multi></etools-searchable-multiselection-menu>
+          <etools-searchable-multiselection-menu
+              label="Searchable menu"
+              placeholder="Please select 2 lines options"
+              options="[[twoLineOptions]]"
+              two-lines-label></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
