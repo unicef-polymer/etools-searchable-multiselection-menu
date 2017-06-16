@@ -8,8 +8,9 @@
 <link rel="import" href="../paper-input/paper-input-error.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../etools-ajax/etools-ajax.html">
-
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="deletable-option-list.html">
+<link rel="import" href="styles/etools-dropdown-shared-styles.html">
 <!--
 `etools-searchable-multiselection-menu`
 
@@ -32,13 +33,14 @@ Custom property | Description | Default
 `--esmm-readonly-input-container-label` | Mixin applied to the label in readonly state | `{}`
 `--esmm-readonly-input-container-label-focus` | Mixin applied to the label in readonly state with focus | `{}`
 `--esmm-list-wrapper` | Mixin applied to list wrapper, can be used to controll list height | `{}`
+`--esmm-search-input-label` | Mixin aplied to the search input label | `{}`
 
 @demo demo/index.html
 -->
 
 <dom-module id="etools-searchable-multiselection-menu">
   <template>
-    <style>
+    <style include="etools-dropdown-shared-styles">
       :host {
         display: block;
         width: 100%;
@@ -63,6 +65,9 @@ Custom property | Description | Default
         left: 0;
         width: calc(100% - 32px);
         margin: 16px;
+        --paper-input-container-label: {
+          @apply(--esmm-search-input-label)
+        }
       }
 
       .search-input iron-icon {
@@ -77,10 +82,6 @@ Custom property | Description | Default
 
       paper-input.value-container {
         --paper-input-container-input: {
-          padding-right: 24px;
-          box-sizing: border-box;
-        };
-        --paper-input-container-label: {
           padding-right: 24px;
           box-sizing: border-box;
         };
@@ -164,6 +165,7 @@ Custom property | Description | Default
         line-height: 48px;
         width: 100%;
       }
+
       .tick-icon {
         display: none;
         padding-right: 8px;
@@ -178,20 +180,23 @@ Custom property | Description | Default
       .iron-selected {
         background: var(--esmm-list-item-selected-color, #DCDCDC);
       }
+
       .warning {
         font-family: Roboto;
         font-size: 12px;
         line-height: 16px;
-        color: rgba(0,0,0,0.54);
+        color: rgba(0, 0, 0, 0.54);
         background-color: #EEEEEE;
       }
+
       .emptyValue {
         --paper-item: {
-          color: rgba(0,0,0,0.38);
+          color: rgba(0, 0, 0, 0.38);
           padding: 0 16px;
           cursor: pointer;
         };
       }
+
       .multi-input-container {
         outline: none;
       }
@@ -230,20 +235,20 @@ Custom property | Description | Default
 
       <template is="dom-if" if="{{!multi}}">
         <paper-input
-          id="singleSelectionDropdown"
-          class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
-          on-tap="_openMenu"
-          on-focus="_openMenu"
-          label="[[label]]"
-          value="[[_getSingleSelectedOptionLabel(value)]]"
-          title="[[_getSingleSelectedOptionLabel(value)]]"
-          disabled="[[disabled]]"
-          error-message="[[errorMessage]]"
-          required$="[[_simpleRequired(required)]]"
-          placeholder="[[placeholder]]"
-          auto-validate$="[[autoValidate]]"
-          invalid$="[[invalid]]"
-          readonly$="[[readonly]]">
+            id="singleSelectionDropdown"
+            class$="value-container [[_capitalizeInputValueClass(capitalizeInputShown)]]"
+            on-tap="_openMenu"
+            on-focus="_openMenu"
+            label="[[label]]"
+            value="[[_getSingleSelectedOptionLabel(value)]]"
+            title="[[_getSingleSelectedOptionLabel(value)]]"
+            disabled="[[disabled]]"
+            error-message="[[errorMessage]]"
+            required$="[[_simpleRequired(required)]]"
+            placeholder="[[placeholder]]"
+            auto-validate$="[[autoValidate]]"
+            invalid$="[[invalid]]"
+            readonly$="[[readonly]]">
         </paper-input>
       </template>
 
@@ -252,29 +257,30 @@ Custom property | Description | Default
         <div class="multi-container">
 
           <paper-input-container
-            class="multi-input-container"
-            id="customPaperInput"
-            tabindex="0"
-            on-tap="_openMenu"
-            on-focus="_openMenu"
-            attr-for-value="option-value"
-            disabled$="[[disabled]]"
-            error-message="[[errorMessage]]"
-            required$="[[_multiRequired(required)]]"
-            invalid$="[[invalid]]"
-            always-float-label>
+              class="multi-input-container"
+              id="customPaperInput"
+              tabindex="0"
+              on-tap="_openMenu"
+              on-focus="_openMenu"
+              attr-for-value="option-value"
+              disabled$="[[disabled]]"
+              error-message="[[errorMessage]]"
+              required$="[[_multiRequired(required)]]"
+              invalid$="[[invalid]]"
+              always-float-label>
 
             <label>[[label]]</label>
 
             <deletable-option-list on-option-delete="_removeItem"
-              class="paper-input-input"
-              option-value="{{value}}"
-              custom-object-options="[[customObjectOptions]]"
-              option-value-attribute="[[optionValue]]"
-              option-label-attribute="[[optionLabel]]"
-              disabled="[[_disableMenuBtn(disabled, readonly)]]"
-              readonly$="[[readonly]]"
-              placeholder=[[placeholder]]>
+                                   class="paper-input-input"
+                                   option-value="{{value}}"
+                                   custom-object-options="[[customObjectOptions]]"
+                                   option-value-attribute="[[optionValue]]"
+                                   option-label-attribute="[[optionLabel]]"
+                                   disabled="[[_disableMenuBtn(disabled, readonly)]]"
+                                   readonly$="[[readonly]]"
+                                   two-lines-label="[[twoLinesLabel]]"
+                                   placeholder=[[placeholder]]>
             </deletable-option-list>
 
             <template is="dom-if" if="[[errorMessage]]">
@@ -285,17 +291,17 @@ Custom property | Description | Default
       </template>
 
       <paper-menu-button
-        horizontal-align="right"
-        id="dropdownMenu"
-        ignore-select
-        opened="[[menuOpened]]"
-        restore-focus-on-close$="{{falseValue}}"
-        on-paper-dropdown-close="_valueSelected"
-        on-paper-dropdown-open="_onDropdownOpen"
-        allow-outside-scroll="[[allowOutsideScroll]]"
-        dynamic-align$="[[dynamicAlign]]"
-        disabled="[[_disableMenuBtn(disabled, readonly)]]"
-        hidden$=[[readonly]]>
+          horizontal-align="right"
+          id="dropdownMenu"
+          ignore-select
+          opened="[[menuOpened]]"
+          restore-focus-on-close$="{{falseValue}}"
+          on-paper-dropdown-close="_valueSelected"
+          on-paper-dropdown-open="_onDropdownOpen"
+          allow-outside-scroll="[[allowOutsideScroll]]"
+          dynamic-align$="[[dynamicAlign]]"
+          disabled="[[_disableMenuBtn(disabled, readonly)]]"
+          hidden$=[[readonly]]>
 
         <paper-icon-button icon="arrow-drop-down" class="dropdown-trigger"></paper-icon-button>
 
@@ -303,12 +309,12 @@ Custom property | Description | Default
 
           <div class="input-wrapper" hidden$="{{hideSearch}}">
             <paper-input
-              id="searchInput"
-              no-label-float
-              class="search-input"
-              label="Search"
-              type="text"
-              value="{{search}}">
+                id="searchInput"
+                no-label-float
+                class="search-input"
+                label="Search"
+                type="text"
+                value="{{search}}">
               <iron-icon icon="search" prefix></iron-icon>
             </paper-input>
           </div>
@@ -316,21 +322,27 @@ Custom property | Description | Default
           <div class$="list-wrapper [[_withoutSearchClass(hideSearch)]]">
 
             <paper-listbox
-              multi="[[multi]]"
-              attr-for-selected="internal-id"
-              selected="{{selectedValues}}"
-              selected-values="{{selectedValues}}">
+                multi="[[multi]]"
+                attr-for-selected="internal-id"
+                selected="{{selectedValues}}"
+                selected-values="{{selectedValues}}">
 
               <template is="dom-repeat" items="[[shownItems]]">
 
                 <paper-item
-                  internal-id$="[[item.value]]"
-                  on-tap="_elementSelected"
-                  class$="[[item.style]]"
-                  title$="[[item.label]]">
+                    internal-id$="[[item.value]]"
+                    on-tap="_elementSelected"
+                    class$="[[_getPaperItemClass(item)]]"
+                    title$="[[item.label]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <span>[[item.label]]</span>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[item.label]]</span>
+                  </template>
 
                 </paper-item>
               </template>
@@ -356,6 +368,7 @@ Custom property | Description | Default
       Polymer({
 
         is: 'etools-searchable-multiselection-menu',
+        behaviors: [etoolsSearchableDropdown.SplitLabelBehavior], // eslint-disable-line no-undef
 
         properties: {
 
@@ -373,13 +386,17 @@ Custom property | Description | Default
           },
           readonly: {
             type: Boolean,
-            value: function() { return false; },
+            value: function() {
+              return false;
+            },
             reflectToAttribute: true,
             observer: '_readonlyStateChanged'
           },
           invalid: {
             type: Boolean,
-            value: function() { return false; },
+            value: function() {
+              return false;
+            },
             reflectToAttribute: true
           },
           options: {
@@ -494,6 +511,10 @@ Custom property | Description | Default
             notify: true,
             value: []
           },
+          twoLinesLabel: {
+            type: Boolean,
+            value: false
+          },
           url: String,
           ajaxParams: Object
 
@@ -581,7 +602,7 @@ Custom property | Description | Default
 
             if (this.selectedValues === null) {
               if (this.value === null && this.updateSelected &&
-                this.notFoundValues instanceof Array && this.notFoundValues.length) {
+                  this.notFoundValues instanceof Array && this.notFoundValues.length) {
                 this.set('selected', null);
               }
             }
@@ -596,7 +617,7 @@ Custom property | Description | Default
             this.set('selectedValues', null);
             return;
           }
-          if (this.multi && Array.isArray(value) && value.length > 0 ) {
+          if (this.multi && Array.isArray(value) && value.length > 0) {
             // multiple selection on
             var selectedValues = [];
             var selVal;
@@ -615,7 +636,7 @@ Custom property | Description | Default
             this.set('value', value[0]);
             this.set('selectedValues', value[0][this.optionValue]);
           } else if (!this.multi && !Array.isArray(value) &&
-            typeof value === 'object' && value[this.optionValue]) {
+              typeof value === 'object' && value[this.optionValue]) {
             // single selection, value is just an object from options
             this.set('selectedValues', value[this.optionValue]);
           }
@@ -639,7 +660,7 @@ Custom property | Description | Default
           // this could be fired twice almost in the same time (on item tap and on dropdown close)
           this.debounce('etoolsEsmmValueSelected', function() {
             this.set('menuOpened', false);
-            if(this.selectedValues === null) {
+            if (this.selectedValues === null) {
               // reset selected
               this.set('value', null);
               this._fireValueChangeEvent();
@@ -751,8 +772,8 @@ Custom property | Description | Default
             }
 
             if (this.selectedRequiresValidOptions &&
-              (options instanceof Array === false ||
-              (options instanceof Array && options.length === 0))) {
+                (options instanceof Array === false ||
+                (options instanceof Array && options.length === 0))) {
               return;
             }
 
@@ -829,12 +850,12 @@ Custom property | Description | Default
               }
             } else {
               if (selectedValues === null &&
-                Array.isArray(this._prevSelectedValues) &&
-                this._prevSelectedValues.length === 0) {
+                  Array.isArray(this._prevSelectedValues) &&
+                  this._prevSelectedValues.length === 0) {
                 return;
               }
               if (!this._prevSelectedValues &&
-                (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
+                  (!selectedValues || (Array.isArray(selectedValues) && selectedValues.length === 0))) {
                 return;
               }
             }
@@ -967,7 +988,7 @@ Custom property | Description | Default
           this.debounce('fireValueChanged', function() {
             var selectedValues = null;
             if ((typeof this.value === 'object' && this.value !== null) ||
-              (this.value instanceof Array && this.value.length > 0)) {
+                (this.value instanceof Array && this.value.length > 0)) {
               selectedValues = this.value;
             }
             this.fire('value-change', {selectedValues: selectedValues});
@@ -1081,13 +1102,20 @@ Custom property | Description | Default
             } else {
               // eslint-disable-next-line no-console
               console.warn('[etools-esmm ' + this.label + '] Missing options received(from ' +
-                this.url + ') are not valid(missing \'' + this.optionValue + '\' and \'' +
-                this.optionLabel + '\' properties)');
+                  this.url + ') are not valid(missing \'' + this.optionValue + '\' and \'' +
+                  this.optionLabel + '\' properties)');
             }
           } catch (error) {
             // eslint-disable-next-line no-console
             console.error('[etools-esmm ' + this.label +
-              '] Error occurred on missing options request response handling', error);
+                '] Error occurred on missing options request response handling', error);
+          }
+        },
+        _getPaperItemClass: function(item) {
+          if (this.twoLinesLabel) {
+            return 'two-lines';
+          } else {
+            return item.style;
           }
         },
 
