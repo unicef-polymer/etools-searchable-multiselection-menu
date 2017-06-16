@@ -100,7 +100,8 @@
       },
       twoLinesLabel: {
         type: Boolean,
-        value: false
+        value: false,
+        reflectToAttribute: true
       }
     },
     _noOptions: function() {
@@ -113,8 +114,13 @@
       return item ? item[this.optionValue] : null;
     },
     _getLabel: function(item) {
-      return this.twoLinesLabel ? this.getPrimaryLabel(item[this.optionLabel])
-          : ((item && item[this.optionLabel]) ? item[this.optionLabel] : null);
+      if (!item) {
+        return null;
+      }
+      if (this.twoLinesLabel) {
+        return this.getPrimaryLabel(item[this.optionLabel])
+      }
+      return item[this.optionLabel];
     },
     resetInvalidState: function() {
       this.set('invalid', false);
@@ -187,13 +193,7 @@
       if (ironDropdown) {
         ironDropdown.notifyResize();
       }
-    },
-
-    appendTwoLinesOptionItemClass: function(currentClass) {
-      if (this.twoLinesLabel) {
-        currentClass += ' two-lines';
-      }
-      return currentClass;
     }
+
   };
 </script>

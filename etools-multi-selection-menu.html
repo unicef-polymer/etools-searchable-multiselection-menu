@@ -160,7 +160,7 @@ Dropdown with search and multi selection capabilities
               <template is="dom-repeat" items="[[shownOptions]]">
                 <paper-item item=[[item]]
                             internal-id$="[[_getValue(item)]]"
-                            class$="[[_getSelectedClass(item, selectedValues, shownOptions)]] [[item.cssClass]]"
+                            class$="[[_getSelectedClass(item, shownOptions)]] [[item.cssClass]]"
                             title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -226,7 +226,7 @@ Dropdown with search and multi selection capabilities
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
         '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
-      _selectedValuesOrOptionsChanged: function (selectedValues, options, selectedValuesLength) {
+      _selectedValuesOrOptionsChanged: function(selectedValues, options, selectedValuesLength) {
         this._selectedValuesToString();
         this._setSelectedItems(selectedValues);
 
@@ -237,7 +237,7 @@ Dropdown with search and multi selection capabilities
 
       // Can't use paper-listbox's on-selected-items-changed event ,
       // because paper-lisbox doesn't cover the case when selectedItems are not in the shownOptions values
-      _setSelectedItems: function (selectedValues) {
+      _setSelectedItems: function(selectedValues) {
         this.notFoundOptions = null;
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
@@ -246,17 +246,17 @@ Dropdown with search and multi selection capabilities
           this.set('selectedItems', []);
           return;
         }
-        var selectedItems = this.options.filter(function (item) {
+        var selectedItems = this.options.filter(function(item) {
           return selectedValues.includes(item[this.optionValue].toString());
         }.bind(this));
 
         this._setAnyNotFoundOptions(selectedItems, selectedValues);
         this.set('selectedItems', selectedItems);
       },
-      _selectedItemsChanged: function (selectedItems) {
+      _selectedItemsChanged: function(selectedItems) {
         // force selected list to re-render
         this.$.itemsListDisplay.render();
-        this.debounce('selected-items-changed', function () {
+        this.debounce('selected-items-changed', function() {
           // check and trigger change event
           if (!this.triggerValueChangeEvent) {
             return;
@@ -264,19 +264,19 @@ Dropdown with search and multi selection capabilities
           this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
         }.bind(this), 10);
       },
-      _setAnyNotFoundOptions: function (selectedItems, selectedValues) {
+      _setAnyNotFoundOptions: function(selectedItems, selectedValues) {
         if (this._noSelectedItems(selectedItems)) {
           this.notFoundOptions = selectedValues;
         } else if (selectedItems.length < selectedValues.length) {
           var selectedItemsValues = this._getValuesFromItems(selectedItems);
-          this.notFoundOptions = selectedValues.filter(function (value) {
+          this.notFoundOptions = selectedValues.filter(function(value) {
             return !selectedItemsValues.includes(value);
           });
         }
       },
-      _removeSelectedItem: function (e) {
+      _removeSelectedItem: function(e) {
         // Compute selectedItems without the removed item
-        var selectedItems = this.selectedItems.filter(function (item) {
+        var selectedItems = this.selectedItems.filter(function(item) {
           return item[this.optionValue] !== e.model.item[this.optionValue];
         }.bind(this));
 
@@ -296,12 +296,12 @@ Dropdown with search and multi selection capabilities
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
-      _notFoundOptionsAndUrlChanged: function () {
+      _notFoundOptionsAndUrlChanged: function() {
         if (this.notFoundOptions) {
           this._handleSelectedNotFoundInOptions(this.notFoundOptions);
         }
       },
-      _handleSelectedNotFoundInOptions: function (notFoundSelectedValues) {
+      _handleSelectedNotFoundInOptions: function(notFoundSelectedValues) {
         this._requestMissingOptions(notFoundSelectedValues);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
@@ -309,7 +309,7 @@ Dropdown with search and multi selection capabilities
         warnMsg += notFoundSelectedValues + ' not found in dropdown\'s options!';
         console.warn(warnMsg);
       },
-      _updateAfterMissingOptionsReceived: function (detail) {
+      _updateAfterMissingOptionsReceived: function(detail) {
         var selectedItems;
         if (Array.isArray(detail) && detail.length) {
           selectedItems = detail;
@@ -322,12 +322,12 @@ Dropdown with search and multi selection capabilities
           this.set('selectedItems', selectedItems);
         }
       },
-      _onPaperDropdownClose: function () {
+      _onPaperDropdownClose: function() {
         if (this.autoValidate) {
           this.validate(this.selectedValues);
         }
       },
-      validate: function (selectedValues) {
+      validate: function(selectedValues) {
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
         }
@@ -338,12 +338,12 @@ Dropdown with search and multi selection capabilities
         this.set('invalid', invalid);
         return !invalid;
       },
-      _handleClickOrTap: function (e) {
+      _handleClickOrTap: function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
         this._openMenu(e);
       },
-      _openMenu: function (event) {
+      _openMenu: function(event) {
         if (event) {
           if (this._clickedOnX(event)) {
             return; // Do not open
@@ -355,31 +355,31 @@ Dropdown with search and multi selection capabilities
         }
       },
       // Clicked on x to remove selected item
-      _clickedOnX: function (event) {
+      _clickedOnX: function(event) {
         return event.path && event.path[0] && event.path[0].id === 'icon';
       },
-      _getValuesFromItems: function (selectedItems) {
-        return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function (item) {
+      _getValuesFromItems: function(selectedItems) {
+        return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function(item) {
           return item[this.optionValue].toString();
         }.bind(this)) : null;
       },
-      _noSelectedValues: function (selectedValues) {
+      _noSelectedValues: function(selectedValues) {
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
         }
         return !selectedValues || !selectedValues.length;
       },
-      _noSelectedItems: function (selectedItems) {
+      _noSelectedItems: function(selectedItems) {
         if (typeof selectedItems === 'undefined') {
           selectedItems = this.selectedItems;
         }
         return !selectedItems || !selectedItems.length;
       },
-      _selectedValuesToString: function () {
+      _selectedValuesToString: function() {
         if (this._noSelectedValues(this.selectedValues)) {
           return;
         }
-        this.selectedValues.forEach(function (value, index) {
+        this.selectedValues.forEach(function(value, index) {
           if (typeof value !== 'string') {
             this.selectedValues[index] = value.toString();
           }
@@ -395,12 +395,11 @@ Dropdown with search and multi selection capabilities
         }
       },
       // Use of this method covers a corner case
-      _getSelectedClass: function(item, selectedValues) {
-        var itemClass = '';
-        if (selectedValues instanceof Array && selectedValues.length > 0) {
-          itemClass = selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
+      _getSelectedClass: function(item) {
+        if (this.selectedValues instanceof Array && this.selectedValues.length > 0) {
+          return this.selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
-        this.appendTwoLinesOptionItemClass(itemClass);
+        return '';
       }
 
     });
