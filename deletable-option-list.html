@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-
+<link rel="import" href="behaviors/split-label-behavior.html">
 <dom-module id="deletable-option-list">
   <template>
     <style>
@@ -73,6 +73,7 @@
   <script>
     Polymer({
       is: 'deletable-option-list',
+      behaviors: [etoolsSearchableDropdown.SplitLabelBehavior], // eslint-disable-line no-undef
 
       properties: {
         placeholder: {
@@ -107,6 +108,9 @@
       },
 
       _getItemLabel: function(item) {
+        if (this.twoLinesLabel) {
+          return this.getPrimaryLabel(item.label);
+        }
         return item[this.optionLabelAttribute];
       },
 
