@@ -5,6 +5,7 @@
   <template>
     <style>
       :host {
+        display: block;
         height: 100%;
       }
 
@@ -108,7 +109,7 @@
       },
       _getItemLabel: function(item) {
         if (this.twoLinesLabel) {
-          return this.getPrimaryLabel(item.label);
+          return this.getPrimaryLabel(item[this.optionLabelAttribute]);
         }
         return item[this.optionLabelAttribute];
       },

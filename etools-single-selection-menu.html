@@ -99,7 +99,7 @@ Dropdown with search and single selection capabilities
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
                     on-tap="_itemSelected"
-                    class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
+                    class$="[[item.cssClass]][[_getSelectedClass(item)]]"
                     title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
@@ -268,8 +268,8 @@ Dropdown with search and single selection capabilities
         this._closeMenu();
       },
       // Use of this method covers a corner case
-      _getSelectedClass: function(item, selected) {
-        var itemClass = (selected === item[this.optionValue]) ? 'iron-selected' : '';
+      _getSelectedClass: function(item) {
+        var itemClass = (this.selected === item[this.optionValue]) ? 'iron-selected' : '';
         if (this.twoLinesLabel) {
           itemClass += ' two-lines';
         }
