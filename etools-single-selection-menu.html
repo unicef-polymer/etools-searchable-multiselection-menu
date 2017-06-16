@@ -11,6 +11,7 @@
 <link rel="import" href="scripts/es6-polyfills.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
 
 
@@ -230,11 +231,17 @@ Dropdown with search and single selection capabilities
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
                     on-tap="_itemSelected"
-                    class$="[[item.cssClass]][[_getSelectedClass(item, selected)]]"
+                    class$="[[item.cssClass]][[_getSelectedClass(item)]]"
                     title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <span>[[_getLabel(item)]]</span>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[_getLabel(item)]]</span>
+                  </template>
                 </paper-item>
               </template>
 
@@ -267,7 +274,8 @@ Dropdown with search and single selection capabilities
       is: 'etools-single-selection-menu',
       behaviors: [
         etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
-        etoolsSearchableDropdown.CommonBehavior // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.SplitLabelBehavior// eslint-disable-line no-undef
       ],
       properties: {
         selected: {
@@ -289,6 +297,10 @@ Dropdown with search and single selection capabilities
         notFoundOption: {
           type: String
         },
+        twoLinesLabel: {
+          type: Boolean,
+          value: false
+        },
         allowOutsideScroll: Boolean
       },
       observers: [
@@ -296,8 +308,12 @@ Dropdown with search and single selection capabilities
         'notFoundOptionAndUrlChanged(notFoundOption, url)'
       ],
 
-      _getSelectedClass: function(item, selected) {
-        return selected === item[this.optionValue] ? 'iron-selected' : '';
+      _getSelectedClass: function(item) {
+        var itemClass = this.selected === item[this.optionValue] ? 'iron-selected' : '';
+        if (this.twoLinesLabel) {
+          itemClass += ' two-lines';
+        }
+        return itemClass;
       },
 
       // This observer makes sure request for missing option is triggered only after the url is set also.
@@ -330,7 +346,8 @@ Dropdown with search and single selection capabilities
         return item ? item[this.optionValue] : null;
       },
       _getLabel: function(item) {
-        return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
+        return this.twoLinesLabel ? this.getPrimaryLabel(item.label)
+            : ((item && item[this.optionLabel]) ? item[this.optionLabel] : null);
       },
       _menuBtnIsDisabled: function(disabled, readonly) {
         return disabled || readonly;
