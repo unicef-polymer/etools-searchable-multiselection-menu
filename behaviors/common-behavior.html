@@ -109,7 +109,8 @@
       return item ? item[this.optionValue] : null;
     },
     _getLabel: function (item) {
-      return (item && item[this.optionLabel]) ? item[this.optionLabel] : null;
+      return this.twoLinesLabel ? this.getPrimaryLabel(item[this.optionLabel])
+            : ((item && item[this.optionLabel]) ? item[this.optionLabel] : null);
     },
     resetInvalidState: function () {
       this.set('invalid', false);

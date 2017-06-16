@@ -11,6 +11,7 @@
 <link rel="import" href="scripts/es6-polyfills.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
 
 
@@ -102,7 +103,13 @@ Dropdown with search and single selection capabilities
                     title$="[[_getLabel(item)]]">
 
                   <iron-icon class="tick-icon" icon="check"></iron-icon>
-                  <span>[[_getLabel(item)]]</span>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[_getLabel(item)]]</span>
+                  </template>
                 </paper-item>
               </template>
 
@@ -135,7 +142,8 @@ Dropdown with search and single selection capabilities
       is: 'etools-single-selection-menu',
       behaviors: [
         etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
-        etoolsSearchableDropdown.CommonBehavior // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.SplitLabelBehavior// eslint-disable-line no-undef
       ],
       properties: {
         selected: {
@@ -150,6 +158,10 @@ Dropdown with search and single selection capabilities
         },
         notFoundOption: {
           type: String
+        },
+        twoLinesLabel: {
+          type: Boolean,
+          value: false
         },
         allowOutsideScroll: Boolean
       },
@@ -257,7 +269,11 @@ Dropdown with search and single selection capabilities
       },
       // Use of this method covers a corner case
       _getSelectedClass: function(item, selected) {
-        return selected === item[this.optionValue] ? 'iron-selected' : '';
+        var itemClass = (selected === item[this.optionValue]) ? 'iron-selected' : '';
+        if (this.twoLinesLabel) {
+          itemClass += ' two-lines';
+        }
+        return itemClass;
       }
     });
   </script>
