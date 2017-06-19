@@ -1,14 +1,409 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../paper-input/paper-input-error.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel="import" href="../paper-input/paper-input-container.html">
 
+<link rel="import" href="../etools-ajax/etools-ajax.html">
 <link rel="import" href="behaviors/missing-options-behavior.html">
 <link rel="import" href="behaviors/common-behavior.html">
+<link rel="import" href="behaviors/split-label-behavior.html">
 <link rel="import" href="styles/etools-dropdown-shared-styles.html">
+<link rel="import" href="scripts/es6-polyfills.html">
 <!--
 `etools-multi-selection-menu`
 Dropdown with search and multi selection capabilities
 
 @demo demo/index.html
 -->
+<dom-module id="etools-multi-selection-menu">
+  <template strip-whitespace>
+    <style include="etools-dropdown-shared-styles">
+      :host {
+        display: block;
+        position: relative;
+        width: 100%;
+      }
 
+      :host * {
+        outline: none;
+      }
 
-<!--To be continued-->
+      .content-wrapper {
+        max-width: calc(100% - 24px);
+        display: inline-block;
+        width: 100%;
+        min-height: 24px;
+      }
+
+      .option-string {
+        display: inline-block;
+        width: auto;
+        height: auto;
+        margin-right: 8px;
+        font-size: 16px;
+        line-height: 24px;
+        color: var(--esmm-option-list-color, #212121);
+      }
+
+      :host([readonly]) .option-string {
+        margin-right: 0;
+      }
+
+      :host([readonly]) .option-string paper-icon-button,
+      :host([readonly]) .option-string:last-of-type .readonly-separator {
+        display: none;
+      }
+
+      .readonly-separator {
+        display: inline-block;
+        padding: 0 5px;
+        margin: 0;
+      }
+
+      .option-string paper-icon-button {
+        color: var(--esmm-delete-icon-color, #dd2c00);
+        padding: 0;
+        height: 18px;
+        width: 18px;
+      }
+
+      #selected-items-wrapper {
+        display: inline-block;
+        width: 100%;
+      }
+
+    </style>
+
+    <etools-ajax id="missingOptionsAjax"
+                 params="[[ajaxParams]]"
+                 on-success="_handleMissingOptionsReqResponse"
+                 on-fail="_handleMissingOptionsReqError"></etools-ajax>
+
+    <paper-input-container id="main"
+                           tabindex="0"
+                           class="external-wrapper"
+                           always-float-label
+                           disabled$="[[disabled]]"
+                           invalid$="[[invalid]]"
+                           required$="[[required]]"
+                           attr-for-value="selected-values"
+                           on-focus="_openMenu"
+                           on-tap="_handleClickOrTap"
+                           on-click="_handleClickOrTap">
+
+      <label hidden$=[[!label]] aria-hidden="true">[[label]]</label>
+
+      <div class="content-wrapper paper-input-input">
+        <span class="placeholder"
+              hidden$="[[_hidePlaceholder]]">
+          [[placeholder]]
+        </span>
+        <div id="selected-items-wrapper"
+             hidden$="[[!_hidePlaceholder]]">
+          <template id="itemsListDisplay"
+                    is="dom-repeat"
+                    notify-dom-change
+                    on-dom-change="_selectedItemsDisplayHasChanged"
+                    items="[[selectedItems]]">
+            <span class="option-string">
+            {{_getLabel(item)}}
+            <span class="readonly-separator" hidden$=[[!readonly]]>|</span>
+            <paper-icon-button id="iconRemoveSelected"
+                               hidden$="[[disabled]]"
+                               icon="close"
+                               on-click="_removeSelectedItem"></paper-icon-button>
+            </span>
+          </template>
+        </div>
+      </div>
+      <template is="dom-if" if="[[invalid]]">
+        <paper-input-error aria-live="assertive">[[errorMessage]]</paper-input-error>
+      </template>
+
+      <paper-menu-button id="dropdownMenu"
+                         horizontal-align="right"
+                         ignore-select
+                         restore-focus-on-close$="[[restoreFocusOnClose]]"
+                         allow-outside-scroll="[[allowOutsideScroll]]"
+                         dynamic-align$="[[dynamicAlign]]"
+                         on-paper-dropdown-open="_onDropdownOpen"
+                         on-paper-dropdown-close="_onPaperDropdownClose"
+                         disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
+                         hidden$="[[readonly]]">
+
+        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"
+                   on-tap="_handleClickOrTap"
+                   on-click="_handleClickOrTap">
+        </iron-icon>
+
+        <div class="dropdown-content">
+          <div class="search-input-wrapper" hidden$="{{hideSearch}}">
+            <paper-input id="searchInput"
+                         no-label-float
+                         class="search-input"
+                         label="Search" type="text"
+                         value="{{search}}"
+                         auto-focus
+                         tabindex="0">
+              <iron-icon icon="search" prefix></iron-icon>
+            </paper-input>
+          </div>
+          <div class="list-wrapper">
+            <paper-listbox multi
+                           attr-for-selected="internal-id"
+                           selected-values={{selectedValues}}>
+              <template is="dom-repeat" items="[[shownOptions]]">
+                <paper-item item=[[item]]
+                            internal-id$="[[_getValue(item)]]"
+                            class$="[[_getSelectedClass(item, shownOptions)]] [[item.cssClass]]"
+                            title$="[[_getLabel(item)]]">
+
+                  <iron-icon class="tick-icon" icon="check"></iron-icon>
+                  <template is="dom-if" if="[[twoLinesLabel]]">
+                    <div class="primary-label">[[getPrimaryLabel(item.label)]]</div>
+                    <div class="secondary-label">[[getSecondaryLabel(item.label)]]</div>
+                  </template>
+                  <template is="dom-if" if="[[!twoLinesLabel]]">
+                    <span>[[_getLabel(item)]]</span>
+                  </template>
+                </paper-item>
+              </template>
+
+              <paper-item hidden$="[[!showNoSearchResultsWarning]]" class="warning" disabled>
+                No results found. Try other keywords.
+              </paper-item>
+
+              <paper-item hidden$="[[!showLimitWarning]]" class="warning" disabled>
+                More than [[shownOptionsLimit]] items, use the search function to reveal more.
+              </paper-item>
+
+              <paper-item hidden$="[[!noOptionsAvailable]]" class="warning" disabled>
+                No options available.
+              </paper-item>
+            </paper-listbox>
+          </div>
+        </div>
+      </paper-menu-button>
+
+    </paper-input-container>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'etools-multi-selection-menu',
+      behaviors: [
+        etoolsSearchableDropdown.MissingOptionsBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.CommonBehavior, // eslint-disable-line no-undef
+        etoolsSearchableDropdown.SplitLabelBehavior // eslint-disable-line no-undef
+      ],
+      properties: {
+        selectedValues: {
+          type: Array,
+          notify: true
+        },
+        selectedItems: {
+          type: Array,
+          value: [],
+          notify: true
+        },
+        notFoundOptions: {
+          type: Array,
+          value: []
+        },
+        triggerValueChangeEvent: {
+          type: Boolean,
+          value: false
+        },
+        _hidePlaceholder: Boolean
+      },
+      observers: [
+        '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
+        '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
+        '_selectedItemsChanged(selectedItems, selectedItems.length)'
+      ],
+      _selectedValuesOrOptionsChanged: function(selectedValues, options, selectedValuesLength) {
+        this._selectedValuesToString();
+        this._setSelectedItems(selectedValues);
+
+        if (this.autoValidate) {
+          this.validate(selectedValues);
+        }
+      },
+
+      // Can't use paper-listbox's on-selected-items-changed event ,
+      // because paper-lisbox doesn't cover the case when selectedItems are not in the shownOptions values
+      _setSelectedItems: function(selectedValues) {
+        this.notFoundOptions = null;
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        if (this._noSelectedValues(selectedValues) || this._noOptions()) {
+          this.set('selectedItems', []);
+          return;
+        }
+        var selectedItems = this.options.filter(function(item) {
+          return selectedValues.includes(item[this.optionValue].toString());
+        }.bind(this));
+
+        this._setAnyNotFoundOptions(selectedItems, selectedValues);
+        this.set('selectedItems', selectedItems);
+      },
+      _selectedItemsChanged: function(selectedItems) {
+        // force selected list to re-render
+        this.$.itemsListDisplay.render();
+        this.debounce('selected-items-changed', function() {
+          // check and trigger change event
+          if (!this.triggerValueChangeEvent) {
+            return;
+          }
+          this.fire('etools-selected-items-changed', {selectedItems: this.selectedItems});
+        }.bind(this), 10);
+      },
+      _setAnyNotFoundOptions: function(selectedItems, selectedValues) {
+        if (this._noSelectedItems(selectedItems)) {
+          this.notFoundOptions = selectedValues;
+        } else if (selectedItems.length < selectedValues.length) {
+          var selectedItemsValues = this._getValuesFromItems(selectedItems);
+          this.notFoundOptions = selectedValues.filter(function(value) {
+            return !selectedItemsValues.includes(value);
+          });
+        }
+      },
+      _removeSelectedItem: function(e) {
+        // Compute selectedItems without the removed item
+        var selectedItems = this.selectedItems.filter(function(item) {
+          return item[this.optionValue] !== e.model.item[this.optionValue];
+        }.bind(this));
+
+        if (this._noSelectedItems(selectedItems)) {
+          this.selectedValues = null;
+          this.set('selectedItems', []);
+        } else {
+          var selectedValues = this._getValuesFromItems(selectedItems);
+          this.selectedValues = selectedValues;
+          this.set('selectedItems', selectedItems);
+        }
+
+        if (this.autoValidate) {
+          this.validate(this.selectedValues);
+        }
+      },
+
+      // This observer makes sure request for missing option is triggered only after the url is set also.
+      // notFoundOption is actually this.selected
+      _notFoundOptionsAndUrlChanged: function() {
+        if (this.notFoundOptions) {
+          this._handleSelectedNotFoundInOptions(this.notFoundOptions);
+        }
+      },
+      _handleSelectedNotFoundInOptions: function(notFoundSelectedValues) {
+        this._requestMissingOptions(notFoundSelectedValues);
+        // show console warning
+        var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
+        var notFoundValues = (notFoundSelectedValues instanceof Array ? notFoundSelectedValues.join(', ')
+            : notFoundSelectedValues);
+        warnMsg += notFoundValues + ' not found in dropdown\'s options!';
+        // eslint-disable-next-line no-console
+        console.warn(warnMsg);
+      },
+      _updateAfterMissingOptionsReceived: function(detail) {
+        var selectedItems;
+        if (Array.isArray(detail) && detail.length) {
+          selectedItems = detail;
+        } else {
+          selectedItems = [detail];
+        }
+        if (this.selectedItems) {
+          Array.prototype.push.apply(this.selectedItems, selectedItems);
+        } else {
+          this.set('selectedItems', selectedItems);
+        }
+      },
+      _onPaperDropdownClose: function() {
+        if (this.autoValidate) {
+          this.validate(this.selectedValues);
+        }
+      },
+      validate: function(selectedValues) {
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        if (!this.hasAttribute('required')) {
+          return true;
+        }
+        var invalid = (!selectedValues || !selectedValues.length);
+        this.set('invalid', invalid);
+        return !invalid;
+      },
+      _handleClickOrTap: function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        this._openMenu(e);
+      },
+      _openMenu: function(event) {
+        if (event) {
+          if (this._clickedOnX(event)) {
+            return; // Do not open
+          }
+        }
+        var dropdown = this.$.dropdownMenu;
+        if (!dropdown.opened) {
+          dropdown.open();
+        }
+      },
+      // Clicked on x to remove selected item
+      _clickedOnX: function(event) {
+        return event.path && event.path[0] && event.path[0].id === 'icon';
+      },
+      _getValuesFromItems: function(selectedItems) {
+        return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function(item) {
+          return item[this.optionValue].toString();
+        }.bind(this)) : null;
+      },
+      _noSelectedValues: function(selectedValues) {
+        if (typeof selectedValues === 'undefined') {
+          selectedValues = this.selectedValues;
+        }
+        return !selectedValues || !selectedValues.length;
+      },
+      _noSelectedItems: function(selectedItems) {
+        if (typeof selectedItems === 'undefined') {
+          selectedItems = this.selectedItems;
+        }
+        return !selectedItems || !selectedItems.length;
+      },
+      _selectedValuesToString: function() {
+        if (this._noSelectedValues(this.selectedValues)) {
+          return;
+        }
+        this.selectedValues.forEach(function(value, index) {
+          if (typeof value !== 'string') {
+            this.selectedValues[index] = value.toString();
+          }
+        }.bind(this));
+      },
+      _selectedItemsDisplayHasChanged: function(e) {
+        e.stopImmediatePropagation();
+        // hide/show placeholder
+        if (this.selectedItems instanceof Array && this.selectedItems.length > 0) {
+          this.set('_hidePlaceholder', true);
+        } else {
+          this.set('_hidePlaceholder', false);
+        }
+      },
+      // Use of this method covers a corner case
+      _getSelectedClass: function(item) {
+        if (this.selectedValues instanceof Array && this.selectedValues.length > 0) {
+          return this.selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
+        }
+        return '';
+      }
+
+    });
+  </script>
+</dom-module>
