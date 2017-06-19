@@ -305,8 +305,10 @@ Dropdown with search and multi selection capabilities
         this._requestMissingOptions(notFoundSelectedValues);
         // show console warning
         var warnMsg = '[etools-esmm ' + this.label + '] Selected value ';
-
-        warnMsg += notFoundSelectedValues + ' not found in dropdown\'s options!';
+        var notFoundValues = (notFoundSelectedValues instanceof Array ? notFoundSelectedValues.join(', ')
+            : notFoundSelectedValues);
+        warnMsg += notFoundValues + ' not found in dropdown\'s options!';
+        // eslint-disable-next-line no-console
         console.warn(warnMsg);
       },
       _updateAfterMissingOptionsReceived: function(detail) {

@@ -118,7 +118,7 @@
         return null;
       }
       if (this.twoLinesLabel) {
-        return this.getPrimaryLabel(item[this.optionLabel])
+        return this.getPrimaryLabel(item[this.optionLabel]);
       }
       return item[this.optionLabel];
     },
@@ -155,7 +155,8 @@
       return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
     },
     _itemContainsSearchString: function(item) {
-      return item[this.optionLabel] && item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      return item[this.optionLabel] &&
+          item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
     },
     _computeShowLimitWarning: function(limit, shownOptions) {
       return shownOptions.length >= limit;
@@ -166,7 +167,6 @@
       }
       return (optionsLength > 0 && shownOptionsLength === 0) ||
           (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
-
     },
     _onDropdownOpen: function() {
       var ironDropdown = this._getIronDropdown();

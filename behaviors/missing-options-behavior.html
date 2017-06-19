@@ -17,7 +17,7 @@
       *    values: 1,2,3,4 // multiple values
       * }
      */
-    _requestMissingOptions: function (notFoundValues) {
+    _requestMissingOptions: function(notFoundValues) {
       if (!(notFoundValues instanceof Array && notFoundValues.length)) {
         return;
       }
@@ -42,7 +42,7 @@
       }
       etoolsAjax.url = this.url;
     },
-    _handleMissingOptionsReqResponse: function (response) {
+    _handleMissingOptionsReqResponse: function(response) {
       if (!(response.detail instanceof Array && response.detail.length)) {
         return;
       }
@@ -67,17 +67,17 @@
       }
     },
 
-    _handleMissingOptionsReqError: function (errorResponse) {
+    _handleMissingOptionsReqError: function(errorResponse) {
       // eslint-disable-next-line no-console
       console.error('[etools-esmm ' + this.label + '] Missing options request failed!', errorResponse.detail);
     },
-    _shouldRequestMissingOption: function (url) {
+    _shouldRequestMissingOption: function(url) {
       if (typeof url === 'string' && url !== '') {
         return true;
       }
       return false;
     },
-    _isValidOption: function (optionObj) {
+    _isValidOption: function(optionObj) {
       return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
     },
 
