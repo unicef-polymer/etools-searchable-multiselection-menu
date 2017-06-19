@@ -30,16 +30,33 @@
   <body>
 
     <div class="vertical-section-container centered">
-      <h1>etools-searchable-multiselection-menu demo</h1>
+      <h1>etools-single-selection-menu & etools-multi-selection-menu demo</h1>
 
+      <h2>New version of single selectable with search</h2>
+
+      <demo-snippet>
+        <template>
+          <demo-single-selection-menu></demo-single-selection-menu>
+        </template>
+      </demo-snippet>
+
+      <h2>New version of multi selectable with search</h2>
+
+      <demo-snippet>
+        <template>
+          <demo-multi-selection-menu></demo-multi-selection-menu>
+        </template>
+      </demo-snippet>
+
+      <h1>etools-searchable-multiselection-menu demo - DEPRECATED</h1>
       <h2>Single selection, with search</h2>
       <demo-snippet>
         <template is="dom-bind">
           <demo-helper selected-values="{{selectedValues}}" real-options="{{realOptions}}"></demo-helper>
           <etools-searchable-multiselection-menu
-                  label="Searchable menu"
-                  options="[[realOptions]]"
-                  value="{{selectedValues}}"></etools-searchable-multiselection-menu>
+              label="Searchable menu"
+              options="[[realOptions]]"
+              value="{{selectedValues}}"></etools-searchable-multiselection-menu>
         </template>
       </demo-snippet>
 
@@ -69,22 +86,6 @@
               placeholder="Please select 2 lines options"
               options="[[twoLineOptions]]"
               two-lines-label></etools-searchable-multiselection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>New version of single selectable with search</h2>
-
-      <demo-snippet>
-        <template>
-          <demo-single-selection-menu></demo-single-selection-menu>
-        </template>
-      </demo-snippet>
-
-      <h2>New version of multi selectable with search</h2>
-
-      <demo-snippet>
-        <template>
-          <demo-multi-selection-menu></demo-multi-selection-menu>
         </template>
       </demo-snippet>
 

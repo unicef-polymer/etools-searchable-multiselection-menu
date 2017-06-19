@@ -20,7 +20,9 @@
         label="Searchable multi select, options on two lines"
         options="[[twoLineOptions]]"
         selected-values="[55]"
-        two-lines-label>
+        two-lines-label
+        on-iron-activate="_onIronActivateEx"
+        on-iron-select="_onIronSelectEx">
     </etools-multi-selection-menu>
 
 
@@ -78,6 +80,14 @@
 
         onEtoolsSelectedItemsChanged: function(event) {
             console.log('demo-ontoolsSelectedItemsChanged',event.detail);
+        },
+
+        _onIronActivateEx: function(e) {
+          console.log('iron-activate event handling...', e.detail);
+        },
+
+        _onIronSelectEx: function(e) {
+          console.log('iron-select event handling...', e.detail);
         }
       });
 
