@@ -390,7 +390,12 @@ Custom property | Description | Default
               return false;
             },
             reflectToAttribute: true,
-            observer: '_readonlyStateChanged'
+            observer: '_attributeRepaintNeeded'
+          },
+          starred: {
+            type: Boolean,
+            value: false,
+            observer: '_attributeRepaintNeeded'
           },
           invalid: {
             type: Boolean,
@@ -537,8 +542,8 @@ Custom property | Description | Default
           return disabled || readonly;
         },
 
-        _readonlyStateChanged: function(readonly, oldReadonly) {
-          if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+        _attributeRepaintNeeded: function(newValue, oldReadonly) {
+          if (typeof oldReadonly !== 'undefined' && newValue !== undefined && newValue !== oldReadonly) {
             this.updateStyles();
           }
         },
