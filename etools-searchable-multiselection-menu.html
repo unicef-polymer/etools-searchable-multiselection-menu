@@ -542,8 +542,8 @@ Custom property | Description | Default
           return disabled || readonly;
         },
 
-        _attributeRepaintNeeded: function(newValue, oldReadonly) {
-          if (typeof oldReadonly !== 'undefined' && newValue !== undefined && newValue !== oldReadonly) {
+        _attributeRepaintNeeded: function(newValue, oldValue) {
+          if (typeof oldValue !== 'undefined' && newValue !== undefined && newValue !== oldValue) {
             this.updateStyles();
           }
         },
