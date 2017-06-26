@@ -1,5 +1,7 @@
 <link rel="import" href="../../polymer/polymer.html">
 <link rel="import" href="../etools-searchable-multiselection-menu.html">
+<link rel="import" href="../etools-single-selection-menu.html">
+<link rel="import" href="../etools-multi-selection-menu.html">
 
 
 <dom-module id="demo-readonly-starred-state">
@@ -13,25 +15,51 @@
 
       :root {
         --required-star-style: {
-           background-color: red;
-           width: auto !important;
-           max-width: 100%;
-           right: initial;
-           padding-right: 15px;
-          };
+          background: url(required.svg) no-repeat 99% 20%/8px;
+          width: auto !important;
+          max-width: 100%;
+          right: initial;
+          padding-right: 15px;
+        };
       }
 
-     etools-searchable-multiselection-menu[starred] {
+      etools-searchable-multiselection-menu[starred],
+      etools-single-selection-menu[starred],
+      etools-multi-selection-menu[starred] {
         --paper-input-container-label: {
-         @apply(--required-star-style);
+          @apply(--required-star-style);
         };
       }
 
     </style>
 
     <button on-tap="_toggleReadOnly">Toggle readonly</button>
-    <button on-tap="_toggleStarred" >Toggle starred</button>
+    <button on-tap="_toggleStarred">Toggle starred</button>
 
+    <h4>New esmm versions</h4>
+
+    <etools-single-selection-menu
+        label="Searchable single select"
+        options="[[realOptions]]"
+        readonly$="[[readonly]]">
+    </etools-single-selection-menu>
+    <etools-multi-selection-menu
+        label="Searchable multi select"
+        options="[[realOptions]]"
+        readonly$="[[readonly]]">
+    </etools-multi-selection-menu>
+    <etools-single-selection-menu
+        label="Searchable single select"
+        options="[[realOptions]]"
+        starred$="[[starred]]">
+    </etools-single-selection-menu>
+    <etools-multi-selection-menu
+        label="Searchable multi select"
+        options="[[realOptions]]"
+        starred$="[[starred]]">
+    </etools-multi-selection-menu>
+
+    <h4>Old esmm versions</h4>
     <etools-searchable-multiselection-menu
         label="Searchable menu"
         options="[[realOptions]]"
@@ -41,7 +69,7 @@
         label="Searchable menu"
         options="[[realOptions]]"
         value="" starred$="[[starred]]">
-        </etools-searchable-multiselection-menu>
+    </etools-searchable-multiselection-menu>
 
     <etools-searchable-multiselection-menu
         label="Multi searchable menu"
@@ -77,7 +105,7 @@
             type: Array,
             value: function() {
               var opt = [];
-              for(var i = 1; i <= 10; i++) {
+              for (var i = 1; i <= 10; i++) {
                 opt.push({value: i, label: 'Option ' + i});
               }
               return opt;
@@ -89,15 +117,18 @@
           }
         },
 
-        _toggleStarred: function () {
+        _toggleStarred: function() {
           this.set('starred', !this.starred);
         },
-        _toggleReadOnly: function () {
+        _toggleReadOnly: function() {
           this.set('readonly', !this.readonly);
         },
 
         ready: function() {
-         this.set('selectedValues',  [{value: 2, label: 'Option 2'}, {value: 3, label: 'Option 3'}, {value: 4, label: 'Option 4'}]);
+          this.set('selectedValues', [{value: 2, label: 'Option 2'}, {value: 3, label: 'Option 3'}, {
+            value: 4,
+            label: 'Option 4'
+          }]);
         },
       });
 
