@@ -54,7 +54,13 @@
           return false;
         },
         reflectToAttribute: true,
-        observer: '_readonlyChanged'
+        observer: '_attributeRepaintNeeded'
+      },
+      starred: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+        observer: '_attributeRepaintNeeded'
       },
       invalid: {
         type: Boolean,
@@ -128,8 +134,8 @@
     _computeNoOptionsAvailable: function(options, optionsLength) {
       return !Array.isArray(options) || !optionsLength;
     },
-    _readonlyChanged: function(readonly, oldReadonly) {
-      if (typeof oldReadonly !== 'undefined' && readonly !== oldReadonly) {
+    _attributeRepaintNeeded: function(newValue, oldValue) {
+      if (typeof oldValue !== 'undefined' && newValue !== undefined && newValue !== oldValue) {
         this.updateStyles();
       }
     },
