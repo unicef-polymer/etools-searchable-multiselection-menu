@@ -110,6 +110,9 @@
         reflectToAttribute: true
       }
     },
+    listeners: {
+      'blur': '_closeMenu'
+    },
     _noOptions: function() {
       return (!this.options || !this.options.length);
     },
@@ -186,6 +189,9 @@
     },
     _getIronDropdown: function() {
       return this.$.dropdownMenu.$.dropdown;
+    },
+    _closeMenu: function() {
+      this.$.dropdownMenu.close();
     },
     /**
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
