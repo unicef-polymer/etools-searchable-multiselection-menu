@@ -158,6 +158,11 @@ Dropdown with search and single selection capabilities
         },
         notFoundOption: {
           type: String
+        },
+        title: {
+          type: String,
+          reflectToAttribute: true,
+          computed: '_getLabel(selectedItem)'
         }
       },
       observers: [
