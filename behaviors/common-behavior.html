@@ -54,7 +54,7 @@
           return false;
         },
         reflectToAttribute: true,
-        observer: '_attributeRepaintNeeded'
+        observer: '_readonlyChanged'
       },
       starred: {
         type: Boolean,
@@ -136,6 +136,12 @@
     },
     _computeNoOptionsAvailable: function(options, optionsLength) {
       return !Array.isArray(options) || !optionsLength;
+    },
+    _readonlyChanged: function(newValue, oldValue) {
+      if (newValue) {
+        this.invalid = false;
+      }
+      this._attributeRepaintNeeded(newValue, oldValue);
     },
     _attributeRepaintNeeded: function(newValue, oldValue) {
       if (typeof oldValue !== 'undefined' && newValue !== undefined && newValue !== oldValue) {
