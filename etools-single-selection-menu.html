@@ -255,10 +255,11 @@ Dropdown with search and single selection capabilities
         console.warn(warnMsg);
       },
       validate: function(selected) {
-        selected = selected || this.selected;
         if (!this.hasAttribute('required')) {
+          this.set('invalid', false);
           return true;
         }
+        selected = selected || this.selected;
         this.set('invalid', !selected);
         return !!selected;
       },

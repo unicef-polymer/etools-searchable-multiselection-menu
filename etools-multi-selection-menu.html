@@ -335,11 +335,13 @@ Dropdown with search and multi selection capabilities
         }
       },
       validate: function(selectedValues) {
+        if (!this.hasAttribute('required')) {
+          this.set('invalid', false);
+          return true;
+        }
+
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
-        }
-        if (!this.hasAttribute('required')) {
-          return true;
         }
         var invalid = (!selectedValues || !selectedValues.length);
         this.set('invalid', invalid);
