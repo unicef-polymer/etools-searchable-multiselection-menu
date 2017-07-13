@@ -219,6 +219,11 @@ Dropdown with search and multi selection capabilities
           type: Boolean,
           value: false
         },
+        title: {
+          type: String,
+          computed: '_getElementTitle(selectedItems)',
+          reflectToAttribute: true
+        },
         _hidePlaceholder: Boolean
       },
       observers: [
@@ -403,8 +408,14 @@ Dropdown with search and multi selection capabilities
           return this.selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
         return '';
-      }
+      },
+      _getElementTitle: function(selectedItems) {
+        var labels = selectedItems.map(function(item) {
+          return this._getLabel(item);
+        }.bind(this));
 
+        return labels.join(' | ');
+      },
     });
   </script>
 </dom-module>
