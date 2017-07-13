@@ -219,6 +219,11 @@ Dropdown with search and multi selection capabilities
           type: Boolean,
           value: false
         },
+        title: {
+          type: String,
+          computed: '_getElementTitle(selectedItems)',
+          reflectToAttribute: true
+        },
         _hidePlaceholder: Boolean
       },
       observers: [
@@ -358,7 +363,8 @@ Dropdown with search and multi selection capabilities
       },
       // Clicked on x to remove selected item
       _clickedOnX: function(event) {
-        return event.path && event.path[0] && event.path[0].id === 'icon';
+        var rootTarget =  Polymer.dom(event).rootTarget;
+        return rootTarget.id === 'icon';
       },
       _getValuesFromItems: function(selectedItems) {
         return (selectedItems && selectedItems.length > 0) ? selectedItems.map(function(item) {
@@ -402,8 +408,14 @@ Dropdown with search and multi selection capabilities
           return this.selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
         return '';
-      }
+      },
+      _getElementTitle: function(selectedItems) {
+        var labels = selectedItems.map(function(item) {
+          return this._getLabel(item);
+        }.bind(this));
 
+        return labels.join(' | ');
+      },
     });
   </script>
 </dom-module>
