@@ -376,7 +376,8 @@ Custom property | Description | Default
             type: String
           },
           required: {
-            type: Boolean
+            type: Boolean,
+            observer: '_attributeRepaintNeeded'
           },
           placeholder: {
             type: String
@@ -390,11 +391,6 @@ Custom property | Description | Default
               return false;
             },
             reflectToAttribute: true,
-            observer: '_attributeRepaintNeeded'
-          },
-          starred: {
-            type: Boolean,
-            value: false,
             observer: '_attributeRepaintNeeded'
           },
           invalid: {

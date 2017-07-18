@@ -335,7 +335,7 @@ Dropdown with search and multi selection capabilities
         }
       },
       validate: function(selectedValues) {
-        if (!this.hasAttribute('required')) {
+        if (!this.hasAttribute('required') || this.readonly) {
           this.set('invalid', false);
           return true;
         }

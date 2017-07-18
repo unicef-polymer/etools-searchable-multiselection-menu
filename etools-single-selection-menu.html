@@ -255,7 +255,7 @@ Dropdown with search and single selection capabilities
         console.warn(warnMsg);
       },
       validate: function(selected) {
-        if (!this.hasAttribute('required')) {
+        if (!this.hasAttribute('required') || this.readonly) {
           this.set('invalid', false);
           return true;
         }
