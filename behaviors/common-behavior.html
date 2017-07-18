@@ -8,7 +8,8 @@
       },
       noLabelFloat: Boolean,
       required: {
-        type: Boolean
+        type: Boolean,
+        observer: '_attributeRepaintNeeded'
       },
       search: {
         type: String,
@@ -55,12 +56,6 @@
         },
         reflectToAttribute: true,
         observer: '_readonlyChanged'
-      },
-      starred: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-        observer: '_attributeRepaintNeeded'
       },
       invalid: {
         type: Boolean,
