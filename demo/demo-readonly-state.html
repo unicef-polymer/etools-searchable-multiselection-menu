@@ -23,12 +23,13 @@
         };
       }
 
-      etools-searchable-multiselection-menu[starred],
-      etools-single-selection-menu[starred],
-      etools-multi-selection-menu[starred] {
+      etools-searchable-multiselection-menu[required],
+      etools-single-selection-menu[required],
+      etools-multi-selection-menu[required] {
         --paper-input-container-label: {
           @apply(--required-star-style);
         };
+
       }
 
     </style>
@@ -51,12 +52,12 @@
     <etools-single-selection-menu
         label="Searchable single select"
         options="[[realOptions]]"
-        starred$="[[starred]]">
+        required$="[[starred]]">
     </etools-single-selection-menu>
     <etools-multi-selection-menu
         label="Searchable multi select"
         options="[[realOptions]]"
-        starred$="[[starred]]">
+        required$="[[starred]]">
     </etools-multi-selection-menu>
 
     <h4>Old esmm versions</h4>
@@ -68,7 +69,7 @@
     <etools-searchable-multiselection-menu
         label="Searchable menu"
         options="[[realOptions]]"
-        value="" starred$="[[starred]]">
+        value="" required$="[[starred]]">
     </etools-searchable-multiselection-menu>
 
     <etools-searchable-multiselection-menu
@@ -81,7 +82,7 @@
         label="Multi searchable menu"
         options="[[realOptions]]"
         value=""
-        multi starred$="[[starred]]"></etools-searchable-multiselection-menu>
+        multi required$="[[starred]]"></etools-searchable-multiselection-menu>
 
   </template>
   <script>
