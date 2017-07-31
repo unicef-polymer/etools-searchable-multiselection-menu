@@ -9,7 +9,7 @@
       noLabelFloat: Boolean,
       required: {
         type: Boolean,
-        observer: '_attributeRepaintNeeded'
+        observer: '_requiredChanged'
       },
       search: {
         type: String,
@@ -138,8 +138,14 @@
       }
       this._attributeRepaintNeeded(newValue, oldValue);
     },
+    _requiredChanged: function(newValue, oldValue) {
+      if (!newValue) {
+        this.invalid = false;
+      }
+      this._attributeRepaintNeeded(newValue, oldValue);
+    },
     _attributeRepaintNeeded: function(newValue, oldValue) {
-      if (typeof oldValue !== 'undefined' && newValue !== undefined && newValue !== oldValue) {
+      if (newValue !== undefined && newValue !== oldValue) {
         this.updateStyles();
       }
     },
