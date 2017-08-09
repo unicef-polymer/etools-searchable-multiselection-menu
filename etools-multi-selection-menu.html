@@ -227,11 +227,11 @@ Dropdown with search and multi selection capabilities
         _hidePlaceholder: Boolean
       },
       observers: [
-        '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
+        '_selectedValuesOrOptionsChanged(selectedValues, options)',
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
         '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
-      _selectedValuesOrOptionsChanged: function(selectedValues, options, selectedValuesLength) {
+      _selectedValuesOrOptionsChanged: function(selectedValues, options) {
         this._selectedValuesToString();
         this._setSelectedItems(selectedValues);
 
