@@ -103,10 +103,53 @@
         type: Boolean,
         value: false,
         reflectToAttribute: true
+      },
+      opened: {
+        type: Boolean,
+        observer: '_openedChanged'
+      },
+      avoidHeaderOverlappingDropdown: {
+        type: Boolean,
+        value: false
+      },
+      _resizedManually: {
+        type: Boolean,
+        value: false
       }
     },
     listeners: {
       'blur': '_closeMenu'
+    },
+    _openedChanged: function(newVal) {
+      if (newVal && this.avoidHeaderOverlappingDropdown) {
+        this.async(function() {
+          this._avoidHeaderOverlappingDropdown();
+        }, 500); //* Delay required for correct sizing and positioning to be returned
+      }
+    },
+    _avoidHeaderOverlappingDropdown: function() {
+      var ddContent = this._getDropdownContent();
+      if (!ddContent) {
+        return;
+      }
+      var coord = ddContent.getBoundingClientRect();
+      if (!this._headerOverlapsDropdown(coord)) {
+        return;
+      }
+
+      if (coord.height === 0) {
+        coord.height = window.getComputedStyle(ddContent).height;
+        if (coord.height === 0) {
+          return;
+        }
+      }
+
+      ddContent.style.height = (coord.height - coord.top) + 'px';
+      this._resizedManually = true;
+      this.notifyDropdownResize();
+    },
+    _headerOverlapsDropdown: function(clientRect) {
+      return clientRect.top < 60; //*60 is the height of the pmp header
     },
     _noOptions: function() {
       return (!this.options || !this.options.length);
@@ -197,8 +240,18 @@
     _getIronDropdown: function() {
       return this.$.dropdownMenu.$.dropdown;
     },
+    _getDropdownContent: function() {
+      return this.$.dropdownMenu.$$('.dropdown-content');
+    },
     _closeMenu: function() {
       this.$.dropdownMenu.close();
+
+      if (this._resizedManually) {
+        // *Reset neccessary so that dropdown becomes responsive
+        // on window resize after it's height was manually changed
+        this.refit();
+        this._resizedManually = false;
+      }
     },
     /**
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
@@ -212,6 +265,11 @@
       if (ironDropdown) {
         ironDropdown.notifyResize();
       }
+    },
+    refit: function() {
+      var ddContent = this._getDropdownContent();
+      ddContent.style.height = 'auto';
+      this.notifyDropdownResize();
     }
 
   };

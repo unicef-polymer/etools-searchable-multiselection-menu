@@ -134,7 +134,8 @@ Dropdown with search and multi selection capabilities
                          on-paper-dropdown-open="_onDropdownOpen"
                          on-paper-dropdown-close="_onPaperDropdownClose"
                          disabled$="[[_menuBtnIsDisabled(disabled, readonly)]]"
-                         hidden$="[[readonly]]">
+                         hidden$="[[readonly]]"
+                         opened="{{opened}}">
 
         <iron-icon icon="arrow-drop-down" class="dropdown-trigger"
                    on-tap="_handleClickOrTap"
@@ -332,6 +333,10 @@ Dropdown with search and multi selection capabilities
       _onPaperDropdownClose: function() {
         if (this.autoValidate) {
           this.validate(this.selectedValues);
+        }
+        if (this._resizedManually) {
+          this.refit();
+          this._resizedManually = false;
         }
       },
       validate: function(selectedValues) {
