@@ -227,11 +227,11 @@ Dropdown with search and multi selection capabilities
         _hidePlaceholder: Boolean
       },
       observers: [
-        '_selectedValuesOrOptionsChanged(selectedValues, options)',
+        '_selectedValuesOrOptionsChanged(selectedValues, options, selectedValues.length)',
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
         '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
-      _selectedValuesOrOptionsChanged: function(selectedValues, options) {
+      _selectedValuesOrOptionsChanged: function(selectedValues, options, selectedValuesLength) {
         this._selectedValuesToString();
         this._setSelectedItems(selectedValues);
 
@@ -418,6 +418,10 @@ Dropdown with search and multi selection capabilities
 
         return labels.join(' | ');
       },
+      clearValues: function() {
+        this.set('selectedValues', null);
+        this._selectedValuesOrOptionsChanged(null);
+      }
     });
   </script>
 </dom-module>
