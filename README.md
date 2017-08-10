@@ -3,7 +3,7 @@
 `etools-single-selection-menu` dropdown menu with search and single selection option
 When the optionValue is Number (in the options array), the type is preserved, it's not converted to string
 
-`etools-multi-selection-menu` is dropdown with multi selection. 
+`etools-multi-selection-menu` is dropdown with multi selection.
 Most of the functionality it's common with `etools-single-selection-menu`
 
 ### etools-single-selection-menu specific properties
@@ -56,7 +56,7 @@ Single/multi selection, with search
       label="Searchable menu"
       options="[[realOptions]]"
       selected="{{selectedId}}"></etools-single-selection-menu>
-      
+
 <etools-multi-selection-menu
     label="Searchable menu"
     options="[[realOptions]]"
@@ -70,11 +70,11 @@ Single/multi selection, without search
      options="[[realOptions]]"
      selected="{{selectedId}}"
      hide-search></etools-single-selection-menu>
-     
+
 <etools-multi-selection-menu
      label="Searchable menu"
      options="[[realOptions]]"
-     selected-values="{{selectedValuesArray}}" 
+     selected-values="{{selectedValuesArray}}"
      hide-search></etools-multi-selection-menu>
 ```
 
@@ -107,7 +107,7 @@ Change event examples:
 
 The event parameter of the method (_singleSelectionChanged) holds info about the item that was selected in: `event.detail.item.item`
 
-`etools-multi-selection-menu` has `etools-selected-items-changed` event, fired if `triggerValueChangeEvent = true`, 
+`etools-multi-selection-menu` has `etools-selected-items-changed` event, fired if `triggerValueChangeEvent = true`,
 the `event.details` will contain `selectedItems` array
 
 ```html
@@ -238,7 +238,8 @@ many missing options `someUrl?values=1,2,3`). This can be used only with `select
 The response of the missing options request should be an array with one or more objects with the same properties
 dropdown options have.
 * value - String
-
+* avoidHeaderOverlappingDropdown - Boolean , default: false . This was added for a case in pmp, where when the dropdown
+oppened upwards, the search input was covered by the header of the app
 ## Usage
 
 Examples:
