@@ -574,6 +574,11 @@ Custom property | Description | Default
           if (emptyValue) {
             filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
           }
+          
+          if (filtered && filtered.length) {
+            this.fire('resize');
+          }
+          
           return filtered;
         },
         _computeShowLimitWarning: function(limit, shownItems) {
