@@ -241,7 +241,7 @@ Custom property | Description | Default
             on-focus="_openMenu"
             label="[[label]]"
             value="[[_getSingleSelectedOptionLabel(value)]]"
-            title="[[_getSingleSelectedOptionLabel(value)]]"
+            title="[[_getSingleSelectedInputTitle(value)]]"
             disabled="[[disabled]]"
             error-message="[[errorMessage]]"
             required$="[[_simpleRequired(required)]]"
@@ -517,6 +517,10 @@ Custom property | Description | Default
             value: false,
             reflectToAttribute: true
           },
+          noTitleAttr: {
+            type: Boolean,
+            value: false
+          },
           url: String,
           ajaxParams: Object
 
@@ -574,6 +578,11 @@ Custom property | Description | Default
           if (emptyValue) {
             filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
           }
+          
+          if (filtered && filtered.length) {
+            this.fire('resize');
+          }
+          
           return filtered;
         },
         _computeShowLimitWarning: function(limit, shownItems) {
@@ -652,6 +661,10 @@ Custom property | Description | Default
             return value[this.optionLabel];
           }
           return null;
+        },
+        
+        _getSingleSelectedInputTitle: function(value) {
+          return this.noTitleAttr ? '' : this._getSingleSelectedOptionLabel(value);
         },
 
         _capitalizeInputValueClass: function() {
