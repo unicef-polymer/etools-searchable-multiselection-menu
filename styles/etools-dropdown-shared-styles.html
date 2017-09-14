@@ -163,7 +163,13 @@
       .placeholder {
         color: var(--esmm-multi-placeholder-color, rgba(0, 0, 0, 0.54));
       }
-
+      /* This fixes an issue with label styling applying to the search label on ie11 */
+      paper-input#searchInput {
+        --paper-input-container-label: {
+          background: none;
+          color: rgba(0, 0, 0, 0.54) !important;
+        };
+      }
     </style>
   </template>
 </dom-module>
