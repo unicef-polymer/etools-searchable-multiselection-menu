@@ -8,7 +8,7 @@
       url: String,
       ajaxParams: Object
     },
-    listeners: ['_buildAjaxQuery(ajaxParams, url)'],
+
     /**
      * If there are no selected options that are not found in dropdown options then request them from server using
      * url and ajaxParams(values property will contain missing values)
@@ -21,29 +21,23 @@
       * }
      */
     _requestMissingOptions: function(notFoundValues) {
-      if (!(notFoundValues instanceof Array && notFoundValues.length)) {
-        return;
-      }
-      if (!this._shouldRequestMissingOption(this.url)) {
-        return;
-      }
-      var etoolsAjax = this.$$('#missingOptionsAjax');
-      if (!etoolsAjax) {
-        return;
-      }
-      var notFoundV = notFoundValues.join(',');
-      if (this.ajaxParams && typeof this.ajaxParams === 'object') {
-        if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
-          // missing values changed, reset url to force request to fire
-          etoolsAjax.url = null;
+      this.debounce('request-missing-options', function() {
+        if (!(notFoundValues instanceof Array && notFoundValues.length)) {
+          return;
         }
-        this.ajaxParams.values = notFoundV;
-      } else {
-        this.ajaxParams = {
-          values: notFoundV
-        };
-      }
-      etoolsAjax.url = this.url;
+        if (!this._shouldRequestMissingOption(this.url)) {
+          return;
+        }
+        var notFoundV = notFoundValues.join(',');
+        if (this.ajaxParams && typeof this.ajaxParams === 'object') {
+          this.ajaxParams.values = notFoundV;
+        } else {
+          this.ajaxParams = {
+            values: notFoundV
+          };
+        }
+        this._buildAjaxQuery(this.ajaxParams, this.url);
+      }.bind(this), 300);
     },
     _handleMissingOptionsReqResponse: function(response) {
       if (!(response instanceof Array && response.length)) {
@@ -85,13 +79,9 @@
     _buildAjaxQuery: function(ajaxParams, url) {
       let self = this;
       let options = {
-        url: url,
-        body: ajaxParams
+        endpoint: {url: url},
+        params: ajaxParams
       };
-
-      if (!url) {
-        return;
-      }
 
       this.sendRequest(options).then(function(resp) {
         self._handleMissingOptionsReqResponse(resp);
