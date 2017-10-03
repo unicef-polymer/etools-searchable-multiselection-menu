@@ -42,10 +42,6 @@ Dropdown with search and single selection capabilities
 
 
     </style>
-    <etools-ajax id="missingOptionsAjax"
-                 params="[[ajaxParams]]"
-                 on-success="_handleMissingOptionsReqResponse"
-                 on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
     <paper-input-container id="main"
                            class="external-wrapper"
@@ -221,10 +217,18 @@ Dropdown with search and single selection capabilities
           return;
         }
         selected = selected || this.selected;
-        if (!selected || this._noOptions()) {
+
+        if (!selected && this._noOptions()) {
           this.set('selectedItem', null);
           return;
         }
+
+        if (selected && this._noOptions()) {
+          this.set('notFoundOption', this.selected + '');
+          this.set('selectedItem', null);
+          return;
+        }
+
         selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
