@@ -30,10 +30,7 @@
       }
       var notFoundV = notFoundValues.join(',');
       if (this.ajaxParams && typeof this.ajaxParams === 'object') {
-        if (this.ajaxParams.values && this.ajaxParams.values !== notFoundV) {
-          // missing values changed, reset url to force request to fire
-          etoolsAjax.url = null;
-        }
+        etoolsAjax.url = null;
         this.ajaxParams.values = notFoundV;
       } else {
         this.ajaxParams = {
