@@ -249,8 +249,12 @@ Dropdown with search and multi selection capabilities
         if (typeof selectedValues === 'undefined') {
           selectedValues = this.selectedValues;
         }
-        if (this._noSelectedValues(selectedValues) || this._noOptions()) {
+        if (this._noSelectedValues(selectedValues) && this._noOptions()) {
           this.set('selectedItems', []);
+          return;
+        }
+        if (!this._noSelectedValues(selectedValues) && this._noOptions()) {
+          this._setAnyNotFoundOptions(selectedItems, selectedValues);
           return;
         }
         var selectedItems = this.options.filter(function(item) {
@@ -326,7 +330,7 @@ Dropdown with search and multi selection capabilities
           selectedItems = [detail];
         }
         if (this.selectedItems) {
-          Array.prototype.push.apply(this.selectedItems, selectedItems);
+          this.splice.apply(this, ['selectedItems', this.selectedItems.length, 0].concat(selectedItems));
         } else {
           this.set('selectedItems', selectedItems);
         }

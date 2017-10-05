@@ -48,20 +48,22 @@ Dropdown with search and single selection capabilities
                  on-fail="_handleMissingOptionsReqError"></etools-ajax>
 
     <paper-input-container id="main"
+                           tabindex="0"
                            class="external-wrapper"
                            always-float-label
                            disabled$="[[disabled]]"
                            invalid$="[[invalid]]"
-                           no-label-float="[[noLabelFloat]]">
-      <label aria-hidden="true" for="main-input">[[label]]</label>
+                           no-label-float="[[noLabelFloat]]"
+                           on-focus="_openMenu"
+                           on-tap="_handleClickOrTap"
+                           on-click="_handleClickOrTap">
+
+      <label hidden$=[[!label]] aria-hidden="true">[[label]]</label>
       <div class="content-wrapper">
-        <input id="main-input" class="paper-input-input"
+        <input class="paper-input-input"
                type="text" readonly
                placeholder="[[placeholder]]"
-               value="[[_getLabel(selectedItem)]]"
-               on-focus="_openMenu"
-               on-tap="_handleClickOrTap"
-               on-click="_handleClickOrTap">
+               value="[[_getLabel(selectedItem)]]">
       </div>
       <paper-menu-button
           id="dropdownMenu"
@@ -76,7 +78,9 @@ Dropdown with search and single selection capabilities
           hidden$="[[readonly]]"
           opened="{{opened}}">
 
-        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"></iron-icon>
+        <iron-icon icon="arrow-drop-down" class="dropdown-trigger"
+                   on-tap="_handleClickOrTap"
+                   on-click="_handleClickOrTap"></iron-icon>
 
         <div class="dropdown-content">
           <div class="search-input-wrapper" hidden$="{{hideSearch}}">
@@ -99,6 +103,7 @@ Dropdown with search and single selection capabilities
                 <paper-item
                     item=[[item]]
                     internal-id$="[[_getValue(item)]]"
+                    on-click="_itemSelected"
                     on-tap="_itemSelected"
                     class$="[[item.cssClass]][[_getSelectedClass(item)]]"
                     title$="[[_getLabel(item)]]">
@@ -190,9 +195,9 @@ Dropdown with search and single selection capabilities
       _handleClickOrTap: function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        this._openMenu();
+        this._openMenu(e);
       },
-      _openMenu: function() {
+      _openMenu: function(e) {
         var dropdown = this.$.dropdownMenu;
         if (!dropdown.opened) {
           dropdown.open();
@@ -220,11 +225,20 @@ Dropdown with search and single selection capabilities
           this.set('selectedItem', selectedItem);
           return;
         }
+
         selected = selected || this.selected;
-        if (!selected || this._noOptions()) {
+
+        if (!selected && this._noOptions()) {
           this.set('selectedItem', null);
           return;
         }
+
+        if (selected && this._noOptions()) {
+          this.set('notFoundOption', this.selected + '');
+          this.set('selectedItem', null);
+          return;
+        }
+
         selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
@@ -270,8 +284,11 @@ Dropdown with search and single selection capabilities
       },
 
       _itemSelected: function(e) {
-        this.set('selected', e.model.item[this.optionValue]);
-        this._closeMenu();
+        e.stopImmediatePropagation();
+        this.debounce('select-action', function() {
+          this.set('selected', e.model.item[this.optionValue]);
+          this._closeMenu();
+        }.bind(this), 5);
       },
       // Use of this method covers a corner case
       _getSelectedClass: function(item) {
