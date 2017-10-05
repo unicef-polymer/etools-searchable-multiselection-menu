@@ -225,11 +225,20 @@ Dropdown with search and single selection capabilities
           this.set('selectedItem', selectedItem);
           return;
         }
+
         selected = selected || this.selected;
-        if (!selected || this._noOptions()) {
+
+        if (!selected && this._noOptions()) {
           this.set('selectedItem', null);
           return;
         }
+
+        if (selected && this._noOptions()) {
+          this.set('notFoundOption', this.selected + '');
+          this.set('selectedItem', null);
+          return;
+        }
+
         selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
           this.set('notFoundOption', this.selected + '');
