@@ -278,6 +278,9 @@ Dropdown with search and multi selection capabilities
         }.bind(this), 10);
       },
       _setAnyNotFoundOptions: function(selectedItems, selectedValues) {
+        // prevent using non array variables
+        selectedItems = (selectedItems instanceof Array) ? selectedItems : [];
+        selectedValues = (selectedValues instanceof Array) ? selectedValues : [];
         if (this._noSelectedItems(selectedItems)) {
           this.notFoundOptions = selectedValues;
         } else if (selectedItems.length < selectedValues.length) {
