@@ -258,7 +258,9 @@ Dropdown with search and multi selection capabilities
           return;
         }
         var selectedItems = this.options.filter(function(item) {
-          return selectedValues.includes(item[this.optionValue].toString());
+          return (selectedValues instanceof Array)
+              ? selectedValues.includes(item[this.optionValue].toString())
+              : false;
         }.bind(this));
 
         this._setAnyNotFoundOptions(selectedItems, selectedValues);
