@@ -234,14 +234,14 @@ Dropdown with search and single selection capabilities
         }
 
         if (selected && this._noOptions()) {
-          this.set('notFoundOption', this.selected + '');
+          this.set('notFoundOption', this.selected);
           this.set('selectedItem', null);
           return;
         }
 
         selectedItem = this._getItemFromOptions(selected);
         if (!selectedItem) {
-          this.set('notFoundOption', this.selected + '');
+          this.set('notFoundOption', this.selected);
           this.set('selectedItem', null);
         } else {
           this.set('selectedItem', selectedItem);
