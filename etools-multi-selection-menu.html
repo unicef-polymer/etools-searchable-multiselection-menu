@@ -229,7 +229,7 @@ Dropdown with search and multi selection capabilities
       },
       observers: [
         '_selectedValuesOrOptionsChanged(selectedValues, options)',
-        '_selectedValuesOrOptionsChanged(selectedValues.length)',
+        '_selectedValuesOrOptionsChanged(selectedValues.length, options)',
         '_notFoundOptionsAndUrlChanged(notFoundOptions, url)',
         '_selectedItemsChanged(selectedItems, selectedItems.length)'
       ],
@@ -254,7 +254,7 @@ Dropdown with search and multi selection capabilities
           return;
         }
         if (!this._noSelectedValues(selectedValues) && this._noOptions()) {
-          this._setAnyNotFoundOptions(selectedItems, selectedValues);
+          this._setAnyNotFoundOptions(this.selectedItems, selectedValues);
           return;
         }
         var selectedItems = this.options.filter(function(item) {
@@ -380,7 +380,7 @@ Dropdown with search and multi selection capabilities
       },
       // Clicked on x to remove selected item
       _clickedOnX: function(event) {
-        var rootTarget =  Polymer.dom(event).rootTarget;
+        var rootTarget = Polymer.dom(event).rootTarget;
         return rootTarget.id === 'icon';
       },
       _getValuesFromItems: function(selectedItems) {

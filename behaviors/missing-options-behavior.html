@@ -49,9 +49,10 @@
         if (this._isValidOption(response.detail[0])) {
           // assuming all objects from response array have same properties
           // we just need to make sure the first one is valid, no need to use a loop here
+          var responseOptions = this._prepareReceivedOptions(response.detail);
           var optionsLength = this.options.length;
-          this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
-          this._updateAfterMissingOptionsReceived(response.detail);
+          this.splice.apply(this, ['options', optionsLength, 0].concat(responseOptions));
+          this._updateAfterMissingOptionsReceived(responseOptions);
           // eslint-disable-next-line no-console
           console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
         } else {
@@ -79,6 +80,32 @@
     _isValidOption: function(optionObj) {
       return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
     },
+    _prepareReceivedOptions: function(receivedOptions) {
+      if (this.options instanceof Array && this.options.length > 0) {
+        let self = this;
+        let missingOptions = [];
+        let receivedOptionsValues = receivedOptions.map(function(receivedOption) {
+          return receivedOption[self.optionValue];
+        });
+        receivedOptionsValues.forEach(function(optVal) {
+          let option = self.options.find(function(option) {
+            return option[self.optionValue] === optVal;
+          });
+          if (!option) {
+            // this option is not in the options array
+            missingOptions.push(receivedOptions.find(function(receivedOption) {
+              return receivedOption[self.optionValue] === optVal;
+            }));
+          }
+        });
+        return missingOptions;
+      } else {
+        return receivedOptions;
+      }
+    },
 
+    _findOptionCondition: function(option, optionValue) {
+      return (option[this.optionValue] + '') === optionValue;
+    }
   };
 </script>

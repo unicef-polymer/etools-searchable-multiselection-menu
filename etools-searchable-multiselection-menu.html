@@ -578,11 +578,11 @@ Custom property | Description | Default
           if (emptyValue) {
             filtered.unshift({value: null, label: '-- None --', style: 'emptyValue'});
           }
-          
+
           if (filtered && filtered.length) {
             this.fire('resize');
           }
-          
+
           return filtered;
         },
         _computeShowLimitWarning: function(limit, shownItems) {
@@ -662,7 +662,7 @@ Custom property | Description | Default
           }
           return null;
         },
-        
+
         _getSingleSelectedInputTitle: function(value) {
           return this.noTitleAttr ? '' : this._getSingleSelectedOptionLabel(value);
         },
@@ -791,7 +791,7 @@ Custom property | Description | Default
 
             if (this.selectedRequiresValidOptions &&
                 (options instanceof Array === false ||
-                (options instanceof Array && options.length === 0))) {
+                    (options instanceof Array && options.length === 0))) {
               return;
             }
 
