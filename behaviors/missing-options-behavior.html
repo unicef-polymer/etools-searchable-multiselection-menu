@@ -52,7 +52,9 @@
           var responseOptions = this._prepareReceivedOptions(response.detail);
           var optionsLength = this.options.length;
           this.splice.apply(this, ['options', optionsLength, 0].concat(responseOptions));
-          this._updateAfterMissingOptionsReceived(responseOptions);
+          if (responseOptions.length) {
+            this._updateAfterMissingOptionsReceived(responseOptions);
+          }
           // eslint-disable-next-line no-console
           console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
         } else {
