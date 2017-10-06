@@ -28,16 +28,18 @@
       if (!etoolsAjax) {
         return;
       }
+      etoolsAjax.url = null;
       var notFoundV = notFoundValues.join(',');
       if (this.ajaxParams && typeof this.ajaxParams === 'object') {
-        etoolsAjax.url = null;
         this.ajaxParams.values = notFoundV;
       } else {
         this.ajaxParams = {
           values: notFoundV
         };
       }
-      etoolsAjax.url = this.url;
+      if (typeof this.ajaxParams.values === 'string' && this.ajaxParams.values !== '') {
+        etoolsAjax.url = this.url;
+      }
     },
     _handleMissingOptionsReqResponse: function(response) {
       if (!(response.detail instanceof Array && response.detail.length)) {
@@ -47,9 +49,12 @@
         if (this._isValidOption(response.detail[0])) {
           // assuming all objects from response array have same properties
           // we just need to make sure the first one is valid, no need to use a loop here
+          var responseOptions = this._prepareReceivedOptions(response.detail);
           var optionsLength = this.options.length;
-          this.splice.apply(this, ['options', optionsLength, 0].concat(response.detail));
-          this._updateAfterMissingOptionsReceived(response.detail);
+          this.splice.apply(this, ['options', optionsLength, 0].concat(responseOptions));
+          if (responseOptions.length) {
+            this._updateAfterMissingOptionsReceived(responseOptions);
+          }
           // eslint-disable-next-line no-console
           console.warn('[etools-esmm ' + this.label + '] Valid missing options received', response.detail);
         } else {
@@ -77,6 +82,28 @@
     _isValidOption: function(optionObj) {
       return optionObj.constructor === Object && optionObj[this.optionValue] && optionObj[this.optionLabel];
     },
-
+    _prepareReceivedOptions: function(receivedOptions) {
+      if (this.options instanceof Array && this.options.length > 0) {
+        let self = this;
+        let missingOptions = [];
+        let receivedOptionsValues = receivedOptions.map(function(receivedOption) {
+          return receivedOption[self.optionValue];
+        });
+        receivedOptionsValues.forEach(function(optVal) {
+          let option = self.options.find(function(option) {
+            return option[self.optionValue] === optVal;
+          });
+          if (!option) {
+            // this option is not in the options array
+            missingOptions.push(receivedOptions.find(function(receivedOption) {
+              return receivedOption[self.optionValue] === optVal;
+            }));
+          }
+        });
+        return missingOptions;
+      } else {
+        return receivedOptions;
+      }
+    }
   };
 </script>

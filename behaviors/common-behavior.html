@@ -124,7 +124,7 @@
       if (newVal && this.avoidHeaderOverlappingDropdown) {
         this.async(function() {
           this._avoidHeaderOverlappingDropdown();
-        }, 500); //* Delay required for correct sizing and positioning to be returned
+        }, 500); // Delay required for correct sizing and positioning to be returned
       }
     },
     _avoidHeaderOverlappingDropdown: function() {
@@ -149,7 +149,7 @@
       this.notifyDropdownResize();
     },
     _headerOverlapsDropdown: function(clientRect) {
-      return clientRect.top < 60; //*60 is the height of the pmp header
+      return clientRect.top < 60; // 60 is the height of the pmp header
     },
     _noOptions: function() {
       return (!this.options || !this.options.length);
