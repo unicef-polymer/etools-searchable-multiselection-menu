@@ -235,6 +235,7 @@
         ironDropdown.style.width = this.offsetWidth + 'px';
         var style = ironDropdown.querySelector('.dropdown-content').style;
         style.overflow = 'hidden';
+        ironDropdown.focusTarget = this.$$('#searchInput');
       }
     },
     _getIronDropdown: function() {

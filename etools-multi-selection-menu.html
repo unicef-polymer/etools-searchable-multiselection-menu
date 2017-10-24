@@ -237,7 +237,7 @@ Dropdown with search and multi selection capabilities
         this._selectedValuesToString();
         this._setSelectedItems(this.selectedValues);
 
-        if (this.autoValidate) {
+        if (this.autoValidate && this.selectedValues !== undefined) {
           this.validate(this.selectedValues);
         }
       },
