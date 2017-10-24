@@ -9,7 +9,7 @@
     <style>
     </style>
     <button on-click="openDialog">Open Etools Dialog</button>
-    <etools-dialog id="etoolsDialog">
+    <etools-dialog id="etoolsDialog" no-auto-focus="[[isIEBrowser()]]">
         <h4>Single selection</h4>
        <etools-single-selection-menu options="[[realOptions]]"></etools-single-selection-menu>
 
@@ -43,6 +43,14 @@
         },
         openDialog: function() {
           this.$.etoolsDialog.opened = true;
+        },
+        isIEBrowser: function() {
+          let userAgent = window.navigator.userAgent;
+          if (userAgent.indexOf('Trident/') > -1) {
+            // IE 11
+            return true;
+          }
+          return false;
         }
       });
 
