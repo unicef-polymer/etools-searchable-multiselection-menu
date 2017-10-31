@@ -54,7 +54,7 @@ Dropdown with search and single selection capabilities
                            disabled$="[[disabled]]"
                            invalid$="[[invalid]]"
                            no-label-float="[[noLabelFloat]]"
-                           on-focus="_openMenu"
+                           on-focus="_onFocusInputContainer"
                            on-tap="_handleClickOrTap"
                            on-click="_handleClickOrTap">
 
@@ -197,6 +197,7 @@ Dropdown with search and single selection capabilities
         e.stopImmediatePropagation();
         this._openMenu(e);
       },
+
       _openMenu: function(e) {
         var dropdown = this.$.dropdownMenu;
         if (!dropdown.opened) {

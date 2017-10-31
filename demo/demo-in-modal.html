@@ -1,0 +1,59 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../etools-dialog/etools-dialog.html">
+<link rel="import" href="../etools-searchable-multiselection-menu.html">
+<link rel="import" href="../etools-single-selection-menu.html">
+<link rel="import" href="../etools-multi-selection-menu.html">
+
+<dom-module id="demo-in-modal">
+  <template>
+    <style>
+    </style>
+    <button on-click="openDialog">Open Etools Dialog</button>
+    <etools-dialog id="etoolsDialog" no-auto-focus="[[isIEBrowser()]]">
+        <h4>Single selection</h4>
+       <etools-single-selection-menu options="[[realOptions]]" disable-on-focus-handling></etools-single-selection-menu>
+
+        <h4>Multi selection</h4>
+        <etools-multi-selection-menu options="[[realOptions]]" disable-on-focus-handling></etools-multi-selection-menu>
+
+        <h4>Old esmm versions</h4>
+        <etools-searchable-multiselection-menu options="[[realOptions]]"></etools-searchable-multiselection-menu>
+    </etools-dialog>
+  </template>
+  <script>
+    (function() {
+      // jscs:disable
+      'use strict';
+
+      Polymer({
+        is: 'demo-in-modal',
+
+        properties: {
+          realOptions: {
+            type: Array,
+            value: function() {
+              var opt = [];
+              for(var i = 1; i <= 25; i++) {
+                opt.push({value: i, label: 'Option ' + i});
+              }
+              return opt;
+            },
+            notify: true
+          },
+        },
+        openDialog: function() {
+          this.$.etoolsDialog.opened = true;
+        },
+        isIEBrowser: function() {
+          let userAgent = window.navigator.userAgent;
+          if (userAgent.indexOf('Trident/') > -1) {
+            // IE 11
+            return true;
+          }
+          return false;
+        }
+      });
+
+    })();
+  </script>
+</dom-module>
