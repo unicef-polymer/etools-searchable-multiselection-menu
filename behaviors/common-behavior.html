@@ -115,6 +115,11 @@
       _resizedManually: {
         type: Boolean,
         value: false
+      },
+      disableOnFocusHandling: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true
       }
     },
     listeners: {
@@ -271,7 +276,13 @@
       var ddContent = this._getDropdownContent();
       ddContent.style.height = 'auto';
       this.notifyDropdownResize();
-    }
+    },
+    _onFocusInputContainer: function() {
+      if (this.disableOnFocusHandling) {
+        return;
+      }
+      this._openMenu();
+    },
 
   };
 </script>

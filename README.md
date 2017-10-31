@@ -240,6 +240,7 @@ dropdown options have.
 * value - String
 * avoidHeaderOverlappingDropdown - Boolean , default: false . This was added for a case in pmp, where when the dropdown
 oppened upwards, the search input was covered by the header of the app
+* disableOnFocusHandling - Boolean, default: false. Set to true to disable onFocus handling on the dropdown (more specifically the contained paper-input-container). We set this to true when the dropdown is in a modal, to avoid a bug that consists of the dropdown overlay closing and opening again and remaining opened , when clicking outside the dropdown or after selecting an item
 ## Usage
 
 Examples:
