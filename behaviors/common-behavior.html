@@ -118,13 +118,16 @@
       },
       disableOnFocusHandling: {
         type: Boolean,
-        value: false,
+        value: function() {
+          return this.disableOnFocusHandling || this.isIEBrowser();
+        },
         reflectToAttribute: true
       }
     },
     listeners: {
       'blur': '_closeMenu'
     },
+
     _openedChanged: function(newVal) {
       if (newVal && this.avoidHeaderOverlappingDropdown) {
         this.async(function() {
@@ -283,6 +286,14 @@
       }
       this._openMenu();
     },
+    isIEBrowser: function() {
+      let userAgent = window.navigator.userAgent;
+      if (userAgent.indexOf('Trident/') > -1) {
+        // IE 11
+        return true;
+      }
+      return false;
+    }
 
   };
 </script>
