@@ -136,14 +136,15 @@
       }
     },
     _avoidHeaderOverlappingDropdown: function() {
-      var ddContent = this._getDropdownContent();
+      let ddContent = this._getDropdownContent();
       if (!ddContent) {
         return;
       }
-      var coord = ddContent.getBoundingClientRect();
-      if (!this._headerOverlapsDropdown(coord)) {
+      let coord = ddContent.getBoundingClientRect();
+      if (!this._headerOverlapsDropdown(coord) || this._dropdownOpenedDownwards(coord)) {
         return;
       }
+
 
       if (coord.height === 0) {
         coord.height = window.getComputedStyle(ddContent).height;
@@ -151,13 +152,32 @@
           return;
         }
       }
-
       ddContent.style.height = (coord.height - (60 - coord.top + 10)) + 'px';
+      this._resizePaperListboxContainer(coord);
+
       this._resizedManually = true;
-      this.notifyDropdownResize();
+      this.async(function() {
+        this.notifyDropdownResize();
+        this._getIronDropdown().set('positionTarget', this);
+      }, 400);
+    },
+    _resizePaperListboxContainer: function(overlayCoord) {
+      let listWrapper = this._getListWrapper();
+      let listWrapperCoord = listWrapper.getBoundingClientRect();
+      listWrapper.style.height = (listWrapperCoord.height - (60 - overlayCoord.top + 10)) + 'px';
+    },
+    _dropdownOpenedDownwards: function(overlayCoord) {
+      let paperContainerCoords = this.$.main.getBoundingClientRect();
+      if (Math.abs(overlayCoord.top - paperContainerCoords.top) <= 10) {
+        return true;
+      }
+      return false;
     },
     _headerOverlapsDropdown: function(clientRect) {
       return clientRect.top < 60; // 60 is the height of the pmp header
+    },
+    _getListWrapper: function() {
+      return Polymer.dom(this.$.dropdownMenu).querySelector('.dropdown-content .list-wrapper');
     },
     _noOptions: function() {
       return (!this.options || !this.options.length);
@@ -278,6 +298,7 @@
     refit: function() {
       var ddContent = this._getDropdownContent();
       ddContent.style.height = 'auto';
+      this._getListWrapper().style.height = 'auto';
       this.notifyDropdownResize();
     },
     _onFocusInputContainer: function() {
