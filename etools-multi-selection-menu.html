@@ -433,6 +433,10 @@ Dropdown with search and multi selection capabilities
 
         return labels.join(' | ');
       },
+      clearValues: function() {
+        this.set('selectedValues', null);
+        this._selectedValuesOrOptionsChanged(null);
+      }
     });
   </script>
 </dom-module>
