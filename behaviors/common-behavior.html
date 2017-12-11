@@ -105,9 +105,9 @@
         reflectToAttribute: true
       },
       opened: {
-        type: Boolean,
-        observer: '_openedChanged'
+        type: Boolean
       },
+      // TODO: cleanup
       avoidHeaderOverlappingDropdown: {
         type: Boolean,
         value: false
@@ -122,37 +122,17 @@
           return this.disableOnFocusHandling || this.isIEBrowser();
         },
         reflectToAttribute: true
+      },
+      _lastOpenedPosition: {
+        type: String,
+        value: ''
       }
     },
     listeners: {
       'blur': '_closeMenu'
     },
 
-    _openedChanged: function(newVal) {
-      if (newVal && this.avoidHeaderOverlappingDropdown) {
-        let ironDropdown = this._getIronDropdown();
-        let dropdownContent = this._getDropdownContent();
-        this.async(function() {
-          console.log(ironDropdown.style.top);
-
-//          let coord = dropdownContent.getBoundingClientRect();
-//          console.log(coord);
-//          if (this._headerOverlapsDropdown(coord) && this.avoidHeaderOverlappingDropdown) {
-//            ironDropdown.set('verticalOffset', '-120');
-//          } else {
-//            ironDropdown.set('verticalOffset', '0');
-//          }
-//          ironDropdown.notifyResize();
-//
-//          console.log(this._headerOverlapsDropdown(coord), this._dropdownOpenedDownwards(coord));
-
-        }, 10);
-
-        this.async(function() {
-          // this._avoidHeaderOverlappingDropdown();
-        }, 500); // Delay required for correct sizing and positioning to be returned
-      }
-    },
+    // TODO: cleanup
     _avoidHeaderOverlappingDropdown: function() {
       let ddContent = this._getDropdownContent();
       if (!ddContent) {
@@ -185,6 +165,7 @@
     },
     _dropdownOpenedDownwards: function(overlayCoord) {
       let paperContainerCoords = this.$.main.getBoundingClientRect();
+      console.log(overlayCoord, paperContainerCoords);
       if (Math.abs(overlayCoord.top - paperContainerCoords.top) <= 10) {
         return true;
       }
@@ -272,42 +253,60 @@
       return (optionsLength > 0 && shownOptionsLength === 0) ||
           (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
     },
+
+    _resizeDropdownHeight: function(ironDropdown, dropdownContent) {
+      let self = this;
+      let dropdownContentHeightCheck = setInterval(function() {
+        let dropdownVisibleHeight = dropdownContent.style.maxHeight;
+        if (dropdownVisibleHeight) {
+          clearInterval(dropdownContentHeightCheck);
+
+          let searchInputWrapper = self.$$('.search-input-wrapper');
+          let listWrapper = self.$$('.list-wrapper');
+          let optionsList = self.$$('.list-wrapper paper-listbox');
+
+          let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
+          let maxDropdownHeight = Number(dropdownVisibleHeight.replace('px', '')) - 10;
+          let optionsListHeight = Number(window.getComputedStyle(optionsList).height.replace('px', ''));
+          let listMaxHeight = maxDropdownHeight - (self.hideSearch ? 0 : searchInputWrapperHeight);
+
+          if (optionsListHeight > listMaxHeight) {
+            listWrapper.style.height = listMaxHeight + 'px';
+            dropdownContent.style.height = maxDropdownHeight + 'px';
+          } else {
+            listWrapper.style.height = optionsListHeight + 'px';
+            dropdownContent.style.height = ((self.hideSearch ? 0 : searchInputWrapperHeight) +
+                optionsListHeight) + 'px';
+          }
+          let visibleDropdownContent = self.$$('.dropdown-content');
+          visibleDropdownContent.style.height = dropdownVisibleHeight;
+          ironDropdown.notifyResize();
+        }
+      }, 5);
+    },
+
+    // TODO: move everything except resize to attached callback
     _onDropdownOpen: function() {
       var ironDropdown = this._getIronDropdown();
-      var dropdownContent = this._getDropdownContent();
+      var listWrapper = this.$$('.list-wrapper');
 
       if (ironDropdown) {
         // set position target to align dropdown content properly
-        ironDropdown.set('fitInto', Polymer.dom(document.querySelector('app-shell').root).querySelector('#appHeadLayout').$$('#contentContainer'));
+        ironDropdown.set('fitInto', Polymer.dom(document.querySelector('app-shell').root)
+            .querySelector('#appHeadLayout').$$('#contentContainer'));
         ironDropdown.set('positionTarget', this);
-        ironDropdown.set('sizingTarget', dropdownContent);
+        ironDropdown.set('sizingTarget', listWrapper);
         ironDropdown.style.width = this.offsetWidth + 'px';
         ironDropdown.focusTarget = this.$$('#searchInput');
-        dropdownContent.style.overflow = 'hidden';
-
-        let self = this;
-        let dropdownContentHeightCheck = setInterval(function() {
-          let dropdownVisibleHeight = dropdownContent.style.maxHeight;
-          if (dropdownVisibleHeight) {
-            clearInterval(dropdownContentHeightCheck);
-
-            let visibleDropdown = self.$$('.dropdown-content');
-            console.log(dropdownVisibleHeight, visibleDropdown);
-            visibleDropdown.style.height = dropdownVisibleHeight;
-
-            let searchInputWrapper = self.$$('.search-input-wrapper');
-            let listWrapper = self.$$('.list-wrapper');
-            console.log(listWrapper);
-
-            let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
-            let maxDropdownHeight = Number(dropdownVisibleHeight.replace('px', ''));
-            listWrapper.style.height = (maxDropdownHeight - searchInputWrapperHeight) + 'px';
-
-            console.log(searchInputWrapperHeight, maxDropdownHeight);
-            console.log(window.getComputedStyle(searchInputWrapper).height, window.getComputedStyle(listWrapper).height);
-          }
-        }, 5);
-
+        // ironDropdownContent.style.overflow = 'hidden';
+//        this._resizeDropdownHeight(ironDropdown, dropdownContent);
+        this.async(function() {
+          var listWrapperMaxHeight = Number(listWrapper.style.maxHeight.replace('px', ''));
+          var searchInputWrapper = this.$$('.search-input-wrapper');
+          var searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
+          console.log(listWrapperMaxHeight, listWrapperMaxHeight - searchInputWrapperHeight);
+          listWrapper.style.maxHeight = (listWrapperMaxHeight - searchInputWrapperHeight) + 'px';
+        }, 100); 
       }
     },
     _getIronDropdown: function() {
