@@ -114,7 +114,11 @@
         },
         reflectToAttribute: true
       },
-      fitInto: Object // element that will prevent dropdown to overflow outside it's margins
+      fitInto: Object, // element that will prevent dropdown to overflow outside it's margins
+      _viewportEdgeMargin: {
+        type: Number,
+        value: 20
+      }
     },
 
     listeners: {
@@ -242,10 +246,33 @@
     },
 
     _dropdownBottomOutsideViewPort: function(openedDropdownCoord) {
-      let viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      let viewportH = this._getViewportHeight();
       let dropdownBottomY = openedDropdownCoord.top + openedDropdownCoord.height;
       let diff = viewportH - dropdownBottomY;
       return diff <= 0;
+    },
+
+    _getViewportHeight: function() {
+      return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    },
+
+    _recalculateOptionsListHeightForIE11: function(newComputedHeight, openedDropdownCoord, searchInputWrapperHeight) {
+      if (this.isIEBrowser()) {
+        let viewportH = this._getViewportHeight();
+        /**
+         * - if newComputedHeight is bigger than IE11 viewport we need to recalculate list height
+         * or
+         * - recheck bottom margin if it's visible, it might still be under viewport in IE11
+         * possible dynamicAlign issue in IE11
+         */
+        if (newComputedHeight > viewportH ||
+            (this._dropdownOpenedDownwards(openedDropdownCoord) &&
+                this._dropdownBottomOutsideViewPort(openedDropdownCoord))) {
+          newComputedHeight = viewportH - Math.max(openedDropdownCoord.top, 0) -
+              searchInputWrapperHeight - this._viewportEdgeMargin;
+        }
+      }
+      return newComputedHeight;
     },
 
     _resizeOptionsListHeight: function() {
@@ -258,7 +285,9 @@
 
       let dropdownContentHeightCheck = setInterval(function() {
         // opened dropdown coordinates
-        let openedDropdownCoord = this.$$('.dropdown-content').getBoundingClientRect();
+        let openedDropdown = this.$$('.dropdown-content');
+        let openedDropdownCoord = openedDropdown.getBoundingClientRect();
+        console.log(listWrapper.style.maxHeight, openedDropdownCoord);
         // don't do anything until maxHeight is set and the dropdown has been opened
         if (listWrapper.style.maxHeight && this._validCoordinates(openedDropdownCoord)) {
           clearInterval(dropdownContentHeightCheck);
@@ -267,10 +296,17 @@
           let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
 
           let newComputedHeight = listWrapperMaxHeight - searchInputWrapperHeight;
+          console.log(this._dropdownOpenedDownwards(openedDropdownCoord), this._dropdownBottomOutsideViewPort(openedDropdownCoord));
           if (this._dropdownOpenedDownwards(openedDropdownCoord) &&
               this._dropdownBottomOutsideViewPort(openedDropdownCoord)) {
-            newComputedHeight -= 20;
+            newComputedHeight -= this._viewportEdgeMargin;
           }
+
+          console.log(newComputedHeight);
+          newComputedHeight = this._recalculateOptionsListHeightForIE11(newComputedHeight,
+              openedDropdownCoord, searchInputWrapperHeight);
+
+          console.log(newComputedHeight);
 
           listWrapper.style.maxHeight = newComputedHeight + 'px';
         }
