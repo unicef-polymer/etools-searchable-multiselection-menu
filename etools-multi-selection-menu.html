@@ -344,10 +344,6 @@ Dropdown with search and multi selection capabilities
         if (this.autoValidate) {
           this.validate(this.selectedValues);
         }
-        if (this._resizedManually) {
-          this.refit();
-          this._resizedManually = false;
-        }
       },
       validate: function(selectedValues) {
         if (!this.hasAttribute('required') || this.readonly) {

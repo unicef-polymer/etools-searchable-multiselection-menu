@@ -107,15 +107,6 @@
       opened: {
         type: Boolean
       },
-      // TODO: cleanup
-      avoidHeaderOverlappingDropdown: {
-        type: Boolean,
-        value: false
-      },
-      _resizedManually: {
-        type: Boolean,
-        value: false
-      },
       disableOnFocusHandling: {
         type: Boolean,
         value: function() {
@@ -123,69 +114,48 @@
         },
         reflectToAttribute: true
       },
-      _lastOpenedPosition: {
-        type: String,
-        value: ''
-      }
+      fitInto: Object // element that will prevent dropdown to overflow outside it's margins
     },
+
     listeners: {
       'blur': '_closeMenu'
     },
 
-    // TODO: cleanup
-    _avoidHeaderOverlappingDropdown: function() {
-      let ddContent = this._getDropdownContent();
-      if (!ddContent) {
-        return;
-      }
-      let coord = ddContent.getBoundingClientRect();
-      if (!this._headerOverlapsDropdown(coord) || this._dropdownOpenedDownwards(coord)) {
-        return;
-      }
-
-      if (coord.height === 0) {
-        coord.height = window.getComputedStyle(ddContent).height;
-        if (coord.height === 0) {
-          return;
-        }
-      }
-      ddContent.style.height = (coord.height - (60 - coord.top + 10)) + 'px';
-      this._resizePaperListboxContainer(coord);
-
-      this._resizedManually = true;
-      this.async(function() {
-        this.notifyDropdownResize();
-        this._getIronDropdown().set('positionTarget', this);
-      }, 400);
-    },
-    _resizePaperListboxContainer: function(overlayCoord) {
+    attached: function() {
+      let ironDropdown = this._getIronDropdown();
       let listWrapper = this._getListWrapper();
-      let listWrapperCoord = listWrapper.getBoundingClientRect();
-      listWrapper.style.height = (listWrapperCoord.height - (60 - overlayCoord.top + 10)) + 'px';
+      if (ironDropdown) {
+        // fitInto element will not let the dropdown to overlap it's margins
+        if (!this.fitInto) {
+          this.fitInto = window.EtoolsEsmmFitIntoEl;
+        }
+        if (this.fitInto) {
+          ironDropdown.set('fitInto', this.fitInto);
+        }
+        // set position target to align dropdown content properly
+        ironDropdown.set('positionTarget', this);
+        // sizingTarget is the element that will automatically get the calculated height (by iron-dropdown)
+        ironDropdown.set('sizingTarget', listWrapper);
+      }
     },
+
     _dropdownOpenedDownwards: function(overlayCoord) {
       let paperContainerCoords = this.$.main.getBoundingClientRect();
-      console.log(overlayCoord, paperContainerCoords);
-      if (Math.abs(overlayCoord.top - paperContainerCoords.top) <= 10) {
-        return true;
-      }
-      return false;
+      return Math.abs(overlayCoord.top - paperContainerCoords.top) <= 10;
     },
-    _headerOverlapsDropdown: function(clientRect) {
-      return clientRect.top < 60; // 60 is the height of the pmp header
-    },
-    _getListWrapper: function() {
-      return Polymer.dom(this.$.dropdownMenu).querySelector('.dropdown-content .list-wrapper');
-    },
+
     _noOptions: function() {
       return (!this.options || !this.options.length);
     },
+
     _menuBtnIsDisabled: function(disabled, readonly) {
       return disabled || readonly;
     },
+
     _getValue: function(item) {
       return item ? item[this.optionValue] : null;
     },
+
     _getLabel: function(item) {
       if (!item) {
         return null;
@@ -195,31 +165,37 @@
       }
       return item[this.optionLabel];
     },
+
     resetInvalidState: function() {
       this.set('invalid', false);
     },
+
     _computeNoOptionsAvailable: function(options, optionsLength) {
       return !Array.isArray(options) || !optionsLength;
     },
+
     _readonlyChanged: function(newValue, oldValue) {
       if (newValue) {
         this.invalid = false;
       }
       this._attributeRepaintNeeded(newValue, oldValue);
     },
+
     _requiredChanged: function(newValue, oldValue) {
       if (!newValue) {
         this.invalid = false;
       }
       this._attributeRepaintNeeded(newValue, oldValue);
     },
+
     _attributeRepaintNeeded: function(newValue, oldValue) {
       if (newValue !== undefined && newValue !== oldValue) {
         this.updateStyles();
       }
     },
+
     _computeShownOptions: function(options, search, showEmptyValue) {
-      var shownOptions = JSON.parse(JSON.stringify(options));
+      let shownOptions = JSON.parse(JSON.stringify(options));
 
       if (search) {
         shownOptions = options.filter(this._itemContainsSearchString.bind(this));
@@ -229,23 +205,27 @@
       }
 
       if (showEmptyValue) {
-        var emptyOption = {cssClass: 'emptyValue'};
+        let emptyOption = {cssClass: 'emptyValue'};
         emptyOption[this.optionValue] = null;
         emptyOption[this.optionLabel] = '-- None --';
         shownOptions.unshift(emptyOption);
       }
       return shownOptions;
     },
+
     _trimByShownOptionsLimit: function(options) {
       return options.slice(0, Math.min(this.shownOptionsLimit, options.length));
     },
+
     _itemContainsSearchString: function(item) {
       return item[this.optionLabel] &&
           item[this.optionLabel].toString().toLowerCase().indexOf(this.search.toLowerCase()) > -1;
     },
+
     _computeShowLimitWarning: function(limit, shownOptions) {
       return shownOptions.length >= limit;
     },
+
     _showNoSearchResultsWarning: function(noOptionsAvailable, shownOptionsLength, optionsLength) {
       if (noOptionsAvailable) {
         return false;
@@ -254,102 +234,99 @@
           (shownOptionsLength === 1 && this.shownOptions[0][this.optionValue] === null);
     },
 
-    _resizeDropdownHeight: function(ironDropdown, dropdownContent) {
-      let self = this;
-      let dropdownContentHeightCheck = setInterval(function() {
-        let dropdownVisibleHeight = dropdownContent.style.maxHeight;
-        if (dropdownVisibleHeight) {
-          clearInterval(dropdownContentHeightCheck);
-
-          let searchInputWrapper = self.$$('.search-input-wrapper');
-          let listWrapper = self.$$('.list-wrapper');
-          let optionsList = self.$$('.list-wrapper paper-listbox');
-
-          let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
-          let maxDropdownHeight = Number(dropdownVisibleHeight.replace('px', '')) - 10;
-          let optionsListHeight = Number(window.getComputedStyle(optionsList).height.replace('px', ''));
-          let listMaxHeight = maxDropdownHeight - (self.hideSearch ? 0 : searchInputWrapperHeight);
-
-          if (optionsListHeight > listMaxHeight) {
-            listWrapper.style.height = listMaxHeight + 'px';
-            dropdownContent.style.height = maxDropdownHeight + 'px';
-          } else {
-            listWrapper.style.height = optionsListHeight + 'px';
-            dropdownContent.style.height = ((self.hideSearch ? 0 : searchInputWrapperHeight) +
-                optionsListHeight) + 'px';
-          }
-          let visibleDropdownContent = self.$$('.dropdown-content');
-          visibleDropdownContent.style.height = dropdownVisibleHeight;
-          ironDropdown.notifyResize();
-        }
-      }, 5);
+    _validCoordinates: function(coords) {
+      return !(coords.x === 0 && coords.y === 0 &&
+          coords.width === 0 && coords.height === 0 &&
+          coords.left === 0 && coords.right === 0 &&
+          coords.top === 0 && coords.bottom === 0);
     },
 
-    // TODO: move everything except resize to attached callback
-    _onDropdownOpen: function() {
-      var ironDropdown = this._getIronDropdown();
-      var listWrapper = this.$$('.list-wrapper');
+    _dropdownBottomOutsideViewPort: function(openedDropdownCoord) {
+      let viewportH = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+      let dropdownBottomY = openedDropdownCoord.top + openedDropdownCoord.height;
+      let diff = viewportH - dropdownBottomY;
+      return diff <= 0;
+    },
 
+    _resizeOptionsListHeight: function() {
+      // if searchbox is hidden we do not need to recalculate list height
+      if (this.hideSearch) {
+        return;
+      }
+
+      let listWrapper = this._getListWrapper();
+
+      let dropdownContentHeightCheck = setInterval(function() {
+        // opened dropdown coordinates
+        let openedDropdownCoord = this.$$('.dropdown-content').getBoundingClientRect();
+        // don't do anything until maxHeight is set and the dropdown has been opened
+        if (listWrapper.style.maxHeight && this._validCoordinates(openedDropdownCoord)) {
+          clearInterval(dropdownContentHeightCheck);
+          let listWrapperMaxHeight = Number(listWrapper.style.maxHeight.replace('px', ''));
+          let searchInputWrapper = this.$$('.search-input-wrapper');
+          let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
+
+          let newComputedHeight = listWrapperMaxHeight - searchInputWrapperHeight;
+          if (this._dropdownOpenedDownwards(openedDropdownCoord) &&
+              this._dropdownBottomOutsideViewPort(openedDropdownCoord)) {
+            newComputedHeight -= 20;
+          }
+
+          listWrapper.style.maxHeight = newComputedHeight + 'px';
+        }
+      }.bind(this), 0);
+    },
+
+    _onDropdownOpen: function() {
+      let ironDropdown = this._getIronDropdown();
       if (ironDropdown) {
-        // set position target to align dropdown content properly
-        ironDropdown.set('fitInto', Polymer.dom(document.querySelector('app-shell').root)
-            .querySelector('#appHeadLayout').$$('#contentContainer'));
-        ironDropdown.set('positionTarget', this);
-        ironDropdown.set('sizingTarget', listWrapper);
         ironDropdown.style.width = this.offsetWidth + 'px';
         ironDropdown.focusTarget = this.$$('#searchInput');
-        // ironDropdownContent.style.overflow = 'hidden';
-//        this._resizeDropdownHeight(ironDropdown, dropdownContent);
-        this.async(function() {
-          var listWrapperMaxHeight = Number(listWrapper.style.maxHeight.replace('px', ''));
-          var searchInputWrapper = this.$$('.search-input-wrapper');
-          var searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
-          console.log(listWrapperMaxHeight, listWrapperMaxHeight - searchInputWrapperHeight);
-          listWrapper.style.maxHeight = (listWrapperMaxHeight - searchInputWrapperHeight) + 'px';
-        }, 100); 
+
+        this._resizeOptionsListHeight();
       }
     },
+
     _getIronDropdown: function() {
       return this.$.dropdownMenu.$.dropdown;
     },
-    _getDropdownContent: function() {
-      return this.$.dropdownMenu.$$('.dropdown-content');
+
+    _getListWrapper: function() {
+      return this.$$('.list-wrapper');
     },
+
     _closeMenu: function() {
       this.$.dropdownMenu.close();
-
-//      if (this._resizedManually) {
-//        // *Reset neccessary so that dropdown becomes responsive
-//        // on window resize after it's height was manually changed
-//        this.refit();
-//        this._resizedManually = false;
-//      }
     },
+
     /**
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
      */
-    _searchValueChanged: function(search) {
+    _searchValueChanged: function(search, oldSearch) {
+      if (oldSearch === undefined && search === '') {
+        // prevent resizing at search property init
+        return;
+      }
       this.notifyDropdownResize();
+      this.async(function() {
+        this._resizeOptionsListHeight();
+      });
     },
 
     notifyDropdownResize: function() {
-      var ironDropdown = this._getIronDropdown();
+      let ironDropdown = this._getIronDropdown();
       if (ironDropdown) {
         ironDropdown.notifyResize();
       }
     },
-    refit: function() {
-      var ddContent = this._getDropdownContent();
-      ddContent.style.height = 'auto';
-      this._getListWrapper().style.height = 'auto';
-      this.notifyDropdownResize();
-    },
+
     _onFocusInputContainer: function() {
       if (this.disableOnFocusHandling) {
         return;
       }
       this._openMenu();
     },
+
     isIEBrowser: function() {
       let userAgent = window.navigator.userAgent;
       if (userAgent.indexOf('Trident/') > -1) {

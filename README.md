@@ -238,9 +238,9 @@ many missing options `someUrl?values=1,2,3`). This can be used only with `select
 The response of the missing options request should be an array with one or more objects with the same properties
 dropdown options have.
 * value - String
-* avoidHeaderOverlappingDropdown - Boolean , default: false . This was added for a case in pmp, where when the dropdown
-oppened upwards, the search input was covered by the header of the app
 * disableOnFocusHandling - Boolean, default: false. Set to true to disable onFocus handling on the dropdown (more specifically the contained paper-input-container). We set this to true when the dropdown is in a modal, to avoid a bug that consists of the dropdown overlay closing and opening again and remaining opened , when clicking outside the dropdown or after selecting an item
+* fitInto - Element, default: undefined. To not overlap your app header or any other elements you can set this property to an element. The dropdown will not overflow this element margins. 
+
 ## Usage
 
 Examples:
