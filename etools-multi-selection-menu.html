@@ -147,7 +147,8 @@ Dropdown with search and multi selection capabilities
             <paper-input id="searchInput"
                          no-label-float
                          class="search-input"
-                         label="Search" type="text"
+                         placeholder="Search"
+                         type="text"
                          value="{{search}}"
                          auto-focus
                          tabindex="0">
@@ -343,10 +344,6 @@ Dropdown with search and multi selection capabilities
       _onPaperDropdownClose: function() {
         if (this.autoValidate) {
           this.validate(this.selectedValues);
-        }
-        if (this._resizedManually) {
-          this.refit();
-          this._resizedManually = false;
         }
       },
       validate: function(selectedValues) {
