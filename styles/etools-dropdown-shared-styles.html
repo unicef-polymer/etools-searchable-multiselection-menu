@@ -62,6 +62,10 @@
         opacity: 0.54;
       }
 
+      #dropdownMenu .dropdown-content {
+        overflow: hidden;
+      }
+
       .search-input-wrapper {
         @apply(--layout);
         position: relative;
@@ -105,8 +109,8 @@
       .list-wrapper {
         position: relative;
         z-index: 5;
-        max-height: 50vh;
         width: 100%;
+        min-height: 48px;
         overflow-y: auto;
         background: #fff;
         font-size: 0;
