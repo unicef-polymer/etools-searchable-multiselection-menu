@@ -240,6 +240,7 @@ dropdown options have.
 * value - String
 * disableOnFocusHandling - Boolean, default: false. Set to true to disable onFocus handling on the dropdown (more specifically the contained paper-input-container). We set this to true when the dropdown is in a modal, to avoid a bug that consists of the dropdown overlay closing and opening again and remaining opened , when clicking outside the dropdown or after selecting an item
 * fitInto - Element, default: undefined. To not overlap your app header or any other elements you can set this property to an element. The dropdown will not overflow this element margins. 
+* viewportEdgeMargin - Number, default: 20. In case dropdown is downwards opened and reach the viewport edge, this value will be added as a bottom margin.
 
 ## Usage
 

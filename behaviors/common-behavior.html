@@ -115,7 +115,7 @@
         reflectToAttribute: true
       },
       fitInto: Object, // element that will prevent dropdown to overflow outside it's margins
-      _viewportEdgeMargin: {
+      viewportEdgeMargin: {
         type: Number,
         value: 20
       }
@@ -127,7 +127,6 @@
 
     attached: function() {
       let ironDropdown = this._getIronDropdown();
-      let listWrapper = this._getListWrapper();
       if (ironDropdown) {
         // fitInto element will not let the dropdown to overlap it's margins
         if (!this.fitInto) {
@@ -138,9 +137,22 @@
         }
         // set position target to align dropdown content properly
         ironDropdown.set('positionTarget', this);
-        // sizingTarget is the element that will automatically get the calculated height (by iron-dropdown)
-        ironDropdown.set('sizingTarget', listWrapper);
+
+        let ironDrContent = this._getIronDropdownContent();
+        ironDrContent.style.overflow = 'hidden';
+        ironDropdown.addEventListener('iron-overlay-closed', this.resetIronDropdownSize.bind(this));
       }
+    },
+
+    /**
+     * Reset previous calculated maxHeight,
+     * in this way on each dropdown open action we'll get the same calculated new height.
+     */
+    resetIronDropdownSize: function() {
+      let ironDrContent = this._getIronDropdownContent();
+      let listWrapper = this._getListWrapper();
+      ironDrContent.style.maxHeight = 'none';
+      listWrapper.style.maxHeight = 'none';
     },
 
     _dropdownOpenedDownwards: function(overlayCoord) {
@@ -245,6 +257,11 @@
           coords.top === 0 && coords.bottom === 0);
     },
 
+    _bottomTooCloseToViewportEdge: function(dropdownBottom) {
+      let viewportH = this._getViewportHeight();
+      return (viewportH - dropdownBottom) < 10;
+    },
+
     _dropdownBottomOutsideViewPort: function(openedDropdownCoord) {
       let viewportH = this._getViewportHeight();
       let dropdownBottomY = openedDropdownCoord.top + openedDropdownCoord.height;
@@ -254,11 +271,6 @@
 
     _getViewportHeight: function() {
       return Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    },
-
-    _isDownwardsOpenedAndOutsideViewport: function(openedDropdownCoord) {
-      return this._dropdownOpenedDownwards(openedDropdownCoord) &&
-          this._dropdownBottomOutsideViewPort(openedDropdownCoord);
     },
 
     _recalculateOptionsListHeightForIE11: function(newComputedHeight, openedDropdownCoord, searchInputWrapperHeight) {
@@ -272,7 +284,7 @@
          */
         if (this._dropdownOpenedDownwards(openedDropdownCoord) &&
             (newComputedHeight > viewportH || this._dropdownBottomOutsideViewPort(openedDropdownCoord))) {
-          newComputedHeight = viewportH - openedDropdownCoord.top - searchInputWrapperHeight - this._viewportEdgeMargin;
+          newComputedHeight = viewportH - openedDropdownCoord.top - searchInputWrapperHeight - this.viewportEdgeMargin;
         }
 
         /**
@@ -289,36 +301,41 @@
       return newComputedHeight;
     },
 
-    _resizeOptionsListHeight: function() {
-      // if searchbox is hidden we do not need to recalculate list height
-      if (this.hideSearch) {
-        return;
+    _getSearchFieldHeight: function() {
+      let searchInputWrapperHeight = 0;
+      if (!this.hideSearch) {
+        let searchInputWrapper = this.$$('.search-input-wrapper');
+        searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
       }
+      return searchInputWrapperHeight;
+    },
 
-      let listWrapper = this._getListWrapper();
+    _resizeOptionsListHeight: function() {
+      let ironDrContent = this._getIronDropdownContent();
 
       let dropdownContentHeightCheck = setInterval(function() {
         // opened dropdown coordinates
-        let openedDropdown = this.$$('.dropdown-content');
-        let openedDropdownCoord = openedDropdown.getBoundingClientRect();
+        let openedDropdownCoord = ironDrContent.getBoundingClientRect();
+
         // don't do anything until maxHeight is set and the dropdown has been opened
-        if (listWrapper.style.maxHeight && this._validCoordinates(openedDropdownCoord)) {
+        if (ironDrContent.style.maxHeight && this._validCoordinates(openedDropdownCoord)) {
           clearInterval(dropdownContentHeightCheck);
-          let listWrapperMaxHeight = Number(listWrapper.style.maxHeight.replace('px', ''));
-          let searchInputWrapper = this.$$('.search-input-wrapper');
-          let searchInputWrapperHeight = Number(window.getComputedStyle(searchInputWrapper).height.replace('px', ''));
+          let drMaxHeight = Number(ironDrContent.style.maxHeight.replace('px', ''));
+          let searchInputWrapperHeight = this._getSearchFieldHeight();
 
           // for browsers
-          let newComputedHeight = listWrapperMaxHeight - searchInputWrapperHeight;
-          if (this._isDownwardsOpenedAndOutsideViewport(openedDropdownCoord)) {
-            newComputedHeight -= this._viewportEdgeMargin;
+          let listOptionsComputedHeight = drMaxHeight - searchInputWrapperHeight;
+          if (this._dropdownOpenedDownwards(openedDropdownCoord) &&
+              this._bottomTooCloseToViewportEdge(drMaxHeight + openedDropdownCoord.top)) {
+            listOptionsComputedHeight -= this.viewportEdgeMargin;
           }
 
           // check if height is correctly calculated for IE11 and recalculate if needed
-          newComputedHeight = this._recalculateOptionsListHeightForIE11(newComputedHeight,
+          listOptionsComputedHeight = this._recalculateOptionsListHeightForIE11(listOptionsComputedHeight,
               openedDropdownCoord, searchInputWrapperHeight);
 
-          listWrapper.style.maxHeight = newComputedHeight + 'px';
+          let listWrapper = this._getListWrapper();
+          listWrapper.style.maxHeight = listOptionsComputedHeight + 'px';
         }
       }.bind(this), 0);
     },
@@ -337,6 +354,10 @@
       return this.$.dropdownMenu.$.dropdown;
     },
 
+    _getIronDropdownContent: function() {
+      return this.$.dropdownMenu.$$('.dropdown-content');
+    },
+
     _getListWrapper: function() {
       return this.$$('.list-wrapper');
     },
@@ -353,6 +374,7 @@
         // prevent resizing at search property init
         return;
       }
+      this.resetIronDropdownSize();
       this.notifyDropdownResize();
       this.async(function() {
         this._resizeOptionsListHeight();
