@@ -88,7 +88,7 @@ Dropdown with search and single selection capabilities
                 id="searchInput"
                 no-label-float
                 class="search-input"
-                label="Search"
+                placeholder="Search"
                 type="text"
                 value="{{search}}"
                 auto-focus
@@ -187,10 +187,6 @@ Dropdown with search and single selection capabilities
         if (this.autoValidate) {
           this.validate(this.selected);
         }
-        if (this._resizedManually) {
-          this.refit();
-          this._resizedManually = false;
-        }
       },
       _handleClickOrTap: function(e) {
         e.preventDefault();
@@ -203,9 +199,6 @@ Dropdown with search and single selection capabilities
         if (!dropdown.opened) {
           dropdown.open();
         }
-      },
-      _closeMenu: function() {
-        this.$.dropdownMenu.close();
       },
 
       _selectedAndOptionsChanged: function() {
