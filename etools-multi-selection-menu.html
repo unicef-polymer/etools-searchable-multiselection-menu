@@ -298,7 +298,7 @@ Dropdown with search and multi selection capabilities
         }.bind(this));
 
         if (this._noSelectedItems(selectedItems)) {
-          this.selectedValues = null;
+          this.selectedValues = [];
           this.set('selectedItems', []);
         } else {
           var selectedValues = this._getValuesFromItems(selectedItems);
