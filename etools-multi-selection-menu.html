@@ -314,7 +314,7 @@ Dropdown with search and multi selection capabilities
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
       _notFoundOptionsAndUrlChanged: function() {
-        if (this.notFoundOptions) {
+        if (Array.isArray(this.notFoundOptions) && this.notFoundOptions.length > 0) {
           this._handleSelectedNotFoundInOptions(this.notFoundOptions);
         }
       },
