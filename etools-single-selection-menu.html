@@ -184,6 +184,7 @@ Dropdown with search and single selection capabilities
         }
       },
       _onPaperDropdownClose: function() {
+        this._resetSearch();
         if (this.autoValidate) {
           this.validate(this.selected);
         }

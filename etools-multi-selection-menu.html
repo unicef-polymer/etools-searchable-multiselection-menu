@@ -341,7 +341,8 @@ Dropdown with search and multi selection capabilities
           this.set('selectedItems', selectedItems);
         }
       },
-      _onPaperDropdownClose: function() {
+      _onPaperDropdownClose: function() {|
+        this._resetSearch();
         if (this.autoValidate) {
           this.validate(this.selectedValues);
         }
