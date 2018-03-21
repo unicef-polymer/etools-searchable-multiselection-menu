@@ -314,7 +314,7 @@ Dropdown with search and multi selection capabilities
       // This observer makes sure request for missing option is triggered only after the url is set also.
       // notFoundOption is actually this.selected
       _notFoundOptionsAndUrlChanged: function() {
-        if (this.notFoundOptions) {
+        if (this.arrayNotEmpty(this.notFoundOptions)) {
           this._handleSelectedNotFoundInOptions(this.notFoundOptions);
         }
       },
@@ -330,7 +330,7 @@ Dropdown with search and multi selection capabilities
       },
       _updateAfterMissingOptionsReceived: function(detail) {
         var selectedItems;
-        if (Array.isArray(detail) && detail.length) {
+        if (this.arrayNotEmpty(detail)) {
           selectedItems = detail;
         } else {
           selectedItems = [detail];
@@ -411,7 +411,7 @@ Dropdown with search and multi selection capabilities
       _selectedItemsDisplayHasChanged: function(e) {
         e.stopImmediatePropagation();
         // hide/show placeholder
-        if (this.selectedItems instanceof Array && this.selectedItems.length > 0) {
+        if (this.arrayNotEmpty(this.selectedItems)) {
           this.set('_hidePlaceholder', true);
         } else {
           this.set('_hidePlaceholder', false);
@@ -419,7 +419,7 @@ Dropdown with search and multi selection capabilities
       },
       // Use of this method covers a corner case
       _getSelectedClass: function(item) {
-        if (this.selectedValues instanceof Array && this.selectedValues.length > 0) {
+        if (this.arrayNotEmpty(this.selectedValues)) {
           return this.selectedValues.indexOf(item[this.optionValue].toString()) > -1 ? 'iron-selected' : '';
         }
         return '';
