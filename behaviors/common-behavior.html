@@ -378,6 +378,10 @@
         // prevent resizing at search property init
         return;
       }
+      if (search === '' && !this.opened) {
+        // the search string is being reset when closed, so no need to do anything
+        return;
+      }
       this.resetIronDropdownSize();
       this.notifyDropdownResize();
       this.async(function() {
