@@ -366,6 +366,10 @@
       this.$.dropdownMenu.close();
     },
 
+    _resetSearch: function() {
+      this.set('search', '');
+    },
+
     /**
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
      */
