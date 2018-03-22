@@ -366,12 +366,20 @@
       this.$.dropdownMenu.close();
     },
 
+    _resetSearch: function() {
+      this.set('search', '');
+    },
+
     /**
      * Sometimes the dropdown doesn't resize when search is changed and we need to force the resize
      */
     _searchValueChanged: function(search, oldSearch) {
       if (oldSearch === undefined && search === '') {
         // prevent resizing at search property init
+        return;
+      }
+      if (search === '' && !this.opened) {
+        // the search string is being reset when closed, so no need to do anything
         return;
       }
       this.resetIronDropdownSize();
@@ -402,6 +410,10 @@
         return true;
       }
       return false;
+    },
+
+    arrayNotEmpty(arr) {
+      return Array.isArray(arr) && arr.length;
     }
 
   };

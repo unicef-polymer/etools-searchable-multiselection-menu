@@ -184,6 +184,7 @@ Dropdown with search and single selection capabilities
         }
       },
       _onPaperDropdownClose: function() {
+        this._resetSearch();
         if (this.autoValidate) {
           this.validate(this.selected);
         }
@@ -243,7 +244,7 @@ Dropdown with search and single selection capabilities
       },
       _updateAfterMissingOptionsReceived: function(detail) {
         var selectedItem;
-        if (Array.isArray(detail) && detail.length) {
+        if (this.arrayNotEmpty(detail)) {
           selectedItem = detail[0];
         } else {
           selectedItem = detail;
