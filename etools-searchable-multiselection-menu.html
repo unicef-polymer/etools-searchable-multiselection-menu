@@ -952,7 +952,7 @@ Custom property | Description | Default
             var searchInput = this.$$('#searchInput');
             if (searchInput) {
               this.debounce('focusOnDropdown', function() {
-                Polymer.dom(searchInput.root).querySelector('#input').focus();
+                searchInput.inputElement.focus();
               }, 100);
             }
           }.bind(this), 100);
